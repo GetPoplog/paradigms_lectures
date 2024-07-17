@@ -1,0 +1,143 @@
+
+        CMPSCI 287 FALL 98 FINAL EXAMINATION
+
+Answer all questions. All questions carry equal marks. You may answer
+in the space provided, or use a separate blue-book.
+
+
+Question 1
+
+Evaluate the Scheme expressions given below.
+
+
+
+(a)
+    (let ((x (+ 1 2)) (y (* 10 5))) (+ x y))
+
+(b)
+    (car  (cdr '(tiger bites bananas)))
+
+(c)
+
+    (cons (+ 5 10)  (cons (* 1 10) '()))
+
+(d)
+
+    ((lambda (x y) (+ x (* 2 y)))
+        5
+        (+ 2 (*  3 2)))
+
+(e) Evaluate in sequence all the expressions, writing down the value
+of the last one:
+
+    (define  a '(3 1))
+    (define  b a)
+    (set-car! a '(three generous cats))
+    (car (car b))
+
+
+
+Question 2:
+
+Correct the mistakes (if any) in the following definition of reduce:
+
+(define (reduce f acc base list)
+    (if (null?  base)
+       base
+       (acc
+         (acc (caar list))
+         (acc
+            f
+            f
+            reduce
+            (cdr list)))))
+
+
+
+
+
+
+
+Question 3:
+
+In the evaluation of
+
+    (eval_env!
+        '((lambda (u v) (+ u (* v 4) 7))
+            (+ 8 7) (* 7 2))
+         the-global-environment
+    )
+
+write down the first frame of the environment in which the body
+of the lambda expression is evaluated.
+
+
+
+Question 4:
+
+Convert the following expression into the polynomial form we used for
+homework 9.
+
+    (* (+ p 4) (+ q 3))
+
+
+Question 5:
+
+In class, we have seen that a  parser takes a list of tokens and  maps
+it into a parse-tree combined with a residual token-list. A  generator
+does a kind of  inverse operation: it takes  a parse-tree as  argument
+and produces as result the list of tokens which, if parsed, will  give
+rise to the same parse-tree.
+
+(a) Write the function mk_generator_singleton  for which the call
+
+    (mk_generator_singleton list_of_tokens)
+
+produces the generator corresponding to (mk_parser_singleton list_of_tokens).
+
+(b) Write the function mk_generator_seq for which the call
+
+    (mk_generator_seq  g1 g2 ub)
+
+produces the generator corresponding to
+
+    (mk_parser_seq  p1 p2 b)
+
+Here g1 and g2  are generators corresponding to two parsers  p1 and p2,
+while ub is an unbuilder corresponding to the builder b, that is
+
+    (car  (ub (b p1 p2)))   = p1
+    (cadr (up (b p1 p2)))   = p2
+
+
+Question 6:
+
+With the definition of unification given in the notes,
+and given that we have evaluated
+
+    (define empty-frame '())
+
+what is the value of
+
+(a)
+    (unify '(+ (? a) (? b)) '(+ 4 2) empty-frame)
+
+
+
+(b)
+    (unify '(+ 8 (? a)) '(+ (? b) 4) empty-frame)
+
+
+
+(c)
+    (unify '(+  4 4) '(+ (? b) (? b)) empty-frame)
+
+
+
+(d)
+    (unify '(+ (? a) (? b)) '(+ (? c) (? c)) empty-frame)
+
+
+
+(e)
+    (unify '(+ (log (? a)) 8) '(+ (log 9) (? c)) empty-frame)

@@ -1,0 +1,238 @@
+
+<html><head><title>
+
+Evaluation
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+Environment Models, Combinatory Models.
+</center>
+
+</h1>
+
+<h3>How far can we squash the <img src=lambda.gif>-calculus down?</h3>
+
+In an environment model we <em>identify</em> certain terms of <img
+src=Lambda.gif>(D) which are syntactically distinct. For example
+
+<ul>
+        ((<img src=lambda.gif> x. (+ x a)) p)
+</ul>
+
+is necessarily mapped to the same value as
+
+<ul>
+        (+ p a)
+</ul>
+
+in any environment model. Moreover, further identification is possible. For
+example  <em>(+ a b)</em> will be mapped to the same value as <em>(+ b
+a)</em> in any environment model which implements addition defined by the
+standard rules. How far can this identification process go? Can we project
+the lambda-calculus down to an environment model consisting of a single
+element, or to a finite number of elements? The following two lemmas
+demonstrate that the values of <em>projection functions</em> must be
+distinct in any non-trivial environment model.
+
+<p>From now on we'll write
+<em> (d<sub>1</sub> d<sub>2</sub>) </em>
+for  <em><img src=Phi.gif>(d<sub>1</sub>)(d<sub>2</sub>)</em>.
+
+<hr>
+<h3>Lemma EM4</h3>
+
+In any environment model if, for some environment <img src=rho.gif>,
+<ul>
+p =
+<img src=calV.gif>[
+<img src=lambda.gif> x<sub>1</sub> . . . x<sub>n</sub>. d]
+(<img src=rho.gif>)
+</ul>
+then for any <em>d<sub>1</sub> . . .d<sub>n</sub></em> in <em>D</em>,
+<em>(p d<sub>1</sub> . . .d<sub>n</sub>) = d</em>
+
+<hr>
+
+<h3>Lemma EM5</h3>
+
+In any environment model if, for some environment <img src=rho.gif>,
+<ul>
+p =
+<img src=calV.gif>[
+<img src=lambda.gif> x<sub>1</sub> . . . x<sub>i</sub> . . .
+x<sub>n</sub>. x<sub>i</sub>]
+(<img src=rho.gif>)
+</ul>
+then for any <em>d<sub>1</sub> . . .d<sub>n</sub></em> in <em>D</em>,
+<em>(p d<sub>1</sub> . . .d<sub>n</sub>) = d<sub>i</sub></em>
+
+<h4>Proof</h4>
+By induction on <em>i</em>.
+
+<h4>Base Case: i=1</h4>
+
+
+<ul>
+p =
+<img src=calV.gif>[
+<img src=lambda.gif> x<sub>1</sub> . . .  . x<sub>n</sub> . x<sub>1</sub>]
+(<img src=rho.gif>)
+
+<p>
+= <img src=Psi.gif>(f)
+</ul>
+where
+<ul>
+f(d) =
+<img src=calV.gif>[
+<img src=lambda.gif> x<sub>2</sub> . . .  . x<sub>n</sub> . x<sub>1</sub>]
+(<img src=rho.gif>[x<sub>1</sub>:=d])
+
+<p>= <img src=calV.gif>[
+(<img src=lambda.gif> x<sub>2</sub> . . .  . x<sub>n</sub> .
+x<sub>1</sub>) [x<sub>1</sub>:=d]
+(<img src=rho.gif>)
+</ul>
+by the substitution lemma
+<ul>
+<p>= <img src=calV.gif>[
+(<img src=lambda.gif> x<sub>2</sub> . . .  . x<sub>n</sub> . d)]
+(<img src=rho.gif>)
+
+</ul>
+
+So
+<ul>
+((p d<sub>1</sub>) d<sub>2</sub> . . . d<sub>n</sub>) = d<sub>1</sub>
+</ul>
+by lemma EM4
+
+<h4>Inductive Step</h4>
+
+Suppose that if for some <em>i</em>
+<ul>
+p =
+<img src=calV.gif>[
+<img src=lambda.gif> x<sub>1</sub> . . . x<sub>i</sub> . . .
+x<sub>n</sub>. x<sub>i</sub>]
+(<img src=rho.gif>)
+</ul>
+then for any <em>d<sub>1</sub> . . .d<sub>n</sub></em> in <em>D</em>,
+<em>(p d<sub>1</sub> . . .d<sub>n</sub>) = d<sub>i</sub></em>
+
+<p>Consider
+
+<ul>
+p =
+<img src=calV.gif>[
+<img src=lambda.gif> x<sub>1</sub> . . . x<sub>i+1</sub> . . .
+x<sub>m</sub>. x<sub>i+1</sub>]
+(<img src=rho.gif>) = <img src=Psi.gif>(f)
+</ul>
+where
+<ul>
+f(d) =
+<img src=calV.gif>[
+<img src=lambda.gif>
+x<sub>2</sub> . . .  . x<sub>n</sub> . x<sub>i+1</sub>]
+(<img src=rho.gif>[x<sub>1</sub>:=d])
+
+<p>= <img src=calV.gif>[
+(<img src=lambda.gif> x<sub>2</sub> . . .  . x<sub>n</sub> .
+x<sub>i+1</sub>) [x<sub>1</sub>:=d]
+(<img src=rho.gif>)
+</ul>
+by the substitution lemma
+<ul>
+<p>= <img src=calV.gif>[
+(<img src=lambda.gif> x<sub>2</sub> . . .  . x<sub>n</sub> .
+x<sub>i+1</sub>)] [x<sub>1</sub>:=d]
+(<img src=rho.gif>)
+
+<p>= <img src=calV.gif>[
+(<img src=lambda.gif> x<sub>2</sub> . . .  . x<sub>n</sub> .
+x<sub>i+1</sub>)]
+(<img src=rho.gif>)
+</ul>
+Now consider
+
+<ul>
+((p d<sub>1</sub>) d<sub>2</sub> . . .d<sub>n</sub>)
+
+<p>= (<img src=calV.gif>[
+(<img src=lambda.gif> x<sub>2</sub> . . .  . x<sub>n</sub> .
+x<sub>i+1</sub>)]
+(<img src=rho.gif>) d<sub>2</sub> . . .d<sub>n</sub>)
+<p> = d<sub>i+1</sub>
+</ul>
+by the inductive hypothesis. Hence result.
+
+<hr>
+
+<h3>Lemma EM6</h3>
+
+The equation
+<ul>
+<img src=lambda.gif> x<sub>1</sub> . . . x<sub>n</sub> . x<sub>i</sub>
+= <img src=lambda.gif> x<sub>1</sub> . . . x<sub>n</sub> . x<sub>j</sub>
+</ul>
+where <em>1 <img src = leq.gif> i < j <img src=leq.gif> n</em>
+is not valid in any environment model <em> <D, <img src=Phi.gif>, <img
+src=Psi.gif></em> for which <em>D</em> has  more than one element.
+
+
+<h4>Proof</h4> Since <em>D</em> has more than one element, we can choose
+<em> d<sub>1</sub> . . . d<sub>i</sub> . . . d<sub>j</sub>
+ . . . d<sub>n</sub> </em>
+where <em>d<sub>i</sub> <img src=not_eq.gif> d<sub>j</sub></em>
+and apply lemma EM5.
+
+<hr>
+
+
+<h2>Combinatory Models</h2>
+
+At this point, let's return to our consideration of combinators.
+We have already shown that any term <em>E</em> of
+<em><img src=Lambda.gif>(C)</em>
+has a corresponding  combinatory lambda term <em>E'</em> which is
+alpha-beta equivalent to it. We also showed that any applicative
+algebra which was the image of <em><img src=Lambda.gif>(C)</em> under
+a valuation necessarily contained the combinators <b>S,K,I</b>.
+
+<p>Now in considering environment models, we have already adopted the
+convention that we write <em>(d<sub>1</sub> d<sub>2</sub>)</em> for
+<em><img src=Phi.gif>(d<sub>1</sub>)(d<sub>2</sub>)</em>. This immediately
+raises the idea, could we get an environment model from a combinatory
+algebra by <em>defining</em>
+<ul>
+<img src=Phi.gif>(d<sub>1</sub>)(d<sub>2</sub>)
+ = (d<sub>1</sub> <img src=dot.gif> d<sub>2</sub>)
+</ul>
+
+<p>Unfortunately the axioms for a combinatory algebra aren't quite strong
+enough for this to work, because we also need the <img src=Psi.gif>
+function, which is a left-inverse of <img src=Phi.gif>. Let's consider
+the function which maps <em>d</em> to
+<em><img src=Psi.gif>(<img src=Phi.gif>(d))</em>. Indeed, let's suppose
+it is a function which corresponds to an element
+<br><em>e <img src=in.gif> D</em>. Then we have
+
+<ul>
+(e <img src=dot.gif> d<sub>0</sub>) <img src=dot.gif> d<sub>1</sub>
+
+<p>= (<img src=Phi.gif>(<img src=Psi.gif>(<img
+src=Phi.gif>(d<sub>0</sub>)))   <img src=dot.gif>
+d<sub>1</sub>)
+
+<p>= (<img src=Phi.gif> (d<sub>0</sub>) <img src=dot.gif> d<sub>1</sub>)
+=  (d<sub>0</sub> <img src=dot.gif> d<sub>1</sub>)
+
+</ul>
+since <img src=Phi.gif> is the left inverse of <img src=Psi.gif>.

@@ -1,0 +1,39 @@
+
+    30 SEP 98 DISCUSSION SECTION
+
+A permutation on a set S is a finite one-to-one mapping from the finite
+set S onto itself. Permutations are commonly represented by  mathematicians
+as a set of  cycles. For example,  (1 2 3)  is a cycle,  meaning that 1  is
+mapped to 2, and 2 is mapped to 3 and 3 is mapped to 1. A permutation  that
+is not  a single  cycle on  the whole  set S  is written  as using  several
+cycles.
+
+So a permutation  {(1 2 3),(4 5)} would be the map f, say, from the set
+{1,2,3,4,5} to itself for which
+
+    f(1) = 2
+    f(2) = 3
+    f(3) = 1
+    f(4) = 5
+    f(5) = 4
+
+In Scheme, we could represent a cycle by a list, and a permutation by
+a list of cycles.  So the above permutation would be represented by
+
+    '((1 2 3)(4 5))
+
+
+Another way that you can represent any finite map in Scheme is as an
+association list This is a list of argument-value pairs. For example our
+permutation could be written as:
+
+    '((1 2) (2 3) (3 1) (4 5) (5 4))
+
+You are to:
+
+(a) Write a Scheme function alist_of_cycles to take a permutation expressed
+as a list of cycles and transform it into the equivalent association list
+form.
+
+(b) Write a Scheme function cycles_of_alist to take a permutation expressed
+as an association list and convert  it into a list of cycles.

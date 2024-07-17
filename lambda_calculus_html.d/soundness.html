@@ -1,0 +1,348 @@
+
+
+
+
+<html><head><title>
+
+       Soundness of Rules of Inference
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+                            Rules of Inference
+
+</center>
+
+</h1>
+
+<hr>
+
+
+
+
+<h2> Basic Rules of Inference </h2>
+
+
+<html><head><title>
+
+        Rules of Inference
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+                            Rules of Inference
+
+</center>
+
+</h1>
+
+<hr>
+
+<h4>Definition</h4>
+An
+
+<h4>Definition</h4> A theorem is (universally) valid if
+
+
+<hr>
+<h4> Rule 1: We may introduce an assumption </h4>
+
+We may think of this as a way of encoding the tautology <em>t==>t</em>
+in theorem form.
+
+<p>ASSUME : Term -> Theorem
+
+<pre>
+      __________
+
+        t |- t
+</pre>
+
+<tt>ASSUME t</tt> evaluates to the theorem  <tt> t |- t </tt>
+
+<p>For example <tt>ASSUME 'x=2'</tt> evaluates to the theorem
+<pre>
+    x=2 |- x=2
+</pre>
+
+An implementation may raise an exception if the type of <tt>t</tt> in the
+current type environment is not <tt>Boolean</tt>.
+
+<hr>
+<h4>Rule 2: Discharging an Assumption</h4>
+
+This allows us to perform a step of conversion back from the
+<tt>Theorem</tt> form to a Propositional Calculus form. We can remove
+a specified term from the premises of a <em>theorem</em> and use it as
+the premise of a propositional implication from which the conclusion of the
+original theorem follows.
+
+<p><tt>DISCH : Term -> Theorem -> Theorem </tt>
+
+<pre>
+                <img src=Gamma.gif>  |-  t<sub>2</sub>
+                _________________________
+
+                <img src=Gamma.gif> - {t<sub>1</sub>} |- t<sub>1</sub> ==> t<sub>2</sub>
+</pre>
+
+<p>Note that there's no need for <tt>t<sub>1</sub></tt> to be a member
+of <img src=Gamma.gif>.  In this case
+
+<pre>   <img src=Gamma.gif>-{t<sub>1</sub>} = <img src=Gamma.gif></pre>
+
+For example <tt>(DISCH  'x=2' (ASSUME 'x=2')) </tt> evaluates to
+<ul>
+<tt>|- (x=2) ==> (x=2)</tt>
+</ul>
+
+<p><tt>(DISCH t<sub>1</sub>)</tt> may raise an exception if
+<tt>t<sub>1</sub></tt> is not of type <tt>Boolean</tt> in the current type
+environment.
+
+<hr>
+<h4>Rule 3: Modus Ponens</h4>
+
+MP: Theorem -> Theorem -> Theorem
+
+<pre>
+
+  <img src=Gamma.gif><sub>1</sub> |- t<sub>1</sub> ==> t<sub>2</sub>        <img src=Gamma.gif><sub>2</sub> |- t<sub>1</sub>
+  ___________________________
+
+          <img src=Gamma.gif><sub>1</sub> <img src=cup.gif> <img src=Gamma.gif><sub>2</sub>  |- t<sub>2</sub>
+
+</pre>
+
+Thus <tt>(MP thm1 thm2)</tt> evaluates to a theorem obtained by applying the
+Modus Ponens rule as specified above. <tt>MP</tt> raises an exception if
+either of its arguments is not a theorem, or if the conclusion of the
+first argument is not an implication.
+
+<h3> Rules which specify general facts about equality </h3>
+
+<hr>
+<h4> Rule 4: Equality is reflexive </h4>
+
+REFL :  Term -> Theorem
+
+<pre>
+    ______________
+
+      |-  t = t
+</pre>
+
+<hr>
+
+<h4> Rule 5: Substituting Equal Terms </h4>
+
+
+SUBST1 : Theorem -> Symbol -> Term -> Theorem -> Theorem
+
+<pre>
+    <img src=Gamma.gif><sub>1</sub> |- t<sub>1</sub>=t<sub>2</sub>      <img src=Gamma.gif> t[t<sub>1</sub>]
+    ___________________________________
+
+    <img src=Gamma.gif><sub>1</sub>  <img src=cup.gif>  <img src=Gamma.gif>  |- t[t<sub>2</sub>]
+
+</pre>
+
+Here <tt>t[t<sub>1</sub>]</tt> means "a term <tt>t</tt> with some occurrences of
+<tt>t<sub>1</sub></tt> singled out (for replacement)".
+
+<p>This is the  most complicated rule.  It embodies the  general notion  that
+entities that are <em>equal</em> ought to be interchangeable, so that if,
+say, <em>t<sub>1</sub>=t<sub>2</sub></em> then we ought to be able to
+replace <em>t<sub>1</sub></em> by <em>t<sub>2</sub></em> in any other
+term without changing its meaning. So, for example, if we have a theorem
+<tt>  |- x*1 = x </tt>, and we have another theorem
+
+<pre>
+    |-  5*(x*1+6) = 5*(x*1) + 5*6
+</pre>
+
+then we should be able to conclude that
+
+<pre>
+    |- 5*(x*1+6) = 5*x + 5*6
+</pre>
+
+Notice that we have only replaced <em>one occurrence</em> of <tt>x*1</tt>
+by <tt>x</tt>.
+
+Going back to considering exactly what SUBST1 does, we can say that the
+<tt>Symbol</tt> and <tt>Term</tt> arguments support the "singling out"
+process. Suppose we call
+<pre>
+    (SUBST1 thm<sub>1</sub>  v  t<sub>tem</sub>  thm)
+</pre>
+Where <tt>thm<sub>1</sub></tt> has the form
+<tt><img src=Gamma.gif> |- t<sub>1</sub> = t<sub>2</sub> </tt>
+and <tt>thm</tt> has the form
+<tt><img src=Gamma.gif> |- t </tt>. Then <tt>t<sub>tem</sub></tt> should be equal to
+<tt>t</tt> except that certain occurrences of <tt>t<sub>1</sub></tt>
+have been replaced by <tt>v</tt> (which variable will not normally
+occur  in the theorems). Then <em>exactly those</em> occurrences
+of <tt>t<sub>1</sub></tt> which are "marked out" by <tt>v</tt> will be
+replaced by <tt>t<sub>2</sub></tt> in the new theorem.
+
+<p>The
+<tt>SUBST</tt> rule raises an exception when any of its arguments
+fails to have the right form.
+
+
+<p>[Note - HOL provides a more complicated rule, SUBST. We can write SUBST
+using SUBST1, although it will be distinctly less efficient].
+
+<h3> Rules which are  <img src=lambda.gif>-calculus specific.</h3>
+
+The remaining inference-rules encode the  <img src=beta.gif>-reduction
+rule and say that the  <img src=lambda.gif>-abstraction of equal terms
+gives equal abstractions.
+
+<hr>
+<h4> Rule 6: Beta-conversion</h4>
+
+BETA : Term -> Theorem
+
+<pre>
+     ____________________________
+
+       |- (\x.E<sub>1</sub>)E<sub>2</sub> = E<sub>1</sub>[x:=E<sub>2</sub>]
+</pre>
+
+The argument <tt>t</tt> of <tt>(BETA t)</tt> must have the form of a
+<img src=lambda.gif>-abstraction applied to an argument. If so,
+<a href = "lambda.html#beta">
+<img src=beta.gif>-reduction</a> is performed as specified previously, and
+the original and <img src=beta.gif>-reduced forms are equated.
+
+<p>If the term <tt>t</tt> is not a <img src=beta.gif>-redux [i.e. is not of
+the form specified] an exception is raised.
+
+<p>For example: <tt> (BETA '(\x. 5+x) 20') </tt> evaluates to
+<pre>
+    |-  (\x. 5+x) 20 = 5 + 20
+</pre>
+
+<hr>
+<h4> Rule 7: Abstraction </h4>
+
+ABS : Symbol -> Theorem -> Theorem
+
+<p>The abstraction rule allows us infer the the equality of
+abstractions
+from the equality of terms.
+
+
+<pre>
+             <img src=Gamma.gif> |- t<sub>1</sub> = t<sub>2</sub>
+        _________________________
+
+        <img src=Gamma.gif> |- (\x. t<sub>1</sub>) = (\x. t<sub>2</sub>)
+</pre>
+
+<p>Provided <tt>x</tt> does not occur free in <tt><img src=Gamma.gif></tt></p>
+</pre>
+
+Example:  <tt> ABS 'x' (REFL 'v') </tt> evaluates to
+<pre>
+        |- \x.v = \x.v
+</pre>
+
+The call
+<tt>(ABS v)</tt>  raises an exception if <tt>v</tt> occurs free
+in any assumption in <tt><img src=Gamma.gif></tt>.
+
+<hr>
+
+<h2>But We Build Mightily Upon These Rules</h2>
+
+<p>The above inference rules are the "<tt>car, cdr, cons</tt> of
+program verification. The list-constructors of LISP and its
+descendants <em>police</em> the use  of memory so that users can't
+create illegal structures (pointers to nowhere etc.) However one
+doesn't (or shouldn't) write programs that create complex
+data-structures using just <tt>car, cdr, cons</tt>, but should instead
+create levels of abstraction using these primitives.
+
+<p>Likewise we are free to write functions that manipulate theorems
+knowing that the only theorems we can <em>create</em> are
+provably correct (since we can create a proof of any theorem from the
+system axioms by following the sequences of inference-rule
+applications).
+
+<h3> Looking inside theorems </h3>
+In fact the proof-rules are in effect abstract <em>constructors</em>
+for theorems, and play the role of  <tt>cons</tt> in LISP. There's no
+harm in <em>looking</em> inside a theorem. This is supported as
+follows:
+
+<pre>
+Theorem.? : Top->Boolean           Recognises if an object
+                                   is a theorem
+
+Theorem.hyp : Theorem->List(Term)  Extracts the list of
+                                   hypotheses
+
+Theorem.concl: Theorem->Term       Extracts the conclusion
+
+Theorem.history: Theorem->History  Extracts the inference history of
+                                   the theorem.
+
+Theorem.add_history:               Makes a new theorem with an
+        Theorem->History->Theorem  appropriate history.
+</pre>
+
+The "<tt>add_history</tt>" capability calls for comment. It is an
+exception to the rule that users can only create theorems using
+proof-methods. In effect, it allows a user to rewrite the history
+of a theorem. While this may appear to have Stalinist potential, it
+primarily serves to allow <em>useful</em> histories to be created by
+higher-level theorem-manipulating functions. The inference-rules
+operate at a very fine grain, and it makes sense for higher level
+functions to be able to suppress details of this fine-grain operation
+in the historical record.
+
+<h3> Writing a Derived Inference Rule </h3>
+
+As an example, let's write a new inference rule,
+
+<pre>
+    ADD_ASSUME : Term -> Theorem -> Theorem
+</pre>
+
+<tt>(ADD_ASSUME t<sub>1</sub> thm)</tt> simply adds the (redundant)
+assumption <tt>t<sub>1</sub></tt> to the existing assumptions of the
+theorem. So it embodies a new rule:
+
+<pre>
+       <img src=Gamma.gif> |-  t
+    ______________
+
+    <img src=Gamma.gif>, t<sub>1</sub>  |- t
+</pre>
+
+We can realise this rule with the following definition:
+
+<pre>
+Definition ADD_ASSUME =
+    \ t1 thm.                       ;;; thm = G |- t, say
+        let thm1 = ASSUME t1,       ;;; t1 |- t1
+            thm2 = DISCH t1 thm,    ;;; G  |- t1==>t
+        in
+            MP thm2 thm1            ;;; G,t1 |- t
+        endlet
+End;
+</pre>
+
+</body>
+</html>

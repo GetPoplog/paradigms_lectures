@@ -1,0 +1,119 @@
+
+
+<html><head><title>
+
+        Recursion in the Lambda Calculus
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+        Recursion in the Lambda Calculus
+
+
+</center>
+
+<h2>The fixed-point combinator lets us recurse</h2>
+
+<p>
+A programming language has to allow us, in some sense, to perform an action
+repeatedly. In imperative languages you will have met constructs like <tt>
+while</tt>
+and {\bf for} loops. It is not immediately apparent that the <img src=lambda.gif>-calculus has
+equivalent power, but it does!
+
+<p>
+Let us suppose we have an operator <em>Y</em>
+which acts upon expressions of the
+<img src=lambda.gif>-calculus according to the rule
+
+<ul>YE = E(YE)</ul>
+
+<h3> Doing the factorial function with <em>Y</em> </h3>
+
+<p>
+Consider the expression
+
+<ul>F =  <img src=lambda.gif> u. <img src=lambda.gif> x. (if (= x 0) 1 (* x (u(- x 1))))</ul>
+
+<p>
+For some variable <em>n</em>
+
+<ul>(YF) n = (F(YF)) n</ul>
+
+<p>
+using <em><img src=beta.gif></em>-reduction we obtain:
+
+<ul> = (<img src=lambda.gif> x. if (= x 0) 1 (* x (YF (- x 1)))) n</ul>
+
+
+again using <em><img src=beta.gif></em>-reduction we obtain:
+
+<ul> = if (= n 0) 1 (* n (YF (- n 1)))</ul>
+
+that is to say, <em>YF</em>
+satisfies the equation usually given for the factorial
+function
+
+<ul>fact(n) = if  n=0  then  1  else  n*fact(n-1)</ul>
+
+<h3> <em>YE</em> is a fixed point of E</h3>
+
+<p>
+We say that <em>YE</em>  is a <em> fixed  point</em> of <em>E</em>, and  we
+call <em>Y</em> a  <em> fixpoint combinator</em>.[There  is an  interesting
+analogy in linear algebra - let <em>\cal E</em>
+be a function which  returns
+the eigenvectors of  a matrix. Then
+<em>A(\cal E A)  \equiv \cal E A</em>,
+where vectors  are  equivalent  if  they  have  the  same  direction.  Thus
+eigenvectors are a fixed point of the matrix. Indeed, if we take
+<em>A</em>
+to be a linear function  over projective space, then  \cal E is a  fixpoint
+combinator in the same sense as <em>Y</em>]
+
+
+<h3>Working out the factorial function</h3>
+For an exercise, let us evaluate <em>YF</em> for a few natural numbers:
+
+<ul>YF(0) =  if (= 0 0) 1 (* 0 (YF (- 0 1)))</ul>
+<ul>  =    if true 1 (* 0 (YF (- 0 1)))</ul>
+<ul> = 1 </ul>
+
+
+<ul>YF(1) =  if (= 1 0) 1 (* 1 (YF (- 1 1)))</ul>
+<ul>  =    if false 1 (* 1 (YF (- 1 1)))</ul>
+<ul> =      (* 1 (YF (- 1 1)) </ul>
+<ul> =      (* 1 (YF 0)) </ul>
+<ul> =      (* 1 1) </ul>
+<ul> =        1 </ul>
+
+
+<ul>YF(2) =  if (= 2 0) 2 (* 2 (YF (- 2 1)))</ul>
+<ul>  =    if false 1 (* 2 (YF (- 2 1)))</ul>
+<ul> =      (* 2 (YF (- 2 1)) </ul>
+<ul> =      (* 2 (YF 1)) </ul>
+<ul> =      (* 2 1) </ul>
+<ul> =        2 </ul>
+
+<h4>But we have freedom in where to reduce</h4>
+Note that <em> where chose to apply our reduction rules</em> is significant
+in working out <em>YF</em>.
+For example, we could have chosen to expand using
+<em>YF = F(YF)</em>,
+and gone on forever. In the next section we will consider
+reduction strategies.
+
+<h4>We can define <em>Y</em> in <img src=lambda.gif>-calculus!</h4>
+Up to now we have supposed that <em>Y</em> is an operator that we have made
+available as an addition to the <img src=lambda.gif>-calculus. But it is not! We can define it as an
+expression in the <img src=lambda.gif>-calculus:
+
+<ul> Y = (<img src=lambda.gif> h. (<img src=lambda.gif> x.h (x x)) (<img src=lambda.gif> x.h (x x)))</ul>
+
+It is left as an exercise to the reader to verify that, for any expression
+<em>E</em> of the <img src=lambda.gif>-calculus, YE = E(YE), where Y is defined as above.

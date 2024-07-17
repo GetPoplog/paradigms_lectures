@@ -1,0 +1,595 @@
+
+<html><head><title>
+
+
+Introduction to Object Orientation
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+
+
+    LECTURE 22 Introduction to Object Orientation
+
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+<a href = "lecture22.html#object_orientation">
+  1   What is Object Orientation? </a> <br>
+
+<a href = "lecture22.html#sub_paradigms_orientation">
+  2   The sub-paradigms in object-orientation
+</a><br>
+<pre>
+      2.1   The message-passing sub-paradigm
+      2.2   The distributed-function-definition sub-paradigm
+</pre>
+<a href = "lecture22.html#pop11">
+  3   An example using the POP-11 objectclass library. </a><br>
+<pre>
+      3.1   Defining person records
+      3.2   Defining a method to print a person object.
+      3.3   Creating student as a sub-class of person
+      3.4   Multiple dispatch in lib objectclass
+</pre>
+<hr>
+
+
+<center> <h4>                     Note on the code in this lecture
+</h4>
+
+   The only executable code in this lecture is in the POP-11 language.<br>
+   Since the file extension is ".p", this can be executed, although    <br>
+   since there is no "literate" convention in POP-11, you will have    <br>
+   to mark and run each statement or definition separately.            <br>
+</center>
+
+
+<a name = "object_orientation">
+<h2>1  What is Object Orientation? </h2></a>
+
+<p>
+It is fairly easy to say what the functional and logic paradigms are about:
+<ul>
+<li>
+     The functional paradigm takes as its theoretical basis the
+     lambda calculus.
+<li>
+     The logic paradigm takes as its theoretical basis the predicate
+     calculus.
+</ul>
+<p>
+It is somewhat harder to characterise the imperative paradigm.
+
+<ul>
+<li>
+     The imperative paradigm supports explicit local state changes and so
+     reflects more closely the actual architecture of computers.
+     (while the pure functional paradigm for example provides only state
+      change to the global environment - you may define another function
+      for example).
+</ul>
+
+<p> The object oriented paradigm is  about (a) creating "objects" in  which
+behaviour is associated with data and  (b) ways in which these objects  can
+be placed in a hierarchy in  which one kind of object can  <em>inherit</em>
+the behaviour of others and (c) ways in which the structure of objects  can
+be <em>encapsulated</em> so  as to  allow only legitimate  enquiries to  be
+made about them.
+
+<p>
+Now (a) and (c) are both properties of <em>closures</em>
+- a closure is an  association
+of behaviour (i.e. some  code) with data,  and the data  can only be  accessed
+only by passing appropriate arguments to the closure. So it is not  surprising
+that we  will  use  closures  to represent  objects  in  our  illustration  of
+object-orientation.
+
+<p>
+We often speak of the piece of code that implements a particular  behaviour
+for a  class of  objects as  a  <em>method</em>. We  have already  met  the
+concept of  method when  we  were implementing  the  special forms  of  the
+<tt>eval_env</tt> and <tt>eval_eager</tt>  functions. So,  we could  regard
+that evaluator as running  partly on object-oriented  lines. In that  view,
+all Scheme expressions with a given  special form form a class sharing  the
+same <em>evaluation method</em>.
+
+<p>
+For example, the  <tt>if</tt>
+special form  has the evaluation  method <tt>method_if</tt>.  Thus
+when we evaluate:
+<pre>
+    (eval_env '(if (= x 2) 3 4) the-global-environment)
+</pre>
+<p>
+then <tt>method_if</tt>  is  called  actually to  perform  the  evaluation,
+<em>via</em> the method-lookup in <tt>alist_method</tt>.
+
+<p>
+In general the essential aspect of  object orientation is that a named  action
+applied to an object is mapped on to a piece of code for effecting that action
+by means of a flexible mapping which  takes into account both the name of  the
+action and the class of object to which it is applied.
+
+<p> When we did  the Scheme expression evaluator  we mapped from object  to
+action by means of an  explicit association list <em>alist_method</em>.  In
+an object oriented <em>language</em> such  as Smalltalk, C++ or Java,  this
+mapping is done in a way that is  <em>opaque</em> to the user - that is  it
+is hidden in the implementation.
+
+<a name = "sub_paradigm"></a>
+<h2>
+2  The sub-paradigms in object-orientation </h2>
+
+
+<p>
+There are two sub-paradigms within object orientation:
+
+<h3>2.1  The message-passing sub-paradigm</h3>
+
+<p>
+In this sub-paradigm an object  is "sent" a "message"  to cause it to  exhibit
+behaviour. For example,  if we  were simulating  a university,  we might  have
+person objects, each one of which could  be told to print himself or  herself.
+This could be accomplished, with a Scheme implementation of this sub-paradigm,
+by:
+<pre>
+      (send  person 'print)
+</pre>
+<p>
+which might cause the output:
+<pre>
+     name: Frederika Forsythe
+     age:  42
+     sex:  female
+</pre>
+<p>
+Likewise
+<pre>
+     (send person 'age)
+</pre>
+<p>
+might return the result <tt>42</tt>.
+
+<p>
+Sometimes arguments are embodied in the message, for example
+<pre>
+       (send person 'location 234 456)
+</pre>
+<p>
+might be  used  to  reposition  a  person  in  a  simulation  that  went  into
+topographic detail.
+
+<p>
+The most  significant development  of this  paradigm was  associated with  the
+Smalltalk language.
+
+<p>
+Within this  paradigm, a  general concept  of inheritance  corresponds to  the
+possibility that one  class of  objects may share  some of  the attributes  of
+another class. For example, in our university model we would have students who
+are a kind of person and professors who are a kind of person. Students will be
+able to handle all  the messages that  a person can handle  - they have  ages,
+sexes, addresses etc.. However they also have attributes peculiar to students,
+such as the courses that they  take. Moreover they may respond differently  to
+standard messages.
+<pre>
+
+     (send student 'print)
+
+     name: Jeremiah Jolt
+     age:  23
+     sex:  male
+     course: CMPSCI 287, STATS 101
+</pre>
+
+<p>
+and
+<pre>
+     (send student 'courses)  ==> '( (CMPSCI 287) (STATS 101))
+</pre>
+<p>
+The "send a message" approach has some  virtues. It is a quite natural way  of
+talking about a distributed system in  which the objects are not all  resident
+on a single computer so that information  has to be transferred via some  kind
+of communication link, for example a local area network.
+
+<p> It also has some snags, not least among which is the fact that the nice
+higher-order functions we have  written in this course  are not so  readily
+applicable to this paradigm. For example if we wanted to convert a list  of
+students into a list of lists of the courses they were taking we could  not
+use <tt>map</tt> in quite such a simple way. In the functional paradigm, if
+<tt>courses</tt> was a function mapping from students to their courses,  we
+would write
+<pre>
+      (map courses students)
+</pre>
+
+<p>
+whereas in the message-sending sub-paradigm we have to write:
+
+      (map (lambda (s) (send s 'courses)) students)
+
+<p>
+Moreover the fact that a  message has to be addressed  to one object makes  it
+tricky to implement  certain functions  which naturally  involve two  objects,
+such as comparing them for equality.
+
+<p>
+One common term  for this  limitation is  that this  approach embodies <em>
+single dispatch</em>, that is methods are  selected on the basis  of a
+single object  (and are usually associated fairly directly with that
+object).
+
+<p>
+One can regard the  C++ language as supporting  a single-dispatch approach  to
+method invocation.
+
+<h3>
+2.2  The distributed-function-definition sub-paradigm </h3>
+
+<p>
+The Common Lisp Object System (CLOS) and the <tt>objectclass</tt>
+library of the POP-11
+language support a different sub-paradigm, one in which object orientation  is
+effected by extending the  definition of functions in  an incremental way.  In
+Scheme syntax, one would say:
+<pre>
+      (print person)
+</pre>
+<p>
+and have the same information printed out
+<pre>
+     name: Frederika Forsythe
+     age:  42
+     sex:  female
+</pre>
+<p>
+However, instead of the print function being defined in one place
+<pre>
+(define (print person)
+    (print-basic-info person)
+    (cond ((student? person) (print-student-info person))
+        ((professor? person) (print-prof-info person))
+        )
+    )
+</pre>
+<p>
+the definition of how to print a person is distributed among various method
+definitions, using a new special form.
+
+<a name = "pop11"> </a>
+<h2>
+3  An example using the POP-11 objectclass library.
+</h2>
+
+<p>
+By way  of a  change we  will  consider the  <tt>objectclass</tt>
+library  for  POP-11,
+written by Steven Knight of  Hewlett Packard Laboratories, Bristol. POP-11  is
+derived from POP-2 [Burstall & Popplestone 1968], and is in essence a form  of
+LISP with  ALGOL-60 derived  syntax.  For example  the factorial  function  in
+POP-11 is defined as:
+
+<pre>
+    define fact(n);
+        if n=0 then 1 else n*fact(n-1)
+        endif
+    enddefine;
+</pre>
+
+<p>
+To enter POP-11 from  Scheme, execute the function  call (pop11) in your  base
+window. To get back, type "Scheme". There is no literate version of POP-11, so
+you'd have  to comment  out the  English (with  the /*...*/  comment  brackets
+familiar to C users.
+
+<p>
+In POP-11, to print an expression <b>expr</b> you do
+<pre>
+    <b>expr</b> =>
+</pre>
+<p>
+For example
+<pre>
+    fact(5) =>
+</pre>
+<p>
+will print out
+<pre>
+** 120
+</pre>
+<p>
+Finally, to declare a new global variable, and give it a value, one uses
+<tt>vars</tt> command, exemplified below:
+<pre>
+    vars x = fact(120);
+</pre>
+<p>
+creates (if required)  a new variable <tt> x </tt> and
+makes it have <tt> fact(120) </tt> as  its value.
+
+<h3>3.1  Defining person records</h3>
+
+
+<p>
+To load the objectclass library we need to execute the POP-11 command:
+
+lib objectclass;
+
+<p>
+This will take some tens of seconds, during which the message:
+
+;;; Objectclass, version 5.02
+;;; Loading source files.
+;;; Done.
+
+<p>
+is printed out. We are now ready to define our basic <tt> person </tt>
+class of objects. This is done with the following syntax:
+
+<pre>
+define :objectclass person
+     name     = 'John Doe';
+     age :int = 25;              ;;; The type-constraint is optional.
+     sex      = 'male';
+enddefine;
+</pre>
+
+<p> This has the effect that each member of the <tt> person</tt> class is a
+record with three fields  for <tt>name, age</tt>  and <tt> sex</tt>.  These
+fields are accessible with three functions <tt>name</tt>, <tt>age</tt>  and
+<tt>sex</tt> which are  created (or extended)  by the  <tt>objectclass</tt>
+declaration.
+
+
+<p>
+The declaration also creates two  functions (called newperson and  consperson)
+for creating  person objects  and one  function (destperson)  for taking  them
+apart.
+<ul>
+<li>
+    The function call: newperson() creates object with the default fields
+    specified in the class-definition above.
+<li>
+    The function call: consperson('Jane Roe', 34, 'female') creates a person
+    record with name 'Jane Roe', age  34,  and sex 'female'.
+</ul>
+<p>
+We don't need to consider the effect of the destperson function.
+
+<p>
+Thus, we can create a new person object, and bind the variable p1 to have
+it as its value by:
+<pre>
+    vars p1 = newperson();
+</pre>
+<p>
+and print out the new person, using a default print-method that is created
+when the person objectclass is created:
+
+<pre>
+    p1=>
+</pre>
+
+<pre>
+** <person name:John Doe age:25 sex:male>
+</pre>
+
+
+<ul>
+<h3> Object orientation in an Imperative Framework </h3>
+
+ Object oriented languages designed from an imperative perspective
+ usually distinguish between <em>fields</em> which an object may have,  and
+<em> methods </em>  which may  access these  fields. Fields  are very  like
+fields in a conventional data-structure (records in Pascal, or structures
+in C). POP-11's <tt>lib objectclass</tt> creates records which, internally
+have these fields, but which are only accessible by methods created
+specifically to access them.
+
+ The terms "constructor" and "destructor" are used differently
+in O-O languages with an imperative background. A constructor is
+a user-definable method-like piece of code which typically specifies
+how the fields of an object newly allocated by the memory allocator are to
+be filled  in.  In  C++,  a  destructor is  a  method-like  piece  of  code
+specifying how  to  de-allocate an  object.  The Java  language,  in  which
+objects are normally garbage-collected, does not have destructors, although
+it  provides  a  user-definable   </em>finalize</em>  method  for   objects
+containing entities  (files,  windows) that  may  need specific  action  to
+delete them.
+
+</ul>
+
+
+
+<h3>3.2  Defining a method to print a person object.</h3>
+
+
+<p>
+If we don't like  the way the  default print function  works, we can  define a
+function print for a person by defining the method:
+<pre>
+define :method print(p:person);
+     printf('name: %p \n',  cons(name(p),[]));
+     printf('age: %p \n',   cons(age(p),[]));
+     printf('sex: %p \n',   cons(sex(p),[]));
+enddefine;
+</pre>
+
+<p>
+Here printf is a system function  which loosely follows the convention of  the
+printf function  of  the  C language,  that  is  to say,  the  first  argument
+specifies a string with  "slots" %p which  will be filled  in by values  taken
+from the list which is the second argument. The empty list is denoted by [] in
+POP-11, and  cons  is a  POP-11  function  corresponding to  the  Scheme  cons
+function.
+
+<p>
+Now if we say:
+<pre>
+    print(p1);
+</pre>
+
+<p>
+we obtain the output:
+
+<pre>
+    name: John Doe
+    age: 25
+    sex: male
+</pre>
+
+<p>
+We can create another person:
+
+<pre>
+    vars p2 = consperson('Frederika Forsythe',42,'female' );
+</pre>
+
+<p>
+so that evaluating:
+
+<pre>
+    print(p2)
+</pre>
+
+produces the output:
+
+<pre>
+    name: Frederika Forsythe
+    age: 42
+    sex: female
+</pre>
+
+<h3>3.3  Creating student as a sub-class of person</h3>
+
+
+We can now create students as a kind of person:
+
+<pre>
+    define :objectclass student isa person;
+          classes = ['CMPSCI 287' 'MATH 183'];
+    enddefine;
+</pre>
+
+Here the force of the  isa construct is to say  that the new student class  of
+objects ________inherits all the  attributes of a  person (name, age  and sex) and  by
+default inherits  the _______methods  that apply  to  a person.  To be  precise,  the
+records that implement the student object have fields for name, age, sex, with
+methods of those same names. However, a student object has a new attribute,
+namely the classes attribute.
+
+vars s1 = newstudent();
+
+If we print s1 using the built-in generic printing function of POP-11, we  see
+that students have  inherited the attributes  of people, but  have classes  as
+well:
+
+s1=>
+
+** <student name:John Doe age:25 sex:male classes:[CMPSCI 287 MATH 183]>
+
+
+however the print function which we wrote, with a method defined for the
+person class, treats a student as a person, printing out just name, age and
+sex:
+
+    print(s1);
+
+produces the output
+
+    name: John Doe
+    age: 25
+    sex: male
+
+We can give the student object-class its own printing method:
+<pre>
+    define:method print(s:student);
+         printf('classes: %p \n',   cons(classes(s),[]));
+    enddefine;
+</pre>
+However if we call this, we simply get the information about classes:
+<pre>
+    print(s1);
+</pre>
+gives:
+<pre>
+    classes: [CMPSCI 287 MATH 183]
+</pre>
+
+We could of course  print out the people-attributes  of a student, by  copying
+our earlier  code  for printing  persons,  but more  conveniently  there  is a
+special form defined in lib objectclass, namely call_next_method, which  will,
+in this case, call the method for the person objectclass.
+
+<pre>
+define:method print(s:student);
+     call_next_method(s);
+     printf('classes: %p \n',   cons(classes(s),[]));
+enddefine;
+</pre>
+
+Now we find that:
+<pre>
+    print(s1);
+</pre>
+will produce:
+<pre>
+    name: John Doe
+    age: 25
+    sex: male
+    classes: [CMPSCI 287 MATH 183]
+</pre>
+How does  call_next_method work?  Well, the  isa construct  defines an  ______object
+_________hierarchy in which the student class comes immediately below the person class.
+The expression  call_next_method(s), knowing  that s  belongs to  the  student
+class of objects, arranges for the method appropriate to the next higher class
+in the hierarchy, that is the person class, to be called.
+
+<h3>3.4  Multiple dispatch in lib objectclass</h3>
+
+<p>
+This approach supports multiple dispatch, that is to say one can qualify  some
+or all arguments of a method  with class membership constraints. For  example,
+one might define one person as being senior to another in terms of age:
+<pre>
+    define :method senior(p1:person, p2:person);
+       age(p1) > age(p2)
+    enddefine;
+</pre>
+Whereas one might define one student as being senior to another in terms of
+the number of classes taken:
+<pre>
+    define :method senior(s1:student, s2:student);
+       length(classes(s1)) > length(classes(s2))
+    enddefine;
+</pre>
+What happens if we  try to compare  a student with  a non-student. The  system
+searches the class-hierarchy to  find a method that  applies to both. In  this
+case the definition of senior for two people is used.
+
+Where a class-hierarchy has some complexity it is possible that more than  one
+method may exist which is applicable to the arguments of a multiply-dispatched
+method call. What is to  happen in this case?  In fact lib objectclass  uses a
+simple lexicographical rule to make the choice. The Common Lisp Object  System
+does this  by default,  although  this default  is user-modifiable.  The  Java
+language, which does this kind of search at compile-time, insists on finding a
+unique _________maximally ________specific method-descriptor [Gosling, Joy & Steele 1996].
+
+
+__________References
+
+Burstall, R.M. and Popplestone, R.J., [1968] The POP-2 Reference Manual,
+Machine Intelligence 2, pp. 205-46, eds Dale,E. and Michie,D. Oliver and Boyd,
+Edinburgh, Scotland.
+
+Gosling,J. Joy,B. and Steele,G.[1996] The Java Language Specification. Addison
+Wesley.

@@ -1,0 +1,178 @@
+
+
+
+<html><head><title>
+
+
+                         Operational Equivalence.
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                         Computer Science 591i<br>
+
+                         Operational Equivalence.
+
+
+</center>
+
+</h1>
+
+ERRATA - we must specify normal order reduction.
+
+<hr>
+
+In this lecture we consider the concept of extensional, or operational
+equivalence.  Recall that we said:
+
+<ul> <em> Running </em> a program <em>E<sub>prg</sub></em>
+with a given data-set <em>E<sub>data</sub></em>
+corresponds to forming the application
+<em>E<sub>prg</sub>E<sub>data</sub></em>
+and then using <em>reduction rules</em> to transform that application into a
+simple form that can reasonably be considered as the result of the computation.
+
+</ul>
+
+From our consideration of normal forms, we can now refine the above
+statement to
+
+<ul> <em> Running </em> a program <em>E<sub>prg</sub></em>
+with a given data-set <em>E<sub>data</sub></em>
+corresponds to forming the application
+<em>E<sub>prg</sub>E<sub>data</sub></em>
+and then applying normal-order reduction to obtain a normal form
+which is considered to be the <em>result</em> of the computation.
+</ul>
+
+<h2>The Operational Domain</h2>
+
+Since <img src=alpha.gif>-conversion is an equivalence relation, we can
+define equivalence-classes of terms under  <img src=alpha.gif>-conversion.
+<hr>
+<h4>Definition</h4>
+The  <em>Operational  Domain</em>  of  the  <img   src=lambda.gif>-calculus
+consists   of    the    set    of   equivalence    classes    under    <img
+src=alpha.gif>-conversion of normal forms, together with a distinguished
+entity <b>U</b>.
+<hr>
+<h4>Definition</h4>
+If <em>E</em> is a term of the <img src=lambda.gif>-calculus, then
+<em><b>D</b>(E)</em> is the set <em>{F </em>|<em> F ==<sub>a</sub> E}</em>
+<hr>
+<h4>Definition</h4>
+If <em>E</em> is a term of the <img src=lambda.gif>-calculus, and
+<em>E<img src=longrightarrow.gif><sub>be</sub>N</em>, where <em>N</em>
+is a normal form, then we define
+
+<ul>
+     <b>Eval</b><sub>be</sub>(E) = <b>D</b><sub>a</sub>(F)
+</ul>
+
+If no normal form exists, then
+<ul>
+     <b>Eval</b><sub>be</sub>(E) = <b>U</b>
+</ul>
+
+<hr>
+<h4>Definition</h4>
+
+<p>Two expressions <em>F</em> and <em>G</em> are <em>operationally
+equivalent</em> (or extensionally equivalent) if, for all X
+
+<ul>
+     <b>Eval</b><sub>be</sub>(FX) =  <b>Eval</b><sub>be</sub>(GX)
+</ul>
+<hr>
+
+<p>How does this equivalence relate to our notions of
+<img src=alpha.gif><img src=beta.gif> and <img src=eta.gif>-equivalence?
+The following Lemmas establishes the relationship.
+
+<hr>
+
+<h4>Lemma  OE1 </h4>
+In the Pure <img src=lambda.gif>-calculus, for any <em>F,G</em>
+
+<ul>
+F ==<sub>abe</sub>G   <em>implies</em> F ==<sub>o</sub>G
+</ul>
+
+
+
+<h4>Proof</h4>
+
+<p>let <em>F ==<sub>abe</sub> G</em>.
+Let
+<em>X</em> be a
+term. Then
+<em>FX ==<sub>abe</sub> GX</em>.
+
+Suppose
+
+<ul>FX <img src=longrightarrow.gif><sub>be</sub> E<sub>F</sub>,
+GX <img src=longrightarrow.gif><sub>be</sub> E<sub>G</sub></ul>
+
+
+where <em>E<sub>F</sub>, E<sub>G</sub></em> are
+<img src=beta.gif>,<img src=eta.gif>-irreducible.
+Then, by the Church-Rosser theorem, there exists <em>E</em>
+such that
+<em>E<sub>F</sub><img src=longrightarrow.gif><sub>abe</sub>E</em> and
+<em>E<sub>G</sub><img src=longrightarrow.gif><sub>abe</sub>E</em>
+and, since  <em>E<sub>F</sub></em> and  <em>E<sub>G</sub></em>
+are normal forms, we can conclude FX==<sub>a</sub>GX. <br>
+Thus <em><b>Eval</b>(FX) = <b>Eval</b>(GX)</em>
+
+<p>However, suppose <em><b>Eval</em>(FX)=<b>U</b></em>.  Then there can be
+no normal form for <em>GX</em>, for if there were, by the Church-Rosser
+theorem, there would be an normal form for <em>FX</em>. Therefore
+ <em><b>Eval</b>(FX) = <b>U</b> = <b>Eval</b>(GX)</em>
+
+
+<hr>
+
+We couldn't expect an exact converse of the above lemma to hold, since
+all divergent computations are smashed down by <b>Eval</b> to the single
+undefined element, and there are certainly inconvertible divergent
+terms in the calculus. For example, <em>(<img src=lambda.gif> x . x x)(<img src=lambda.gif> x . x x)</em>
+and  <em>(<img src=lambda.gif> x . x x x)(<img src=lambda.gif> x . x x x)</em> are both divergent, as, for
+example,
+
+<ul>
+(<img src=lambda.gif>x.x x)(<img src=lambda.gif>x. x x)  <img src=longrightarrow.gif><sub>b</sub>
+(<img src=lambda.gif>x. x x) (<img src=lambda.gif>x. x x)   <br>
+</ul>
+
+while the second form is not only divergent but gives successively larger
+terms on each reduction. They are not however abe-equivalent.  However we
+can obtain the following:
+
+
+<hr>
+
+<h4>Lemma</h4>
+
+
+<p>Let  <em>F ==<sub>o</sub> G</em>, and suppose that for
+some variable <em>x</em>,  <em><b>Eval</b>(F x) /= <b>U</b></em>.
+Then   <em>F==<sub>abe</sub>G</em>.
+
+<h4>Proof</h4>
+
+
+
+<p>  From the definition of <b>Eval</b>,
+<em>Fx ==<sub>abe</sub> Gx</em>. So, by the definition of
+<em>==<sub>ab</sub></em>, </p>
+
+<ul>
+<img src=lambda.gif>x . Fx ==<sub>ab</sub>  <img src=lambda.gif>x . Gx
+</ul>
+
+And hence, by <img src=eta.gif>-reduction, <em>F ==<sub>abe</sub>G</em>
+
+<hr>

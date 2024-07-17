@@ -1,0 +1,287 @@
+
+
+Writing Functions that Create Parsers
+
+
+
+
+How can we understand functions
+which return functions as results?
+
+
+
+
+
+
+(mk_builder label) makes a builder for abstract syntax
+
+
+(mk_parser_singleton toks) makes a parser to recognise
+    1-element sequences
+
+
+
+(mk_parser_seq p1 p2 b) combines two parsers in sequence
+
+
+
+
+ Abelson & Sussman
+
+As I mentioned in the previous lecture, starting
+on  page 420 you will find a discussion of parsing
+in the imperative paradigm rather than
+the pure functional form used in this lecture.
+
+You will find a discussion of
+
+    Procedures as Returned Values
+
+starting at page 72.
+
+
+
+
+Making parser-building functions
+
+
+
+(define parse_determiner
+    (lambda (list_of_tokens)
+        (if (member?
+                (car list_of_tokens)
+                '(a the))
+            (cons_parse
+                (car list_of_tokens)
+                (cdr list_of_tokens))
+            #f ) ))
+
+
+
+
+(define parse_noun
+    (lambda (list_of_tokens)
+        (if (member? (car list_of_tokens) noun)
+            (cons_parse (car list_of_tokens) (cdr list_of_tokens))
+            #f ) ))
+
+
+
+
+
+(define mk_parser_singleton                            ;
+    (lambda (class_of_tokens)                          ; (1)
+        (lambda (list_of_tokens)                       ; (2)
+            (if (member? (car list_of_tokens)          ; (3)
+                    class_of_tokens)                   ;
+                (cons_parse                            ; (4)
+                    (car list_of_tokens)               ; (5)
+                    (cdr list_of_tokens))              ; (6)
+                #f )                                   ; (7)
+            )))                                        ;
+
+
+
+
+
+(define class_parse (record-class 'parse '(full full)))
+
+(define cons_parse   (car class_parse))
+(define sel_parse    (caddr class_parse))
+(define tree_parse   (car sel_parse))
+(define rest_parse   (cadr sel_parse))
+
+
+
+
+
+Actually, it is desirable to allow for the fact
+that we may "run out of list" during parsing.
+
+
+(define mk_parser_singleton
+    (lambda (class_of_tokens)
+        (lambda (list_of_tokens)
+            (cond
+                (( null? list_of_tokens) #f)
+                ((member? (car list_of_tokens)
+                    class_of_tokens)
+                 (cons_parse
+                     (car list_of_tokens)
+                     (cdr list_of_tokens))
+                 )
+                (else #f ) ))
+        ))
+
+
+
+(define parse_noun
+   (mk_parser_singleton
+    '(cat dog child woman man bone cabbage canary)))
+
+
+
+(define parse_determiner
+   (mk_parser_singleton '(a the)))
+
+
+
+(define parse_verb
+    (mk_parser_singleton '(likes eats hugs)))
+
+
+
+
+(example '(parse_noun '(the fat)) #f)
+
+(example '(parse_noun '(cat eats))
+    (cons_parse 'cat '(eats)))
+
+(example '(parse_noun '()) #f)
+
+
+
+How can we  understand functions which  return functions  as
+results?
+
+
+We can understand what happens using the substitution  model
+for evaluation of Scheme.
+
+When we do
+
+    (mk_parser_singleton '(a  the))
+
+substitute
+
+    '(a  the)
+
+for class_of_tokens in  the body of
+
+mk_parser_singleton
+
+obtaining:
+
+
+
+    (lambda (list_of_tokens)
+      (if (member? (car list_of_tokens) '(a the))
+             (cons_parse
+                 (car list_of_tokens)
+                 (cdr list_of_tokens))
+        #f ) )
+
+
+
+This  model  is  adequate  for  understanding  Scheme   as a
+functional language.
+
+Warning: this will work fine in Scheme. It will not work  in
+most  programming  languages,  which  either  do  not  allow
+functions/procedures  to   return  functions/procedures   as
+results, or, if  (like C) they  do, they do  not handle  the
+free variables correctly.
+
+
+Combining two parsers sequentially.</h2>
+
+Now  our  other  kind  of  parsing  involved  combining  two
+existing parsers to obtain a new parser which used the first
+existing parser to recognise an initial subsequence, and the
+second existing parser  to recognise what  remained.
+
+
+
+(define parse_sentence
+    (lambda(list_of_tokens)
+        (let ((p1 (parse_noun_phrase list_of_tokens)))
+            (if p1
+                (let ((p2 (parse_verb_phrase (rest_parse p1))))
+                    (if p2
+                        (cons_parse
+                            (list 'sentence (tree_parse p1)
+                                            (tree_parse p2))
+                            (rest_parse p2)
+                            )
+                        #f)
+                    ) ;end let
+                #f)
+            );end let
+        ); end lambda
+    ); end def. parse_sentence
+
+
+
+We can now  make a  function which creates  such parsers  by
+observing that we need 3 parameters - the first parser,  the
+second parser and some way of  building the parse.
+
+
+
+(define (mk_parser_seq parser_1 parser_2 build_parse)
+    (lambda(list_of_tokens)
+        (let ((p1 (parser_1 list_of_tokens)))
+            (if p1
+                (let ((p2 (parser_2 (rest_parse p1))))
+                    (if p2
+                        (cons_parse
+                            (build_parse (tree_parse p1)
+                                         (tree_parse p2))
+                            (rest_parse p2)
+                            )
+                        #f)
+                    ) ;end let
+                #f)
+            );end let
+        ); end lambda
+    ); end def. mk_parser_seq
+
+
+
+(define (mk_builder label)
+   (lambda l (cons label l))
+)
+
+
+
+Now we can redefine our parsers in two lines of Scheme each.
+
+
+
+(define parse_noun_phrase
+        (mk_parser_seq
+            parse_determiner
+            parse_noun
+            (mk_builder 'noun_phrase)))
+
+(define parse_verb_phrase
+        (mk_parser_seq
+            parse_verb
+            parse_noun_phrase
+            (mk_builder 'verb_phrase)))
+
+(define parse_sentence
+        (mk_parser_seq
+            parse_noun_phrase
+            parse_verb_phrase
+            (mk_builder 'sentence)))
+
+ 
+
+
+
+(example
+    '(parse_sentence '(the cat eats the canary))
+    (cons_parse
+        '(sentence (noun_phrase the cat)
+            (verb_phrase eats
+                (noun_phrase the canary)))
+        '()
+        )
+    )
+
+
+
+(example
+    '(parse_sentence '(canary the cat eats))
+    #f)

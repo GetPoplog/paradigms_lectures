@@ -1,0 +1,81 @@
+
+<html><head><title>
+The SuperScheme Browser </title></head>
+<BODY bgcolor = "white">
+<compiler = scheme>
+
+<h1> The SuperScheme Browser. </h1>
+
+<hr>
+<p> This program is intended solely for displaying the 287 course material.
+It makes use of the VED editor to display <tt>.html</tt> files to the  best
+of VED's limited  ability. It  works by taking  a ".html"  source file  and
+creating a temporary ".htmlo" file which is then displayed by VED.
+
+<p>Hyperlinks appear in underlined  blue text as in  Netscape. Like
+this:<br> <a href = "index.html">Back to the index</a>
+
+<p>But the  browser doesn't remember that you have visited a particular
+one.
+
+<p>You can't change the text as displayed by the browser by typing  (unless
+your username is "pop").  You can, however, copy  it into your programs  in
+the usual  way. Note  that  you can  actually  <em>cut</em> text.  This  is
+inadvisable, since the hyperlinks  will cease to  work for that  particular
+buffer.
+
+<p>Information that is intended to be regarded as <em>program text</em>
+will appear in <tt>red</tt>.
+
+<h2> Limitations </h2>
+
+<p>
+(1) Only a single font, and its variants (coloured, underscore, bold  etc.)
+are  available  to  VED.  So  headers  are  indicated  by  an   underlining
+convention.
+
+<p>
+(2) Figures can only be displayed by the "xv" program in a separate window.
+To get rid  of a  figure, use  the right  mouse button  to pull  up the  xv
+control panel, and select "quit".
+
+<p>
+(3) Tables  are not  implemented,  neither are  certain forms  of  indented
+lists.
+
+<p>
+(4) The browser is much more particular  about (some of) the rules of  HTML
+than is Netscape.  It puts  a "BAD  HTML..." message  in the  output if  it
+doesn't like what the author has done.
+
+<p>
+(5) I haven't implemented comments correctly. A comment must have the form
+
+<pre>
+        &lt;!-- XXXXXXX -->
+</pre>
+
+<p>
+with a space after the first "--".
+
+<p>
+If I have time, I'll adapt it  for browsing more widely, but (sigh!)  don't
+expect to make inroads into Netscape's profits...
+
+
+<p>
+(6) See the above-mentioned ability to change the <tt>.htmlo</tt> text by
+cutting or pasting into the text. This WILL upset the hyperlink following
+mechanism
+
+<p>
+(7) Information about the hyperlinks etc. is appended to the end of the
+<tt>.htmlo</tt> file. Currently this is left in place in the edit buffer,
+though the intention is to crop it off.
+
+
+<p>(8) Only one hyperlink per line of text is permitted. And it should not
+be integrated with other text.
+
+</body>
+</html>

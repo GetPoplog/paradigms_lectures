@@ -1,0 +1,557 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Lecture 2: An Introduction to the Scheme Language </TITLE>
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.0Gold (X11; I; OSF1 V4.0 alpha) [Netscape]">
+</HEAD>
+<BODY>
+
+<P><compiler = scheme></P>
+
+<H1>Lecture 2: An Introduction to the Scheme Language</H1>
+
+<P>
+<HR><FONT SIZE=+4><A HREF="#start">How to start up UMASS Scheme.<BR>
+</A><A HREF="#edit">Editing Files and Running Scheme Code.<BR>
+</A><A HREF="#font">Changing your default font for VED under X.<BR>
+</A><A HREF="#values">Simple values in Scheme.<BR>
+</A><A HREF="#variables">Variables in Scheme.<BR>
+</A><A HREF="#bindings">Variable Bindings.<BR>
+</A><A HREF="#expr">Expressions in Scheme.<BR>
+</A><A HREF="#functions">So what are functions in Scheme?.<BR>
+</A><A HREF="#define">Making your very own function.<BR>
+</A><A HREF="#debugger">The Debugger.<BR>
+</A><A HREF="#load">The function load loads a file of Scheme code.<BR>
+</A><A HREF="#lambda">The lambda calculus.</A></FONT><BR>
+
+<HR></P>
+
+<H2><A NAME="start"></A><FONT SIZE=+4>H</FONT>ow to start up UMASS Scheme.
+</H2>
+
+<P><FONT SIZE=+4>Unix command <TT>scheme</TT></FONT></P>
+
+<P> <TT> Sussex Poplog (Version 14.5 Tue Feb 22 15:01:28 WET 1994)<BR>
+  UMASS Scheme (Version 1.0)<BR>
+  initialising X windows<BR>
+<BR>
+  Sussex XVed (Version 2.0 (motif), SCHEME Tue Sep 12 12:14:16 EDT 1995)<BR>
+  X Server: MIT X Consortium<BR>
+initialising X windows</TT></P>
+
+<P><BR>
+<FONT SIZE=+4>Alias in .cshrc file</FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<P><FONT SIZE=+4>UMASS Scheme is implemented under the Sussex Poplog system
+developed at Sussex University (Falmer UK), </FONT></P>
+
+<P><FONT SIZE=+4>It employs the X-window system developed at MIT (Cambridge
+MA). ] </FONT></P>
+
+<P><FONT SIZE=+4>If you are logged in in the EDLAB, you will get a version
+which is customised for running under X-windows. </FONT></P>
+
+<P><FONT SIZE=+4>In this version, you will be able to edit and test programs
+entirely within UMASS Scheme system if you wish.</FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<P><FONT SIZE=+4>If you are logged in remotely, for example from home,
+and do not have an X-server on your local machine, you will get a version
+of UMASS Scheme which is customised for running under a terminal emulator.</FONT></P>
+
+<P><FONT SIZE=+4>If your emulator matches a VT100 terminal, this should
+be OK,</FONT></P>
+
+<P><FONT SIZE=+4>may need to set the <TT>term</TT> environment variable
+before you run your Scheme. </FONT></P>
+
+<P><FONT SIZE=+4>If Scheme is unhappy with your terminal it will say so.</FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>setenv term vt100 </FONT></TT></P>
+</UL>
+<FONT SIZE=+4></FONT>
+<P>
+<HR WIDTH="100%"><FONT SIZE=+4>If you are logged in remotely from a machine
+which is running an X-server, for example another workstation in UMASS,
+or your own machine running an X-server using the ppp protocol, you should
+do: </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>setenv DISPLAY mymachine </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>where mymachine is the net-address of the machine you
+are logged in on. This will allow UMASS Scheme to open windows on your
+machine. </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<H2><A NAME="edit"></A> <FONT SIZE=+4>Editing Files and Running Scheme
+Code.</FONT></H2>
+
+<P><FONT SIZE=+4>Under X-windows, a small &quot;control panel&quot; will
+pop-up when you start Scheme. This has a box labelled &quot;File:&quot;.
+This contains the name of a default file (<TT>&quot;unnamed.scm&quot;</TT>)
+that you can edit using the built-in VED editor. </FONT></P>
+
+<P><FONT SIZE=+4>If you want to change this, put the mouse in the box,
+drag the mouse along the length of the name - it will now reverse its colours.
+Then type in the name of the file you want to edit, and hit the Do Edit
+button. After a brief pause a new window will appear with your file (possibly
+empty) in it. </FONT></P>
+
+<P><FONT SIZE=+4>If it is a file to contain text in the Scheme language,
+the name should end with &quot;<TT>.scm</TT>&quot; or &quot;<TT>.lscm </TT>&quot;</FONT></P>
+
+<P><FONT SIZE=+4>There is also &quot;Exit&quot; button to kill the Scheme
+system. </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<P><FONT SIZE=+4>Each edit window contains a &quot;menu-bar&quot; across
+the top. This is used in a style akin to that of the Macintosh. Currently
+this has the following menus attached: </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<UL>
+<P><FONT SIZE=+4><B>File </B> Allows you to choose to open a new file for
+editing, to save it to backing store, to save it under another name, to
+write it under another name, to insert the contents of a file, and to &quot;quit&quot;
+that is to stop editing that particular file. </FONT></P>
+
+<P><FONT SIZE=+4>Note that most of the file options use a &quot;File Tool&quot;
+which allows you to select the file to operate on interactively. This looks
+a bit complicated, but you can always type the name of the file you want
+in the Selection: slot, and hit the &quot;Edit&quot; button. </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<P><FONT SIZE=+4><B>Edit</B> This menu allows you to cut, copy and paste
+pieces of your document. </FONT></P>
+
+<P><FONT SIZE=+4>You can paste into other windows on your machine which
+are not related to UMASS Scheme, although you should note that the mouse-button
+conventions are usually different. </FONT></P>
+
+<P><FONT SIZE=+4>You use the LEFT mouse button to select an arbitrary piece
+of text. </FONT></P>
+
+<P><FONT SIZE=+4>You can also select a &quot;range&quot; of text. To do
+this, hold down the control key (ctrl) and use left mouse button to select
+a number of lines of text. </FONT></P>
+
+<P><FONT SIZE=+4>The selected range is indicated by a red or black line
+that appears down the left of your screen. </FONT></P>
+
+<P><FONT SIZE=+4>A Search function is also provided. </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<P><FONT SIZE=+4><B>View</B> This allows you to go to the start or end
+of the file, or of a procedure. </FONT></P>
+
+<P><FONT SIZE=+4><B>Compile</B> This menu allows you to compile program
+text. Scheme uses an incremental compiler, so it is possible to compile
+a line of text, a single function definition (use the current procedure
+menu item) or the text of a range or selection. You can also choose to
+compile a file selected with a File Tool. </FONT></P>
+
+<P><FONT SIZE=+4><B>Lectures</B> This gives you access to all the lectures
+of the course. </FONT></P>
+
+<P><FONT SIZE=+4><B>cs287</B> This menu allows you to access information
+specific to the class. It will be added to as time goes on. </FONT></P>
+</UL>
+
+<P><FONT SIZE=+4>Additional help with editing is found under the &quot;<TT>287</TT>&quot;
+menu. This online material is found in the directory <TT>$popscheme</TT>.
+</FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<H2><A NAME="font"></A><FONT SIZE=+4>Changing your default font for VED
+under X.</FONT></H2>
+
+<P><FONT SIZE=+4>If you want to use a different font, add a line of the
+form XVed*font:  to your .Xdefaults file. You can obtain a (long) listing
+of available fonts by doing xlsfonts as a Unix command. You can also change
+the font of a particular window by doing <enter> window font . </FONT></P>
+
+<PRE><FONT SIZE=+4>XVed*font: 7x12  # The default size - rather small for some.
+XVed*font: 9x15  # A bigger size, which you may like better.</FONT>
+
+<HR WIDTH="100%"></PRE>
+
+<H2><FONT SIZE=+4>Simple values in Scheme </FONT></H2>
+
+<P><FONT SIZE=+4>Scheme operates on the usual simple data-objects, that
+is to say data-objects that can best be thought of as having no internal
+structure. </FONT></P>
+
+<UL>
+<P><FONT SIZE=+4><B>integers:</B> These are of <I> arbitrary precision
+</I> that is they are only limited in size by the total amount of memory
+you have! </FONT></P>
+
+<P><FONT SIZE=+4><B>rationals:</B> Scheme can and will compute with fractions.
+If you divide one integer by another you will get a rational. You should
+usually avoid rational computations, unless you are doing symbolic algebra!
+</FONT></P>
+
+<P><FONT SIZE=+4><B>reals:</B> These are represented by floating point
+numbers. </FONT></P>
+
+<P><FONT SIZE=+4><B>booleans:</B> These are #f (false) and #t (true). [NOTE
+for experts: unlike non IEEE Schemes and most Lisps, the empty list '()
+is not a false truth value.]</FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+</UL>
+
+<PRE><FONT SIZE=+4>23   is an integer
+3.4  is a real
+3/4  is a rational </FONT></PRE>
+
+<PRE><FONT SIZE=+4>(WARNING - UMASS Scheme  does not currently </FONT></PRE>
+
+<PRE><FONT SIZE=+4>input rationals
+                   </FONT></PRE>
+
+<PRE><FONT SIZE=+4> but it will generate them and print them out).</FONT></PRE>
+
+<PRE>
+<HR WIDTH="100%">
+</PRE>
+
+<H2><A NAME="variables"></A><FONT SIZE=+4>Variables in Scheme </FONT></H2>
+
+<P><FONT SIZE=+4>A scheme variable is a sequence of letters (a..z A..Z)
+or digits (0..9) or signs (+ - * / ...) which are terminated by &quot;white-space&quot;
+or by certain special characters, of which parentheses are the most important.
+</FONT></P>
+
+<P><FONT SIZE=+4>In fact, most combinations of non-whitespace characters
+which Scheme does not recognise as being a number are treated as a variable.
+Usually, people will choose helpful names for variables. </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<P><FONT SIZE=+4>For example the following are variables: </FONT></P>
+
+<UL>
+<P><FONT SIZE=+4>x y x_23 34x the-fat-cat + +1 </FONT></P>
+</UL>
+
+<P><FONT SIZE=+4>Warning - Scheme gives some variables <I>initial values</I>,
+for example <TT>+, *, / </TT>. It is not a good idea to use these variables
+for your own purposes! </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<H2><A NAME="bindings"></A><FONT SIZE=+4>Variable Bindings</FONT></H2>
+
+<P><FONT SIZE=+4>Variables usually have values. We say that a variable
+is <I>bound</I> to a value when it is associated with the value. Scheme
+has a <I>statement</I> for binding variables </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>    (define <B> variable  expression</B>)</FONT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>For example: </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>    (define pi 3.14159)</FONT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>binds the variable <TT>pi</TT> to have the value <TT>3.14159</TT>
+</FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<H2><A NAME="expr"></A><FONT SIZE=+4>Expressions in Scheme</FONT></H2>
+
+<P><FONT SIZE=+4>Expressions have a very uniform syntax in Scheme. An expression
+can be a constant or a variable, or it can be a sequence of expressions
+enclosed in parentheses (sometimes called a <I>combination</I>). </FONT></P>
+
+<P><FONT SIZE=+4>In the case of a combination, the first expression is
+regarded as a <I>function</I> while the others are its <I>arguments</I>.
+Thus: </FONT></P>
+
+<UL>
+<PRE>
+<TT><FONT SIZE=+4>     (+ 3 4)</FONT></TT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>is an expression, whose function is <TT>'+'</TT> and whose
+arguments are <TT>3</TT> and <TT>4</TT>. </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<P><FONT SIZE=+4>When Scheme evaluates an expression of this form, it evaluates
+the function and arguments, and then <I>applies</I> the function to the
+arguments. Evaluating the above expression we get </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>7 </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>Likewise: </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4> (- 5 4) </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>means &quot;the result of subtracting 4 from 5&quot;,
+or in ordinary mathematical notation <I>5-4</I>. </FONT></P>
+
+<P><FONT SIZE=+4>A more complicated example is: </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>(+ 3 (* 4 5)) </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>Here we evaluate <TT>(* 4 5)</TT> to get <TT>20</TT>,
+and then add <TT>3</TT> to get <TT>23</TT>. </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<H2><A NAME="functions"></A><FONT SIZE=+4>So what are functions in Scheme?</FONT></H2>
+
+<P><FONT SIZE=+4>Well, actually functions are <I>pieces of machine code</I>
+(in effect subroutines for those who have taken CMPSCI 201). So the value
+of the variable '+' is a piece of code for doing addition. </FONT></P>
+
+<P><FONT SIZE=+4>[Note you can actually redefine Scheme standard functions.
+This is NOT recommended for novices, for you may lose important capabilities]
+</FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<H2><A NAME="define"></A><FONT SIZE=+4>Making your very own function</FONT></H2>
+
+<P><FONT SIZE=+4>A Scheme function is defined by the syntax </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>    (lambda <B> formals</B> <B> body</B>)</FONT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>here <B>formals</B> is (usually) a sequence of variables
+enclosed in parentheses, and <B>body</B> is a sequence of expressions.
+For the <I>functional</I> use of Scheme, only one expression is needed
+in the body. </FONT></P>
+
+<P><FONT SIZE=+4>Note that this is <I>not</I> an application of the function
+<TT>lambda</TT>, but is what is called a &quot;special form&quot; in Scheme.
+</FONT></P>
+
+<P><FONT SIZE=+4>For example </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>(lambda (x) (* x x)) </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>is the function which squares its argument. So </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>( (lambda (x) (* x x)) 3) </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>evaluates to 9. </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<P><FONT SIZE=+4>The rule for evaluation of a lambda-function applied to
+arguments is to </FONT></P>
+
+<P><FONT SIZE=+4>(a) evaluate all the arguments, and</FONT></P>
+
+<P><FONT SIZE=+4>(b) strip off the 'lambda' and substitute the values of
+each argument for the corresponding formals,</FONT></P>
+
+<P><FONT SIZE=+4>(c) evaluate the body of the lambda with the values substituted.
+ </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<UL>
+<P><TT><FONT SIZE=+4> ( (lambda (x) (* x x)) (+ 3 4)) </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>Evaluate the argument </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>( (lambda (x) (* x x)) 7) </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>Strip and substitute for corresponding formals (x=7) </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>(* 7 7) </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>Evaluate body </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>49 </FONT></TT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+</UL>
+
+<P><FONT SIZE=+4>This may seem a funny way of defining functions - in Pascal
+we would give the corresponding function a name, like &quot;square&quot;.
+In Scheme, this is easily done </FONT></P>
+
+<UL>
+<P><TT><FONT SIZE=+4>(define square (lambda(x) (* x x)) ) </FONT></TT></P>
+</UL>
+
+<P><FONT SIZE=+4>Scheme responds: </FONT></P>
+
+<UL>
+<PRE><Compiled function: square >
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>and now we can use it </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>    (square 4)</FONT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>Scheme responds: </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>    16</FONT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>An example of a lambda expression with more than one argument
+is </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>    (lambda (x y) (+ x (* 2 y))</FONT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>And an example of its use is: </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>    ((lambda (x y) (+ x (* 2 y))) (+ 4 3) 5)</FONT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>Evaluate the arguments </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>    ((lambda (x y) (+ x (* 2 y))) 7 5)</FONT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>Strip and substitute, x=7, y=5: </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>     (+ 7 (* 2 5)))</FONT>
+</PRE>
+</UL>
+
+<P><FONT SIZE=+4>and evaluate </FONT></P>
+
+<UL>
+<PRE><FONT SIZE=+4>     (+ 7 10)</FONT>
+</PRE>
+</UL>
+
+<UL>
+<PRE><FONT SIZE=+4>     17</FONT>
+</PRE>
+</UL>
+
+<H2><A NAME="debugger"></A><FONT SIZE=+4>The Debugger</FONT></H2>
+
+<P><FONT SIZE=+4>This is accessed by hitting the &quot;Debugger&quot; button
+on the Scheme Control Panel. It is operated by a panel which contains the
+following buttons: </FONT></P>
+
+<DL>
+<DT><FONT SIZE=+4>Generate Debug Code: </FONT></DT>
+
+<DD><FONT SIZE=+4>This is normally true, so that Scheme generates code
+for the debugger by default. Turn it off to create smaller, faster programs.
+</FONT></DD>
+
+<DT><FONT SIZE=+4>Stop at All Breakpoints: </FONT></DT>
+
+<DD><FONT SIZE=+4>This is normally false. When set true, Scheme will stop
+after it evaluates every compound expression such as (+ x 2). It will print
+out &quot;frames&quot; for the top n functions you are currently executing,
+where n is set by the &quot;Number of Frames&quot; slider. </FONT></DD>
+
+<DT><FONT SIZE=+4>Number of Frames:</FONT></DT>
+
+<DD><FONT SIZE=+4> This slider determines how many function-frames you
+will see. </FONT></DD>
+
+<DT><FONT SIZE=+4> Go To Next Breakpoint: </FONT></DT>
+
+<DD><FONT SIZE=+4>Execution continues until the next (automatically generated)
+breakpoint. Breakpoints occur after an expression has been evaluated. </FONT></DD>
+
+<DT><FONT SIZE=+4> Skip Current Function: </FONT></DT>
+
+<DD><FONT SIZE=+4> The execution of the current function will be completed
+without stopping at any breakpoints. </FONT></DD>
+
+<DT><FONT SIZE=+4> Help: </FONT></DT>
+
+<DD><FONT SIZE=+4>Prints out help information about the debugger. </FONT></DD>
+
+<DD>
+<HR WIDTH="100%"></DD>
+</DL>
+
+<H2><A NAME="load"></A><FONT SIZE=+4>The function <TT>load</TT> loads
+a file of Scheme code. </FONT></H2>
+
+<P><FONT SIZE=+4>The function application <TT>(load &quot;<B>file</B>&quot;)</TT>
+will load any file as Scheme program. </FONT></P>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<H2><A NAME="lambda"></A><FONT SIZE=+4>The lambda calculus</FONT></H2>
+
+<P><FONT SIZE=+4>This requires typographic capabilities, so I will put
+notes on the machine separately. </FONT></P>
+
+</BODY>
+</HTML>

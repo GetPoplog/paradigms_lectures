@@ -1,0 +1,217 @@
+<html><head><title>
+Lecture 1: What are Programming Language Paradigms? </title></head>
+<body bgcolor = "white">
+
+<compiler = scheme>
+
+
+<h1>         Lecture 1: What are Programming Paradigms?   </h1>
+
+<hr>
+
+<p><a href="#fp">  The Functional Paradigm</a></p>
+<p><a href="#ip">  The Imperative Paradigm </a></p>
+<p><a href="#lp">   The Logic Paradigm   </a></p>
+<p><a href="#oop">   The Object-Oriented Paradigm </a></p>
+<p><a href="#scm">   The Scheme Language</a></p>
+
+
+<p> This  course  is  concerned  with the  study  of  <i>  programming
+language paradigms </i>,  that is  the various systems  of ideas  that
+have been used  to guide  the design of  programming languages.  These
+paradigms are  realised  to a  greater  or lesser  extent  in  various
+computer languages,  although  the  design of  a  given  language  may
+reflect the influence of more than one paradigm. </p>
+
+<p> <ul> <b>Imperative: </b> The language provides statements, such as
+<i> assignment statements </i>, which explicitly change the <i>  state
+</i> of the memory of the computer. </ul></p>
+
+<p> <ul> <b>Functional: </b> In this paradigm we express  computations
+as the evaluation of mathematical functions. </ul></p>
+
+
+<p> <ul> <b>Logic:  </b> In  this paradigm we  express computation  in
+exclusively in terms of <i> mathematical logic </i> </ul></p>
+
+<p> <ul>  <b>Object-Oriented:  </b>  In  this  paradigm  we  associate
+behaviour with data-structures called "<i> objects </i>" which belong
+to <i>classes</i> which are usually structured into a hierarchy.
+ </ul></p>
+
+The paradigms  are  not  exclusive,  but reflect  the  different  emphasis  of
+language designers. Most practical imperative, functional and  object-oriented
+languages embody features of more than one paradigm.
+
+
+
+<h2> <a name = "fp"> The Functional Paradigm </a> </h2>
+
+<p>In this  we  emphasise  the  idea of  computation  as  being  about
+evaluating mathematical <i> functions </i> combined in <i> expressions
+</i>. While all  languages try  to provide a  representation of  basic
+functions like addition, functional languages support a functional way
+of expressing computations on  large and complex structures,  although
+some  such  as  Scheme  also  have  imperative  features.  In  a  pure
+functional language a mathematical identity like:
+
+<pre>
+         fred(x) + fred(x) = 2*fred(x)
+</pre>
+
+should hold. This  is not  necessarily the case  for a  non-functional
+language, for example in Pascal or C <i>fred</i> might be a  procedure
+which had a  side-effect, so  that calling  it twice  has a  different
+effect from calling it once. For example <i>fred</i> might contain the
+assignment <i>g:=g+1</i>  where <i>g</i>  is  a global  variable.  The
+primary motivation  of writing  functionally  is to  develop  programs
+whose behaviour can easily be analysed mathematically, and in any case
+is easy to predict and understand.</p>
+
+<p>The same non-functional aspect holds also for Java. A method call
+<i>fred(x)</i> will commonly have a side-effect.</p>
+
+<p>However it has been difficult to design languages under the functional
+paradigm
+which produce  programs which  run  as fast  as under  the  imperative
+paradigm. With the high performance of modern computers, this  matters
+less for many  applications than the  ability to write  <i>correct</i>
+programs. The  functional paradigm  is hard  to implement  efficiently
+because if a storage location is once  used to hold a value it is  not
+obvious when it can  be re-used - a  computer running a program  using
+the functional  paradigm can  spend a  lot of  effort determining  the
+reusability of store.</p>
+
+<p>Another way to think of the  functional paradigm is to regard it  as a
+way of taking to its limit
+the advice to avoid harmful side-effects in a program.</p>
+
+
+<h2> <a name = "ip"> The Imperative Paradigm </a> </h2>
+
+
+Languages which  reflect  this  paradigm recognise  the  fact  computers  have
+re-usable  memory  that  can  change  state.  So  they  are  characterised  by
+<i>statements</i>, which affect the state of the machine, for example.
+
+<ul><pre> x := x+1 </pre></ul>
+
+<p>This can only be understood  mathematically by associating a
+sequence of   values    with   <i>x</i>    let   us    say
+<i>x<sub>1</sub>, x<sub>2</sub>,...</i>, where  <i>x<sub>t</sub></i>
+denotes  the  value the variable  <i>x</i>  has at  some  time
+<i>t</i>.  Thus  the  above statement can be translated into
+mathematics as</p>
+
+<ul> x<sub>t+1</sub> = x<sub>t</sub> + 1 </ul>
+
+
+
+<p>This kind of reasoning is discussed in CS250. It gets  increasingly
+hard to  do  as the  state-changes  get  ever more  complex  (e.g.  by
+assigning to data-structure components). However imperative  languages
+can relatively easily be  translated into efficient machine-code,  and
+so are usually  considered to  be highly efficient.  Many people  also
+find the imperative paradigm  to be a more  natural way of  expressing
+themselves.</p>
+
+Languages which use the imperative paradigm commonly have functional
+features - for example the basic functions of arithmetic (addition,
+subtraction...) are provided.
+
+<h2> <a name = "lp"> The Logic Paradigm </a> </h2>
+
+<p>While the functional paradigm emphasises the idea of a mathematical
+function, the logic paradigm focusses on predicate logic, in which the
+basic concept is  a <i>relation</i>.  Logic languages  are useful  for
+expressing problems where it is not obvious what the functions  should
+be. Thus, for example where people are concerned, it is natural to use
+relations.</p>
+
+<p>For example consider the <i>uncle</i> relationship: a given  person
+can have many <i>uncles</i>, and a another person can be  <i>uncle</i>
+to many <i>nieces</i> and <i>nephews</i>. </p>
+
+<p>Let us consider now how we can define the <i>brother</i>  relation
+in terms  of  simpler  relations  and  properties  <i>father,  mother,
+male</i>. Using the Prolog logic language one can say:</p>
+
+<pre>
+
+    brother(X,Y)      /* X is the brother of Y                    */
+        :-            /* if there are two people F and M for which*/
+        father(F,X),  /*          F is the father of X            */
+        father(F,Y),  /*    and   F is the father of Y            */
+        mother(M,X),  /*    and   M is the mother of X            */
+        mother(M,Y),  /*    and   M is the mother of Y            */
+        male(X).      /*    and   X is male                       */
+</pre>
+
+
+<p> That is <i>X</i> is the brother of <i>Y</i> if they have the  same
+father and mother and <i>X</i>  is male. Here "<i>:-</i>" stands  for
+logical implication (written right to left). </p>
+
+<p>
+Mathematical logic  has always  had an  important role  in computation,  since
+boolean logic is the basis of the design of the logic circuits which form  the
+basis of any computer. In  the logic paradigm we make  use of a more  advanced
+construct, namely predicate logic, to give us languages of enhanced expressive
+power.</p>
+
+
+<h2> <a name = "oop"> The Object-Oriented Paradigm</a> </h2>
+
+
+<p>The Object Oriented  paradigm (often written  O-O) focusses on  the
+<i> objects </i> that a program is representing, and on allowing  them
+to exhibit "behaviour". This is  contrasted with the typical  approach
+in the <i>imperative</i>  paradigm, in which  one typically thinks  of
+operating on <i>data</i> with <i>procedures</i>. In the imperative
+paradigm typically the data are passive,
+the procedures are active. In the O-O paradigm, data is combined  with
+procedures to give <i>objects</i>, which are thereby rendered  active.
+For example in the  imperative paradigm, one  would write a  procedure
+which prints the various  kinds of object in  the program. In the  O-O
+paradigm, each object  has a  <i>print-method</i>, and  you "tell"  an
+object to print itself. </p>
+
+<p>
+It is however possible to use certain non object-oriented languages
+to write object-oriented programs. What is required is the ability to
+create data-structures that contain machine code, or pointers to
+machine code. This is possible in the C language and in most functional
+languages (where functions are represented as as code).
+</p>
+
+<p>Objects belong to <em>classes</em>.
+Typically, all the objects in a given class
+will have the same kinds of behaviour.
+
+<p>Classes are usually arranged in some kind of <em>class hierarchy</em>.
+This hierarchy can be thought of as representing a <em>"kind of"</em>
+relation. For example, a computational model of the University might
+need a class <tt>person</tt> to represent the various people who make up
+the University. A sub-class of <tt>person</tt> might be a <tt>student</tt>;
+students are a kind of person. Another sub-class might be
+<tt>professor</tt>. Both students and professors can exhibit the same kinds
+of behaviour, since they are both people. They both eat drink and sleep,
+for example. But there are  kinds of behaviour that
+are distinctive: professors pontificate for example.</p>
+
+<h2> <a name = "scm"> The Scheme Language</a> </h2>
+
+<p>This
+course is taught using the language Scheme which provides good support of
+the functional paradigm,  since it  contains a functional  subset. However  it
+also contains  imperative  features,  which  mean that  we  can  look  at  the
+imperative paradigm within Scheme. It is a simple language but powerful enough
+to let us easily implement extensions which illustrate both the logic paradigm
+and the object-oriented paradigm.</p>
+
+<p>In
+particular, it is quite easy  to implement the object-oriented paradigm  in
+Scheme because the  functions available in  Scheme can easily  be attached  to
+Scheme data-structures providing in effect objects that have behaviour arising
+from the attached functions.</p>
+</body></html>

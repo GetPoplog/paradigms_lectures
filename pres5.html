@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Lecture 5: Functions on Lists, Higher Order Functions
+</TITLE>
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.0Gold (X11; I; OSF1 V4.0 alpha) [Netscape]">
+</HEAD>
+<BODY>
+
+<H1>Course 287 Lecture 5: Functions on Lists, Higher Order Functions </H1>
+
+<P>
+<HR><A HREF="#append">The <TT>append</TT>&nbsp; function joins two lists
+together to make one.<BR>
+</A><A HREF="#member">The <TT> member? </TT>&nbsp; function asks whether
+an object belongs to a list<BR>
+</A><A HREF="#and">The construct <TT> (and expr-1....expr-n) </TT> is a
+special form. <BR>
+</A><A HREF="#or">The construct <TT> (or expr-1...expr-n) </TT> is a special
+form. </A><A HREF="#cond"> The <TT>cond</TT>&nbsp; special-form is more
+convenient than nested if's<BR>
+</A><A HREF="#select_set">The <TT>select_set</TT>&nbsp; function lets you
+choose members out of a list <BR>
+</A><A HREF="#trace">The <TT>trace</TT>&nbsp; function allows you to see
+what a program is doing.<BR>
+</A><A HREF="#example">The <TT>example</TT>&nbsp; function allows you run
+tests on functions as you compile<BR>
+</A><A HREF="#list">The <TT>list</TT>&nbsp; function is more convenient
+than <TT>cons</TT>&nbsp; for building longer lists.<BR>
+</A><A HREF="#lambda"><TT>lambda </TT>&nbsp; expressions which take a variable
+number of arguments <BR>
+</A><A HREF="#map_list">Some examples of the use of map_list<BR>
+</A><A HREF="#reduce">The <TT>reduce</TT>&nbsp; function further generalises
+<TT>map_list</TT>&nbsp;.</A><BR>
+</P>
+
+<P>In this lecture we learn about the special forms <TT>cond</TT>&nbsp;,
+<TT>trace</TT>&nbsp;. We learn also about the useful built-in functions
+<TT>append</TT>&nbsp;, <TT>member</TT> <TT>map</TT>&nbsp;, <TT>example</TT>&nbsp;
+and <TT>list</TT>&nbsp;. We also write our own version of <TT>member</TT>,
+<TT> member? </TT>&nbsp;. These built-in functions will help us implement
+algorithms on finite sets. </P>
+
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD>
+<H2>The <TT>append</TT>&nbsp; function joins two lists together to make
+one.</H2>
+</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD>
+<H2><A NAME="append"></A> </H2>
+
+<P><FONT SIZE=+3>The <TT>append</TT>&nbsp; function is built into Scheme.
+</FONT></P>
+
+<P><FONT SIZE=+3>It produces a new list </FONT></P>
+
+<P><FONT SIZE=+3>This starts with the elements of <TT>list1</TT>&nbsp;</FONT></P>
+
+<P><FONT SIZE=+3>and finishes with those of <TT>list2</TT>&nbsp;. </FONT></P>
+
+<PRE>
+<TT><FONT SIZE=+3>(define (append list1 list2)
+        (if (null? list1) list2
+            (cons (car list1) (append (cdr list1) list2))))</FONT></TT>
+</PRE>
+
+<P><FONT SIZE=+3>(append '(1 2 3) '(4 5 6))<BR>
+<BR>
+    ==&gt;  (1 2 3 4 5 6)</FONT><BR>
+</P>
+</TD>
+</TR>
+</TABLE>
+
+<hr>
+
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><FONT SIZE=+3></FONT>
+<PRE><FONT SIZE=+3>(cons '(1 2 3) '(4 5 6))
+
+    ==&gt;  ((1 2 3) 4 5 6)</FONT>
+</PRE>
+<FONT SIZE=+3></FONT>
+<P><FONT SIZE=+3>(append '((1 2) 3) '(4 (5 6)))<BR>
+<BR>
+<BR>
+    ==&gt;   ((1 2) 3 4 (5 6))</FONT><BR>
+</P>
+</TD>
+</TR>
+</TABLE>
+
+<hr>
+
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD>
+<H2><A NAME="member"></A>The <TT> member? </TT>&nbsp; function asks whether
+an object belongs to a list </H2>
+</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><FONT SIZE=+3></FONT>
+<PRE>
+<TT><FONT SIZE=+3>(define (member? x list)
+     (if (null? list) #f                                ;(1)
+         (if (equal? x (car list)) #t                   ;(2)
+              (member? x (cdr list)))))                 ;(3)</FONT></TT>
+</PRE>
+
+<P><TT><FONT SIZE=+3></FONT></TT></P>
+
+<P><FONT SIZE=+3><TT>(member x list)</TT> evaluates to <TT>#f</TT> if
+<TT>x</TT> is not a member of <TT>list</TT>, </FONT></P>
+
+<P><FONT SIZE=+3>otherwise it evaluates to the that part of <TT>list</TT>
+which begins with the first occurrence of <TT>x</TT>. </FONT></P>
+</TD>
+</TR>
+</TABLE>
+
+<H2><A NAME="and"></A><A NAME="or"></A>The special forms <TT>and</TT> and
+<TT>or</TT></H2>
+
+</html>

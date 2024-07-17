@@ -1,0 +1,91 @@
+
+
+
+
+                         CMPSCI 287 S99 Homework 6
+                   Due 23:59 on TUESDAY 6APR99 as hwk6.lscm
+
+Please document your program carefully. For each function you write,
+you should generate some extra examples of your own to test it.
+
+It must be possible for the TA to load your program file into Scheme
+to check it.
+
+Note that while Netscape does a tolerable job of viewing this file,
+it's best looked at using Scheme - see the 287 menu. You can print
+this using the print option in the file menu.
+-------------------------------------------------------------------------------
+
+Complete the implementation of object-orientation in  Scheme, which we have
+treated in Lecture 11a, by adding inheritance, and supporting an
+updater for send. This will be done by modifying the definition of
+make_class and related functions. Note that the text of Lecture11a is
+available on-line as $cs287/public_html/lecture11a.lscm
+Note also that ".lscm" files are in a "Literate Scheme" dialect, in which
+all text is ignored until a line of text is found which has a left
+parenthesis at the left hand margin. When such a line is found, the system
+reads a Scheme expression, and then reverts to its search for a line
+beginning with a left parenthesis. The effect is that text is comment by
+default; only manifest program is treated as such.
+
+
+(1) Extend send to have an updater.
+
+(define class_person (make_class 'person class_object '() '(name age sex)))
+
+(define p1 (send class_person 'new "Madeleine Misconception" 29 'female))
+
+(set! (send p1 'age) 34)
+
+(example
+    '(send p1 'age)  34)
+
+(2) To support  inheritance of  access to  instance-variables via  selector
+functions, you will need  to append the field-names  of the super-class  to
+the field-names that you are given in the call of make_class.
+
+(define class_student (make_class 'person class_person '() '(classes)))
+
+(define s1  (send class_student 'new "Peter Panacea" 41 'male '(250 287)))
+
+(example '(send s1 'age)  41)
+
+(2)  To  support   inheritance  of   static  methods   you  should   modify
+find_static_method recursively  to  search  for  methods  in  the  ancestor
+classes of the current class.
+
+(insert_static_method
+    class_person
+    'class_info
+    (lambda ()
+        "the person class records name, age, sex"
+        )
+    )
+
+(example '(send class_person 'class_info)
+        "the person class records name, age, sex")
+
+
+(example '(send class_student 'class_info)
+        "the person class records name, age, sex")
+
+
+
+(3)   To   support   inheritance   of   instance   methods   (other    than
+selector-functions) you should  modify find_instance_method recursively  to
+search for methods in the ancestor classes of the current class.
+
+(insert_instance_method
+    class_person
+    'birthday
+    (lambda (p) (set! (send p 'age) (+ 1 (send p 'age)))))
+
+(define class_student (make_class 'person class_person '() '(classes)))
+
+(define s1  (send class_student 'new "Peter Panacea" 41 'male '(250 287)))
+(define s2  (send class_student 'new "Betty Boothroyd" 86 'female '(250 287)))
+
+(send s1 'birthday)
+
+(example '(send s1 'age) 42)
+(example '(send s2 'age) 86)

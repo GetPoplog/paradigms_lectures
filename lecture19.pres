@@ -1,0 +1,492 @@
+
+
+ -----------------------------------------------------------
+ |                                                         |
+ |                                                         |
+ |    LECTURE 19   An Introduction to the Logic Paradigm   |
+ |                                                         |
+ |                                                         |
+ |                                                         |
+ -----------------------------------------------------------
+
+
+
+         CONTENTS - (Use <ENTER> g to access required sections)
+
+  1   Mathematical Logic
+
+  2   Logical Calculi
+
+  3   Propositional Calculus
+      2.1   Truth Tables
+      2.2   Satisfiability  and  universal  validity
+            of  propositional  sentences
+
+  3   Computing with the Propositional Calculus
+      3.1   Deciding whether a proposition is a tautology
+      3.2   The Resolution Principle
+
+  4   Boolean Algebra in Computer Architecture
+
+
+
+Aristotle: Syllogisms
+
+Boole : Boolean Algebra
+
+
+In  the   20th   century  the   formalisation   of
+mathematical reasoning has made great progress;
+
+It  also  has  become  apparent  that  there   are
+limitations on what we  can possibly know  through
+mathematical reasoning.
+
+
+The  need  for  a  tighter  formalism,  even   for
+mathematics, became  manifest when  David  Hilbert
+showed that to express in a purely algebraic style
+Euclid's Geometry,  which had  been regarded  as a
+model of  mathematical  precision  for  over  2000
+years, required an extension of Euclid's  axioms -
+the traditional  treatment  of  geometry  had,  in
+effect, hidden  axioms embodied  in the  "correct"
+way of drawing the figures.
+
+
+Can  we,  by  a  systematic  process,   ______decide
+whether a  mathematical  proposition  is  true  or
+false?
+
+Can we, by a systematic process, find a proof of a
+mathematical proposition if one exists?
+
+Is there  a proof  for every  "true" statement  of
+mathematics?
+
+
+
+In attacking these  questions, which required  the
+rigorous  formalisation   of  logical   reasoning,
+mathematicians were laying the foundations of  the
+theory  of   computation,   since  what   can   be
+characterised  formally   can  in   principle   be
+computed.
+
+
+As computer scientists, we  may find it easier  to
+understand aspects  of mathematical  logic  from a
+computational viewpoint.
+
+
+    Can  we,  by  a  systematic  process,   ______decide
+    whether a mathematical proposition is true or
+    false?
+
+
+In the domain of arithmetic we can translate  this
+into computing terms quite easily.
+
+
+        forall n. P(n)
+
+Property P can be tested for a given n by  running
+a computation.
+
+
+Write a Scheme function that systematically  works
+through all possible values of n, checking if P(n)
+holds, and returning the value of the first n  for
+which P does not hold.
+
+So if P is a theorem, our function never halts.
+
+But we cannot in general determine whether a given
+program halts.
+
+So we  may  suspect  that  we  cannot  in  general
+determine whether a given mathematical proposition
+is true or false.
+
+
+Our argument is  not watertight,
+
+for while we shown that the problem of determining
+the truth of a certain propositions in  arithmetic
+is a halting problem, we haven't shown that it  is
+a general halting problem.
+
+However a watertight linking  of these two can  be
+made, as  was  first  done  by  Alan  Turing,  who
+showed, using  an  argument  about  computability,
+that  determining  the  truth  of  a  mathematical
+proposition is ____________undecidable.
+
+Consider the ________Goldbach __________Conjecture
+
+"Every even number  greater than 2  is the sum  of
+two primes."
+
+Write a function goldbach? for which
+
+ (goldbach?  n) =  #t
+
+iff the  Goldbach  hypothesis  is  true  for  then
+natural number n.
+
+
+Both primes must  be less than  n, so no  infinite
+search, so for  a given n  the (goldbach? n)  will
+terminate.
+
+
+    (define (test_goldbach n)
+        (if (goldbach? n) (test_goldbach (+ n  2))
+        #f)
+    )
+
+(test_goldbach 4)  will halt  if and  only if  the
+Goldbach hypothesis is _____false.
+
+Any mathematical system that is powerful enough to
+characterise a general computation is undecidable.
+
+A  system  of   mathematical  logic  is   called a
+________calculus.
+
+Don't  confuse this with  the  ____________differential ___and
+________integral  ________calculus
+
+
+1 The Propositional Calculus: Boole. Propositions
+considered as unstructured statements, combined
+using and,  or  and implies etc.
+
+2 The Predicate Calculus: Built on the
+propositional calculus by allowing the
+propositions to have internal structure.
+
+        likes(John,Mary)
+
+3 The Lambda Calculus: The functional subset of
+Scheme can be considered as an implementation of a
+variant of this calculus.
+
+The propositional calculus  is built from  the
+following components
+
+     propositional variables p,q,r,...
+     propositional connectives &, \/, ~, ->, <->
+
+We can  represent sentences  of the  propositional
+calculus in  Scheme  by  using  the  usual  Scheme
+conventions
+
+(and p q)      (or p q)         (not p)
+(-> p q)       (<-> p q)
+
+                   Truth Tables
+
+An interpretation of a sentence S
+
+under a mapping of propositional
+variables of  S to the truth values T and F
+
+Is  the value T  or F determined by truth tables
+
+-------------------     -------------------
+|and  |  F  |  T  |     |or   |  F  |  T  |
+|-----+-----+-----|     |-----+-----+-----|
+| F   |  F  |  F  |     | F   |  F  |  T  |
+|-----+-----+-----|     |-----+-----+-----|
+| T   |  F  |  T  |     | T   |  T  |  T  |
+-------------------     -------------------
+     -------------------
+     | ->  |  F  |  T  |
+     |-----+-----+-----|
+     | F   |  T  |  T  |
+     |-----+-----+-----|
+     | T   |  F  |  T  |
+     -------------------
+  
+ -------------------     ------------
+ |<->  |  F  |  T  |     | not |    |
+ |-----+-----+-----|     |-----+----|
+ | F   |  T  |  F  |     | F   |  T |
+ |-----+-----+-----|     |-----+----|
+ | T   |  F  |  T  |     | T   |  F |
+ -------------------     ------------
+   
+For example (and p q) under the mapping p --> T, q
+--> F has the interpretation F.
+
+This logical  concept  of interpretation  is  very
+similar to  the  concept  of  __________evaluation  that  we
+encountered   when   we   discussed   the   Scheme
+interpreter.
+
+A sentence S in the propositional calculus is said
+to  be  ___________satisfiable  if  there  is  a  mapping  of
+variables to  truth-values  under which  it  S  is
+interpreted as T.
+
+A sentence S in the propositional calculus is said
+to be _____________unsatisfiable if there is no mapping from
+variables to truth-values under which it S is
+interpreted as T.
+
+A sentence S in the propositional calculus is said
+to be  ___________universally _____valid  if for  all mappings  of
+variables to truth values  S is interpreted as  T.
+We also  speak  of  such  a  sentence  as  being a
+__________tautology.
+
+
+     _________Computing ____with ___the _____________Propositional ________Calculus
+
+Working out an  interpretation of a  propositional
+calculus sentence is the  same kind of problem  as
+interpreting a Scheme expression.
+
+The mapping  of propositional  variables to  truth
+values can be represented in an environment
+
+Use eval_env, with  suitable entries for  ->,
+ <->, and, or and not
+
+Only a finite number n of  propositional
+variables in a given sentence S
+
+So there  are  2^n  possible  environments
+binding  the variables of S to have the values T
+and F.
+
+We can ______decide if a sentence in the Propositional
+Calculus is universally valid [exponential time!].
+
+We can use a proof system which embodies rules  of
+classical logic (e.g. _____modus ______ponens) to try to find
+a proof for a propositional sentence in less  than
+exponential time.
+
+It  is  believed  that  any  (finitely
+statable) proof  system  for  Propositional  Logic
+will require exponential  time to  find proofs  of
+some propositions.
+
+This has  been shown to be  the case for some
+proof systems.
+
+             The Resolution Principle
+           ----------------------------
+
+The proof method with most influence on computing.
+
+        ~p \/ q
+         p \/ r
+
+from these we may infer
+
+        q \/ r
+
+From (~p \/ q) <-> (p -> q), we have
+
+        p -> q
+        p \/ r
+
+from which we may infer
+
+        q \/ r
+ 
+From
+        ~p \/ q
+         p \/ r
+
+we have inferred
+
+        q \/ r
+
+Like ____________cancellation of a  term in ordinary algebra.
+
+Systematise the  use of  this principle  in a  way
+parallel to what we did for polynomials.
+
+We defined  a  function  to  convert  an  arbitary
+expression whose only functions were + and *  to a
+polynomial expressed as a ___sum __of __________monomials.
+
+Convert a Propositional  Calculus sentence  into a
+conjunction of disjunctions of ________literals.
+
+A literal  is  a  propositional  variable  or  its
+negation.
+
+So a disjunction  of literals in  logic plays  the
+same role as a power product in polynomials.
+
+Repeats of an  expression in  a disjunction  don't
+affect its meaning.
+
+So we don't need distinction corresponding to  the
+monomial/power-product distinction.
+
+Such a disjunction of literals is called a ______clause.
+
+An empty  disjunction of literals is the _____empty  ______clause
+
+It always evaluates to F.
+
+Thus the empty clause is unsatisfiable.
+
+The  process   of   converting   a   sentence   of
+Propositional  Calculus  into  a  conjunction   of
+clauses is  called  putting  it  into  ___________conjunctive
+______normal ____form.
+
+(1) Replace all  connectives except
+        &, \/ and ~
+
+Using
+
+(p <-> q)       <->         ((p -> q) & (q -> p))
+(p -> q)        <->         (~p \/ q)
+
+(2) Use the following tautologies left to right:
+
+p \/ (q & r)    <->         (p \/ q) & (p \/ r)
+(q & r) \/ p    <->         (p \/ q) & (p \/ r)
+~ (p \/ q)      <->         ~p & ~q
+~ (p & q)       <->         ~p \/ ~q
+~~p -> p
+
+(3) Eliminate redundant copies of the same literal
+occurring in the same clause [since (p\/p) <-> p],
+
+Also if a literal and its  negation occur in the
+same clause, we delete them both [since (p\/-p <->
+T)]
+
+__________Resolution _________principle __in _____________Propositional ________Calculus
+
+Take two _______clauses, that is to say sentences of the
+form:
+
+      l_1 \/ l_2 \/ l_3 ....\/   p \/....\/ l_n
+      k_1 \/ k_2 \/ k_3 ....\/  ~p \/....\/ k_m
+
+Use associativity  and  commutativity  laws
+
+     p  \/  (l_1 \/ l_2 \/ l_3 ...\/ l_n)
+     ~p \/   (k_1 \/ k_2 \/ k_3 ...\/ k_m)
+
+Infer:
+
+l_1 \/ l_2 ..\/ l_n \/ k_1 \/ k_2 \/ k_3 ... \/...\/ k_m
+
+We have "cancelled out" a propositional variable
+and its negation.
+   
+
+The resolution principle provides a ________complete _____proof
+______method for the propositional calculus:
+
+Systematic application of  resolution will  always
+find a proof if one  exists ________provided __we ___use  _____proof
+__by ________reductio __ad _________absurdum.
+
+Start with the negation of  what we want to  prove
+and proceed to resolve clauses against each  other
+until we obtain an unsatisfiable clause, which  is
+our demonstration of the "absurd".
+ 
+To use resolution to prove  S, do the following:
+
+(1) Negate the sentence to be proved obtaining ~S
+(2) Express ~S as a conjunction of clauses
+(3) Systematically apply the resolution principle to
+    infer new clauses until EITHER
+
+    (a) the empty clause is found,
+    In this case we know that ~S is
+    unsatisfiable, so that S is a tautology.
+
+    OR
+
+    (b) until no more new resolutions are possible
+
+The only new clauses we get by resolution contain
+the same variables  as the original sentence S.
+
+So there are only a  finite number of possible
+clauses that can be generated,
+
+The above process MUST terminate - the GOOD NEWS
+
+Maybe in exponential time - the BAD NEWS.
+
+Consider the proposition:
+
+    ((p -> q) & (q -> r)) -> (p -> r)
+
+To prove this by resolution we negate it:
+
+   ~( ((p -> q) & (q -> r)) -> (p -> r) )
+
+And now replace all instances of  the -> connective
+
+
+   ~( ~((~p \/ q) & (~q \/ r)) \/ (~p \/ r) )
+
+We move the outermost "~" inwards.
+
+    ~~((~p \/ q) & (~q \/ r)) & ~(~p \/ r) )
+
+Use the fact that double negation is affirmation,
+
+    ((~p \/ q) & (~q \/ r)) & (~~p & ~r) )
+
+Removing  another  double   negation,  we   have a
+clausal form
+
+    ((~p \/ q) & (~q \/ r)) & (p & ~r) )
+
+    ~p \/ q    [1]
+    ~q \/ r    [2]
+    p          [3]
+    ~r         [4]
+
+Resolving [1] with [3] we obtain
+
+    q          [5]
+
+Resolving [2] with [4] we obtain
+
+    ~q         [6]
+
+Resolve [5] with [6] to get the  empty clause.
+
+---------------------------------------------
+4  Boolean Algebra in Computer Architecture
+---------------------------------------------
+Many  of  you  will  know  that  boolean   algebra
+(equivalent to the Propositional Calculus) is used
+in the design of computers.  Do we have a  paradox
+here? We have seen that it is decidable  whether a
+statement  in  the  Propositional  Calculus   is a
+tautology, and yet if  computers are built out  of
+logic circuits, surely the behaviour of a  program
+can ultimately  be translated  into  Propositional
+Logic, and so should be decidable. But the halting
+problem is undecidable.
+
+There is  no  real paradox,  because  any  general
+purpose  computing   machine  must   have   memory
+elements which  give it  _____state. The  behaviour  of
+these memory elements  cannot be characterised  in
+the  Propositional  Calculus,   so  there  is   no
+paradox.
+
+Thus Boolean Algebra plays  a significant role  in
+the design of computers,  but it is inadequate  to
+analyse a design completely.
+ 

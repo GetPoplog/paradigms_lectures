@@ -1,0 +1,169 @@
+
+<!--     OOPs take this out
+<p>Moreover in this case <em>u <img src=in.gif> FV(F) </em>, so that
+the <em>u</em> taken away in the set subtraction is put back by the
+union. Thus we have</p>
+
+<ul>FV(G[u:=w][x:=F]) =
+  (FV(G)-{x}) <img src=cup.gif> FV(F)  <img src=cup.gif> {w}
+</ul>
+-->
+
+
+<p><ul><li>
+Sub-case 1: <em>x <img src=not_in.gif> FV(G) </em>
+
+and  <em>u <img src=not_in.gif> FV(G) </em></p>
+
+<p>In this sub-case, we have by the inductive hypothesis,
+<em>FV(G[u:=w])  = FV(G)</em> and so we have, remembering
+that, from Lemma Sub.0, <em>height(G[u:=w]) = height(G)=n</em>
+
+<p><ul>FV(G[u:=w][x:=F]) = FV(G[u:=w]) = FV(G) </em><br>
+
+<p>
+
+(G[u:=w])[x:=F] <img src=converts.gif> G[u:=w]  <img src=converts.gif> G
+</ul>
+
+<p>
+
+So,
+<ul>
+FV(E[x:=F]) = FV(G) - {u} = FV[E]
+</ul>
+<p>by FV4. Moreover <em>E[x:=F] <img src=converts.gif> E</em> by RA3.</p>
+
+<p> This proves our sub-case, since
+<em>x <img src=not_in.gif> FV(G)</em> and
+<em>x <img src=not_in.gif> FV(E)</em>
+</ul>
+
+<h3>Lemma Sub.1</h3>
+If <em>x <img src=not_in.gif> FV(E)</em> then
+<em>E[x:=F] <img src=converts.gif> E</em>
+
+
+<h4>Proof</h4>
+
+We proceed by induction on <em>n</em>, the height of <em>E</em>.
+
+<p><b>Base Case <em>n=0</em></b>
+
+<ul>
+<li> The case S1, <em>x[x:=F]</em> cannot occur, since
+<em>x <img src=not_in.gif> FV(x) = {x} </em> is false.
+
+
+<li> <em> u[x:=F] = u </em> by S2.
+<li> <em> c[x:=F] = c </em> by S3, where <em>c <img src=in.gif> C</em>.
+
+</ul>
+<b> Inductive Step</b>
+
+<p>Suppose for a given <em>n</em>, for all <em>i <img src=leq.gif> n</em>
+we have
+
+<ul>
+ <em>x <img src=not_in.gif> FV(E) </em> and
+<em>height(E)=i</em> implies  <em>E[x:=F] <img src=converts.gif> E</em>
+</ul>
+
+Consider an expression <em>E</em> of height <em>n+1</em> We must show our
+result holds for <em>E</em>.
+
+
+<ul>
+<li> Suppose <em> E=(E<sub>1</sub>E<sub>2</sub>) </em>.
+
+Recall that from FV3,</p>
+<ul>
+<em>FV(E) = FV(E<sub>1</sub>) <img src=cup.gif> FV(E<sub>2</sub>))</em>,
+</ul>
+<p>and hence  <em> x <img src = not_in.gif> FV(F<sub>1</sub>),
+x <img src = not_in.gif> FV(F<sub>2</sub>)</em>.
+
+Then</p>
+
+<ul>
+   E[x:=F] = (E<sub>1</sub>[x:=F] E<sub>2</sub>[x:=F])
+   <img src=converts.gif> (E<sub>1</sub>E<sub>2</sub>) = E
+</ul>
+<p> by the inductive hypothesis.
+
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>x . G</em>. Using S5 we have
+</p>
+<ul>E[x:=F] = (<img src=lambda.gif>x . F)[x:=F]
+ = (<img src=lambda.gif>x . F) = E </ul>
+
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>u . G</em>
+where <em>u <img src=not_eq.gif> x</em> and
+<em>u <img src=not_in.gif> FV(F)</em>.
+
+<p> We have</p>
+<ul>E[x:=F] = (<img src=lambda.gif>u . G)[x:=F]
+= (<img src=lambda.gif>u . G[x:=F])
+</ul>
+
+<p>by S6. But, by FV4, the free variables of G are the free variables
+of <em>E</em> with the possible addition of
+<em>u <img src=not_eq.gif> x</em>. So <em>x <img src=not_in.gif>
+FV(G)</em>, and we may apply our inductive hypothesis to obtain</p>
+
+<ul>
+    <img src=converts.gif> (<img src=lambda.gif>u . G)
+</ul>
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>u . G</em>
+where <em>u <img src=not_eq.gif> x</em> and
+<em>u <img src=in.gif> FV(F)</em>. Let us choose a variable
+<em>w </em> for which <em> w <img src=not_eq.gif> x </em> and
+<em> w <img src=not_in.gif> FV(F)</em>.</p>
+
+
+<ul>E[x:=F] = (<img src=lambda.gif>u . G)[x:=F]
+= (<img src=lambda.gif>w . G[u:=w][x:=F])
+</ul>
+
+<p>But, by Lemma..., the free variables of G[u:=w] are the
+free variables of G, minus u, with the addition of w.
+
+
+</ul>
+
+<!--   Sub-case 3 for S7 Lemma Sub.1     -->
+
+<p><li> Sub-case 3: <em>x <img src=not_in.gif> FV(G) </em>,
+<em>u <img src=in.gif> FV(G) </em>,
+
+<p>In this sub-case, by the inductive hypothesis, </p>
+
+<ul>
+FV(G[u:=w]) = (FV(G)-{u}) <img src=cup.gif> {w}
+</ul>
+<p>By FV1. Thus <em>x <img src=not_in.gif> FV(G[u:=w])</em>
+or <em>x=w</em>.
+</p>
+<p><ul>
+<li>Sub-sub-case 1: <em>x=w</em></p>
+
+
+<ul>
+    FV(G[u:=w][x:=F]) = FV(G[u:=w][w:=F])
+<p>
+=    (FV(G[u:=w]) - w) <img src=cup.gif> FV(F)
+<p>
+=  (((FV(G)-{u}) <img src=cup.gif> {w}) - {w}) <img src=cup.gif> FV(F)
+
+</ul>
+<p>On the other hand </p>
+<ul>
+FV(E[x:=F]) =  FV(E[w:=F]) = FV(E)
+
+
+</ul>

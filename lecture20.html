@@ -1,0 +1,537 @@
+
+
+
+<html><head><title>
+
+Unification
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+
+     LECTURE 20 Unification: A Key Algorithm
+
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+
+
+
+<a href = "lecture20.html#representing">
+  1   Representing the Predicate Calculus in Scheme
+</a><br>
+
+<a href = "lecture20.html#clauses">
+  2   Representing clauses in Scheme.</a><br>
+<pre>
+      2.1   Distinguishing Variables from Constants
+</pre>
+
+<a href = "lecture20.html#unification">
+  3   Implementing the Unification Algorithm
+</a><br>
+
+<pre>
+      3.1   Binding variables to values; making frames
+      3.2   The function unify
+      3.3   The unify_var function unifies a variable with a term
+      3.4   Implementing the occurs check with freefor?
+      3.5   Examples of the use of unify
+</pre>
+<hr>
+<center>
+<em>Acknowledgement</em> <br>
+
+      Note that the Scheme code used in this lecture is drawn from <br>
+       the book "Structure and Interpretation of Computer Programs"<br>
+                           by Abelson and Sussman.                     <br>
+</center>
+<hr>
+
+
+<a name = "representing">
+<h2>1  Representing the Predicate Calculus in Scheme</h2></a>
+
+<p> In  the  propositional  calculus  we have  seen  that  we  can  perform
+inference using the resolution principle  of "cancelling out" positive  and
+negative literals occurring  in the same  clause. In this  lecture we  will
+develop the <em>Predicate Calculus</em> and extend the resolution principle
+to it by developing the <em>unification algorithm</em> to allow us to  find
+out the most general  conditions under which two  literals can be made  the
+same.
+
+<p>
+In the Predicate Calculus we replace the unstructured propositional  variables
+of the propositional calculus by <em>predicates</em>
+applied to <em>arguments</em>. A  predicate
+can be thought of as expressing a relation between its arguments. For  example
+using the standard notation:
+<pre>
+    loves(John,Mary)
+</pre>
+<p>
+expresses the fact that an individual, <b>John</b>, is enamoured of another
+individual, <b>Mary</b>.
+
+<p> As well as  constants such as the  aforementioned lovers, we need  <em>
+variables</em> which  are subject  to <em>quantifiers</em>.  The  universal
+quantifier, which I shall write  <tt>ForAll</tt> allows us to state  that a
+fact is true for  all individuals. Thus  it allows us  to express the  fact
+that all humans are mortal as:
+
+<pre>
+    ForAll x. human(x) -> mortal(x)
+</pre>
+
+<p> The effect of  the universal quantifier is  that we may substitute  any
+individual for x in the statement governed by the quantifier. For  example,
+we may substitute <tt>Socrates</tt>, obtaining:
+
+<pre>
+    human(Socrates) -> mortal(Socrates)
+</pre>
+
+<p>
+If we also know that <tt>Socrates</tt> is human, that is
+
+<pre>
+    human(Socrates)
+</pre>
+
+<p>
+we may infer, according to the rules of Propositional Logic, that
+<tt>Socrates</tt> is mortal:
+
+<pre>
+    mortal(Socrates)
+</pre>
+
+<p>
+Universal quantifiers are not enough of themselves to allow us to express  all
+the ideas necessary  for normal logical  discourse. To express  the fact  that
+everybody has a  mother, we may  use an <em>
+existential  quantifier</em> which I  shall
+write <tt>Exists</tt>. Thus we would write:
+
+<pre>
+    ForAll p.  Exists m. parent(m,p) & female(m)
+</pre>
+
+<p>
+The  Predicate  Calculus  as  described  above,  with  predicates,  constants,
+variables and quantifiers  is adequate  for logical discourse.  However it  is
+convenient to introduce <em>function
+symbols</em> as well. For example, one might  have
+a function <tt>mother</tt>
+for which <tt>mother(p)</tt> is understood to denote the mother of an
+individual <tt>p</tt>.
+
+<p>
+In fact, for the  formulation of logic  that is normally  used to support  the
+Logic Paradigm, we put our logical statements in a conjunctive normal form  in
+which all use of the  existential quantifier has been  replaced by the use  of
+function symbols, and in which the scope of each universal quantifier is  that
+of the clause  in which  it occurs. This  being so,  we are able  to drop  the
+explicit presence of universal quantifiers,  the understanding being that  all
+variables are implicitly quantified universally.
+
+<p>
+We can begin to see how we  might do resolution in the Predicate Calculus.  We
+represent the fact that all humans are mortal by
+
+
+<pre>
+     ~ human(x) \/ mortal(x)
+</pre>
+
+<p>
+and the fact that <tt>Socrates</tt> is human as before by
+
+<pre>
+    human(Socrates)
+</pre>
+
+Now we cannot immediately use  the propositional principle of resolution,  for
+<tt>human(x)</tt>
+is  not  the  same  as <tt> human(Socrates)</tt>.
+Thus  we  have  to  make a
+substitution of <tt>Socrates</tt>
+for <tt>x</tt> as we  did before. However, it is obvious  that
+this substitution will work;  indeed it is  so obvious that  we will write  an
+algorithm to find the best possible substitution for the circumstances, called
+the <em>unification algorithm</em>.
+
+
+<a name = "clauses">
+<h2>2  Representing clauses in Scheme.</h2>
+
+
+<p>
+However, it is desirable to  think about how we  can represent clauses in  the
+Scheme language so  that we  are not at  a loss  if we want  to implement  our
+algorithm.
+
+<p>
+The representation of clauses is quite straightforward. We can adopt the usual
+rule of Scheme that <tt>or</tt>
+is variadic - i.e. takes a variable number of arguments
+- and represent a  clause as <tt>(or
+l<sub>1</sub>....l<sub>n</sub>)</tt>  where <tt>l<sub>1</sub>...l<sub>n</sub></tt> are  literals. A
+literal is  a  predicate  applied  to  arguments,  possibly  negated.  So  the
+allowable forms of a literal are:
+
+<pre>
+       (p t<sub>1</sub>....t<sub>n</sub>)
+       (not (p t<sub>1</sub>....t<sub>n</sub>))
+</pre>
+
+<p> And the arguments are <em>terms</em> each of which may be a variable, a
+constant or a function-symbol applied to arguments. In the <em>first  order
+predicate calculus,</em> function and predicate variables are not allowed.
+
+<h3>2.1  Distinguishing Variables from Constants</h3>
+
+
+<p>
+The range  of possible  constants can  include Scheme  symbols, so  we  have a
+problem in  distinguishing  between a  symbol  acting  as a  constant  and  as
+variable, just as  we did in  Scheme itself. In  the logic paradigm,  however,
+rather than use quotation  to distinguish symbols acting  as constants, it  is
+more common to use some  other convention. In the  Lisp community it has  been
+common to use a prefixed question mark. In this implementation we will treat a
+variable as a list <tt>(? v )</tt> where <tt>v</tt>
+is (conventionally) a symbol.
+
+<pre><code>
+(define (var? e)
+    (and (pair? e) (eq? (car e) '?))
+    )
+</code></pre>
+
+<p>
+This means that any Scheme atom is a <em>constant</em>
+in our representation of logic:
+
+<pre><code>
+(define constant? atom?)
+</code></pre>
+
+<p>
+and we may use <tt>equal?</tt> to determine if two constants are the same:
+
+<pre><code>
+(define =_constant? equal?)
+</code></pre>
+
+
+
+
+<p>So, for example <em>mortal(Socrates)</em> gets encoded as
+<pre>
+    (or (mortal socrates))
+</pre>
+<p>while <em>ForAll x. mortal(x)->human(x)</em> gets encoded as
+
+<pre>
+    (or (not (mortal (? x))) (human (? x)))
+</pre>
+
+
+
+<a name = "unification">
+<h2>3  Implementing the Unification Algorithm</h2>
+
+
+
+<h3>3.1  Binding variables to values; making frames</h3>
+
+
+<p> To unify two terms <tt>t1</tt> and <tt>t2</tt> we must  <em>determining
+a mapping  f  from  variables to  constants  under  which</em>  <tt>f(t1) =
+f(t2)</tt>. We will refer to our representation of such a mapping as a <em>
+frame</em>. However let us take an  abstract approach, and suppose that  we
+have the following operations:
+
+<pre>
+make_binding      Makes a "binding" that is a pair associating
+                  a variable with a value.
+
+binding-in-frame  Finds a binding for a given variable in a frame
+
+binding-value     Extracts the value component of a binding.
+
+extend            Adds a new variable-value binding to a frame.
+</pre>
+
+<p>
+We may implement these operations using a-lists for frames as follows:
+
+<pre><code>
+(define make-binding cons)
+
+(define binding-in-frame assoc)
+
+(define binding-value cdr)
+
+(define (extend var val frame)
+    (cons (make-binding var val) frame))
+</code></pre>
+
+<h3>3.2  The function unify</h3>
+
+
+<p> To unify two  terms <tt>p1</tt> and <tt>p2</tt>  we write the  function
+<tt>unify</tt>. It  takes  3 arguments,  <tt>p1,  p2 frame</tt>.  Here  the
+<tt>frame</tt> serves the same  role as a frame  in the environment in  our
+Scheme interpreter - it remembers what variables have been bound to and  so
+avoids having to  perform excessive  substitution. However in  the case  of
+unification there  are  extra possibilities  that  have to  be  taken  into
+account
+
+<ul>
+<li>
+    Unification may not be possible. For example if we cannot unify 2 with 3
+    To deal with this possibility, we allow the frame to take the value
+    <tt>#f</tt>. This should be distinguished from the empty frame
+    <tt>'()</tt> which binds no
+    variables. For example we may unify 2 with 2, and the resulting frame is
+    <tt>'()</tt>. Note that here we are depending on the use of Scheme
+    being implemented to the IEEE standard in which the empty list and the
+    false truth value are distinct.
+<li>
+    Variables may be bound to variables. Thus <tt>(? x)</tt>
+    unifies with <tt>(? y)</tt> as
+    specified in the frame which we can think of as
+    <tt>( ((? x) . (? y))).</tt> but which will actually print as
+    <tt>( ((? x) ? y)).</tt>
+</ul>
+<p>
+So let  us  consider  the  unification function.  Essentially  there  are  the
+following cases to consider
+
+<ul>
+<li>
+[1] <tt>frame</tt>
+may be <tt>#f</tt>.
+This case  can arise because the unification has  already
+failed but the code has not yet checked that this had happened. Checking  here
+simplifies case [5] below. (As well as it being good practice to check for all
+types of values an argument can have)
+
+<li> [2] <tt>p1</tt> may  be a variable.  This case turns  out to be  quite
+complicated, since <tt>p1</tt> may actually be bound in the  <tt>frame</tt>
+and so is not free to be rebound. For example if we try to unify <tt>(+  (?
+x) (? x))</tt> with <tt>(+ 2 3)</tt> we will first
+ unify the  variable <tt>(?  x)</tt> with  <tt>2</tt> obtaining  the  frame
+<tt>(((? x) .  2))</tt>. Then  we will need  to unify  <tt>(? x)</tt>  with
+<tt>3</tt>. At this point the unification must fail. So we "pass the  buck"
+to an auxiliary function unify_var.
+
+
+<li> [3] <tt>p2</tt> may be  a variable. Again we call  <tt>unify_var</tt>,
+but with its  arguments reversed.  This means  that the  first argument  of
+<tt>unify_var</tt> is always guaranteed to  be a variable, simplifying  its
+implementation.
+
+<li> [4] If  <tt>p1</tt> is  a constant,  then <tt>p2</tt>  must also  be a
+constant, and it must be the <em>same</em> constant.
+
+<li> [5] If <tt>p2</tt> is a constant then <tt>p1</tt> could not have  been
+a constant, so unification fails.
+
+<li> [6] Otherwise  both <tt>p1</tt>  and <tt>p2</tt> must  be lists  which
+represent complex  terms  and  not variables.  So  we  call  <tt>unify</tt>
+recursively on the <tt>car</tt> and  <tt>cdr</tt> of both. However we  have
+to treat <tt>frame</tt> as a kind of  accumulator, in much the same way  as
+we needed an  accumulator when  we were  making a  list of  the nodes  of a
+ordered tree. So we  call <tt>unify</tt> on the  <tt>car</tt>'s of the  two
+terms [6.2]  obtaining a  new frame  which embodies  any variable  bindings
+necessary to  unify the  <tt>cdr</tt>'s, and  then we  pass this  frame  to
+another  call  of  <tt>unify</tt>  [6.1]   which  proceeds  to  unify   the
+<tt>cdr</tt>'s, keeping the unification  consistent with the bindings  made
+in the <tt>car</tt>'s. </ul>
+
+<pre><code>
+(define (unify p1 p2 frame)
+    (cond
+        ((eq? frame #f) #f)                             ;[1]
+        ((var? p1) (unify_var p1 p2 frame))             ;[2]
+        ((var? p2) (unify_var p2 p1 frame))             ;[3]
+        ((constant? p1)                                 ;[4]
+         (if (constant? p2)
+             (if (=_constant? p1 p2) frame #f)
+             #f))
+        ((constant? p2) #f)                             ;[5]
+        (else                                           ;[6]
+            (unify (cdr p1)                             ;[6.1]
+                (cdr p2)
+                (unify                                  ;[6.2]
+                    (car p1)
+                    (car p2)
+                    frame)))))
+</code></pre>
+
+<h3>3.3  The unify_var function unifies a variable with a term</h3>
+
+<p> Now
+we  come  to  the definition  of  <tt>unify_var</tt>.  There  is a
+subtlety here that needs to be dealt with. What happens if we try to  unify
+a variable with a term that <em>already contains the variable</em>. Suppose
+we want  to  unify  a variable  <tt>(?  x)</tt>  with the  term  <tt>(f  (?
+x))</tt>; we can  only do this  if we systematically  replace the  variable
+<tt>(? x)</tt> with <tt>(f (?  x))</tt> everywhere in our terms,  including
+<em>inside</em> the term <tt>(f (? x))</tt>. But this involves an  infinite
+amount of work generating an infinite  term. This kind of thing can  happen
+if we try to unify:
+
+<pre>
+    (g (? x) (f (? x)))
+    (g (? y) (? y))
+</pre>
+
+<p> Standard logic does not allow  such a circular substitution to  happen,
+and so  we have  to put  an <em>occurs  check</em> into  <tt>unify_var</tt>
+which makes sure that we  do not unify a variable  with a term in which  it
+occurs. [It should be noted that the best known computer language based  on
+the Logic Paradigm, Prolog, does not perform the occurs check because it is
+computationally expensive].
+
+<p> So let us  now consider the  definition of <tt>unify_var</tt>.  Firstly
+[1] we have to  allow for the possiblity  that <tt>val</tt> is a  variable,
+and indeed is the same variable as <tt>var</tt>. In this case,  unification
+is trivial with the existing <tt>frame</tt> [1.1].
+
+<p> Otherwise we find the value-cell for  the value of the variable in  the
+<tt>frame</tt> [2].
+
+<p> If  [3]  it  does not  exist,  then  we may  bind  <tt>var</tt>  to  be
+<tt>val</tt> in a new frame made by <tt>extend</tt> [3.2]. However this  is
+only legal if the "occurs-check" implemented by <tt>freefor?</tt>  succeeds
+[3.1] - otherwise unification fails [3.3].
+
+<p>
+If [4] the variable <tt>var</tt> <em>was</em>
+bound in  the <tt>frame</tt>, then we call <tt>unify</tt> to see  if
+the value of <tt>var</tt> in <tt>frame</tt> and <tt>val</tt> can be unified.
+
+
+<pre><code>
+(define (unify_var var val frame)
+    (if (equal? var val)                                    ;[1]
+        frame                                               ;[1.1]
+        (let ((value-cell (binding-in-frame var frame)))    ;[2]
+            (if (not value-cell)                            ;[3]
+                (if (freefor? var val frame)                ;[3.1]
+                    (extend var val frame)                  ;[3.2]
+                    #f)                                     ;[3.3]
+                (unify (binding-value value-cell)           ;[4]
+                    val
+                    frame)))))
+</code></pre>
+
+<h3>3.4  Implementing the occurs check with freefor?</h3>
+
+
+<p>
+Finally let us  look at  <tt>freefor?</tt>.
+We write  this with  an internal  recursive
+function <tt>freewalk</tt>
+to save  us the trouble of  passing more than one  argument.
+So, we are  asking, is  <tt>exp</tt>
+free  of occurrences  of <tt>var</tt>?  We recurse  through
+<tt>freewalk</tt>,
+examining the various possible types of the expression <tt>e</tt>.
+
+<ul>
+
+<li> [1] If <tt>e</tt> is a  constant, then <tt>var</tt> does not occur  in
+it!
+
+<li> [2]  If  <tt>e</tt>  is  a  variable, and  is  the  same  variable  as
+<tt>var</tt> then
+         [2.1]  <tt>var</tt>  does  occur  in  <tt>e</tt>,  so  we   return
+<tt>#f</tt>. Othewise, we  look up <tt>e</tt>  in <tt>frame</tt> [2.2].  If
+<tt>e</tt> is  not bound,  then  we conclude  that  <tt>e</tt> is  free  of
+<tt>var</tt>, so we return <tt>#t</tt> [2.3]. If it is bound, then we  look
+to see if <tt>var</tt>  occurs in the value  to which <tt>e</tt> was  bound
+[2.4].
+
+<li> [3] Otherwise <tt>e</tt> must be a complex term, so we look to see  if
+the <tt>car</tt>  of <tt>e</tt>  is free  of <tt>var</tt>.  If it  is,  the
+<tt>cdr</tt> of <tt>e</tt> must also be free of <tt>e</tt>.
+
+<li> [4]  Finally, if <tt>(car e)</tt>
+was not free of <tt>var</tt> then <tt>e</tt> itself
+is not free of <tt>var</tt>.
+</ul>
+
+<pre><code>
+(define (freefor? var exp frame)
+    (letrec
+        (
+         (freewalk
+             (lambda (e)
+                 (cond
+                     ((constant? e) #t)                            ;[1]
+                     ((var? e)                                     ;[2]
+                      (if (equal? var e) #f                        ;[2.1]
+                          (let ((b (binding-in-frame e frame)))    ;[2.2]
+                              (if (not b) #t                       ;[2.3]
+                                  (freewalk (binding-value b)))))) ;[2.4]
+                     ( (freewalk (car e)) (freewalk (cdr e)))      ;[3]
+                     (else #f))                                    ;[4]
+                 )  ;end lambda
+             ) ; end freewalk binding
+         ) ;end letrec bindings
+        (freewalk exp)
+        ) ;end letrec
+    )
+</code></pre>
+
+<h3>3.5  Examples of the use of unify</h3>
+
+
+<p>
+And here are some examples of the use of <tt>unify</tt>
+and associated functions.
+
+<pre><code>
+(example
+    '(freefor? '(? x) '(f (? x)) '())
+    #f)
+(example
+    '(unify 'Liz 'Phil '())
+    #f)
+(example
+    '(unify '(+ a b) '(+ a b) '())
+    '())
+(example
+    '(unify '(+ a 2) '(+ a b) '())
+    #f)
+(example
+    '(unify '(+ (? a) 4) '(+ b 4) '())
+    '(((? a) . b)))
+(example
+    '(unify '(+ (? a) (? a)) '(+ b b) '())
+    '(((? a) . b)))
+(example
+    '(unify '(+ (? a) (? a)) '(+ 4 3) '())
+    #f)
+(example
+    '(unify '(+ (? a) 7) '(+ 4 (? b)) '())
+    '(((? b) . 7) ((? a) . 4)))
+(example
+    '(unify '(+ (? a) 4 ) '(+ 5 (? b)) '())
+    '(((? b) . 4) ((? a) . 5))
+    )
+</code></pre>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+
+
+<html><head><title>
+     Lecture 6  Procedural and Data Abstraction: Object Orientation
+</title></head>
+<BODY bgcolor = "white">
+
+
+<h1>
+    Course 287: Lecture 6  Procedural and Data Abstraction: Object
+Orientation
+</h1>
+
+<hr>
+
+<hr>
+<h4> Abelson and Sussman </h4>
+
+Chapter 1 of Abelson and Sussman is entitled "<em>Building Abstractions
+with Procedures</em>".
+
+Chapter 2 of Abelson and Sussman is entitled "<em>Building Abstractions
+with Data</em>".
+
+We shall discuss many of the ideas covered in these chapters during the
+course, but not in exactly the same order.
+
+You will find a discussion of <em>Data Abstraction</em> in section 2.1 of
+Ableson and Sussmann (p83 ff.) See also section 1.1.8 <em> Procedures as
+Black Box Abstractions</em> (p26 ff.).
+
+<hr>
+<h2><a name = "abstract">The need for abstraction</a></h2>
+
+
+<p>  In  abstraction  we  <em>draw  out</em>  (from  the  Latin  verb  <em>
+traho</em> I pull (c.f. <em>tractor</em>), and the preposition  <em>ab</em>
+meaning "from" or "away from") an essential aspect of an idea, allowing  it
+to be applied to more than the particular set of circumstances in which  we
+first encountered it. We have already seen this at work when we  considered
+the <tt>sum</tt> function and abstracted  it to obtain the  <tt>reduce</tt>
+function.
+
+
+<p> An important  principle in the  design of computational  systems is  to
+provide a measure of <em> isolation  of the implementation of a  capability
+from its  users</em>.  Thus a  user  is required  to  employ some  kind  of
+standard <em>interface</em> in accessing a capability. In doing this we are
+<em>abstracting</em> the <em>essence</em> of the capability from the  point
+of view of its users.
+
+<p> For example, in computer hardware, a standard <em>bus</em> such as  the
+VME bus can  be used to  connect modules. In  operating systems, access  to
+backing store is mediated via system-calls.
+
+<p>
+This isolation offers  two primary advantages:
+<UL>
+
+<p> <em> The implementation  can be improved  or changed without  affecting
+how it is used</em>. Provided the  user adheres to the standard  interface,
+(s)he need not alter how (s)he uses the capability.
+
+<p>
+    Thus for example, in hardware, a larger memory module can be plugged into
+    the standard bus and can be immediately usable. In operating systems, a
+    file system local to a particular machine can be replaced by a distributed
+    file system with minimal disruption to users.
+
+
+<p> <em>Safety features can be built into the implementation</em>.
+    Generally it is true
+    that not all states of a resource are legal. For example, in an operating
+    system, each block on the disc should either belong to one named file, or
+    should be known to be free. Ensuring that this remains true can remain the
+    responsibility of the operating system (OS) provided that the user only
+    accesses the disc via the <em>abstraction</em> that the OS provides,
+    namely the file.
+</UL>
+
+<p>
+Sometimes a mechanism is provided  to <em>police</em> the safety  features.
+For example  in the  Unix operating  system, it  is impossible  for a  user
+program to issue an input-output  instruction to access the disc  directly.
+Any such instruction will be  <em>trapped</em> by the machine hardware  and
+referred to the <em>kernel</em> of  the OS. On the  other hand, in the  DOS
+operating system, there is no such protection, so that correct usage of the
+disc is dependent on programmer discipline.
+
+<p>
+Likewise, in the  Scheme language,  any access  to the  machine's store  is
+mediated by the <tt>car</tt>,<tt>cdr</tt> and <tt>cons</tt> functions. This
+prevents certain  kinds of  illegality from  occurring. For  example it  is
+impossible in  a Scheme  system for  a piece  of store  to be  regarded  as
+<em>free</em> when in fact it forms part of a user's data-structure.
+
+<p>
+By contrast, in the C language, the user has free access to her entire virtual
+machine, so that it is possible for a piece of store to be used in two
+contradictory ways by a single program.
+
+<p>
+However there is often a <em>performance penalty</em> associated with using
+a standard  interface.  During the  evolution  of computer  hardware,  many
+bus-standards have become obsolete as technology has advanced. For example,
+memory is  now supplied  as SIMM's  which plug  directly into  a  processor
+board.
+
+Likewise the writers of computer  games are notorious for employing  direct
+access to graphics hardware, rather than employing the standard  interface,
+in order to achieve the necessary speed.
+
+<p>
+Likewise,  the  use  of  the  <tt>car</tt>,<tt>cdr</tt>  and  <tt>cons</tt>
+functions in Scheme may carry a performance penalty compared with the  more
+direct access offered  by C.  Not all  storage configurations  that can  be
+created by  C can  be created  by Scheme.  Moreover the  storage  integrity
+demanded by Scheme  can require  that these  primitive functions  perform a
+check that the <tt>car</tt> and <tt>cdr</tt> functions are being applied to
+lists. The issue of efficiency is a complex one, and does not always  imply
+that languages  like Scheme  are more  inefficient than  C, especially  for
+large programs.
+
+
+So

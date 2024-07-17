@@ -1,0 +1,487 @@
+
+
+<html><head><title>
+     Lecture 8 Writing Functions that Create Parsers
+</title></head>
+
+<BODY bgcolor = "white">
+
+
+<h1>
+    Course 287: Lecture 8  Writing Functions that Create Parsers
+</h1>
+
+<hr>
+
+
+
+<!-- L:parsers --> <a href = "lecture8.html#makers">
+    Making parser-building functions</a><br>
+
+<!-- L:higher-order functions --> <a href = "lecture8.html#higher_order">
+How can we understand functions which return functions as results?</a><br>
+
+<HR>
+<h4> Functions Defined in this Lecture.</h4>
+
+<!-- mk_builder --><a href = "lecture8.html#mk_builder">
+<tt>(mk_builder label)</tt></a> makes a builder for abstract syntax<br>
+
+<!-- mk_parser_singleton --><a href="lecture8.html#mk_parser_singleton">
+    <tt>(mk_parser_singleton toks)</tt> </a> makes a parser to recognise
+    1-element sequences <br>
+
+
+<!-- mk_parser_seq --> <a href = "lecture8.html#mk_parser_seq">
+<tt>(mk_parser_seq p1 p2 b)</tt></a>
+combines two parsers in sequence<br>
+
+<HR>
+
+<h4> Abelson &amp; Sussman </h4>
+As I mentioned in the previous lecture, starting
+on  page 420 you will find a discussion of parsing in the imperative
+paradigm rather than the pure functional form used in this lecture.
+
+You will find a discussion of <em> Procedures as Returned Values </em>
+starting at page 72.
+
+<HR>
+
+<!-- ----------------------------------------------------------------- -->
+
+
+<a name="makers">  </a>
+
+<h2>Making parser-building functions</h2>
+
+<p> When  we  built  the parser  for  English  in the  last  lecture,  we
+duplicated the  text of  basic functions,  making systematic  replacements.
+This suggests that  we have  the option of  saving ourselves  some work  by
+generalising  in  the  much  the  same  way  as  we  did  when  we  created
+<tt>map_list</tt> in lecture 4 and <tt>reduce</tt> in lecture 5.
+
+<p>
+What we  really want  is a  function for  making parsers,  that is  to  say, a
+function which will  take the  some grammatical specifications  and give  us a
+parser to match those specifications.  However <em>parsers are
+functions</em>. We  have
+already seen in  lecture 4  how a  function can be  passed as  an argument  to
+another function, but we  will now need to  define a function which  returns a
+function as value.
+
+Consider:
+
+<pre><code>
+(define parse_determiner
+    (lambda (list_of_tokens)
+        (if (member? (car list_of_tokens) '(a the))    ; (1) determiner there?
+            (cons_parse                                ; (2) yes! make parse
+                (car list_of_tokens)                   ; (3) tree
+                (cdr list_of_tokens))                  ; (4) unparsed list
+            #f ) ))                                    ; (5) fail
+</code></pre>
+
+
+<pre><code>
+(define parse_noun
+    (lambda (list_of_tokens)
+        (if (member? (car list_of_tokens) noun)
+            (cons_parse (car list_of_tokens) (cdr list_of_tokens))
+            #f ) ))
+</code></pre>
+
+
+<p>
+These differ in one  place - <tt>parse_determiner</tt>  has the list
+<tt>'(a the)</tt>
+where <tt> parse_noun </tt>&#160; has the non-local variable
+<tt>  noun
+</tt>. If we wanted  to generalise, we should  create a function  that
+takes a  list of  objects and  returns a  <em>parser</em> which recognises
+sequences beginning  with that  list. We  have seen  that we  must  write a
+function that returns  as value a  function. We  can do this  using a  <tt>
+lambda </tt>&#160; expression.
+
+<p> The nature of the generalisation is to go from defining a parser  which
+recognises that  a  sequence of  tokens  begins with  a  <em>noun</em>,  to
+defining a parser which  recognises that a sequence  of tokens begins  with
+<em>any one of a given class of words</em> (for example nouns, prepositions
+adjectives...). To do this we will  need to replace the non-local  variable
+<tt> noun </tt>&#160; by a variable which is an argument of a function.  The
+resulting parser-maker will  create a  parser which  recognises a  sequence
+beginning with a token  which is any  one of a given  list, which we  shall
+call "<tt> class_of_tokens </tt>&#160;".
+
+<a name = "mk_parser_singleton"></a>
+<h3><tt>mk_parser_singleton</tt> makes a parser for 1-element
+sequences</h3>
+
+<p> So,  here  is  the  function, which  I  call  <tt>  mk_parser_singleton
+</tt>&#160; because calling it makes a parser for a language consisting of a
+finite set of sequences of tokens of length one.
+
+<p>
+Here (1) the argument of  <tt> mk_parser_singleton </tt>&#160; is a  "class"
+of tokens,  represented by  a  list (for  example <tt>'(a  the)</tt>).  The
+result will be a parser which recognises a <b>determiner</b>.
+
+<p> And  (2) this  function returns  a <tt>  lambda </tt>&#160;  expression,
+which is a parser for the language. So, having checked whether the
+input-list is null (3)the
+parser looks (4) to see if  the
+first element in the list of tokens is a member of the class of tokens.
+
+If it is, then (5) it makes a parse-record, consisting (6) of the first
+element of the list (being trivially a parse-tree specifying what was
+found) and (7) the remaining elements of the list (being what is left
+unparsed).
+
+If (8) the first element of the list of tokens is not a member of the class
+of tokens, then the function returns <tt>#f</tt> to indicate failure.
+
+
+<pre><code>
+(define mk_parser_singleton
+    (lambda (class_of_tokens)                       ; (1)
+        (lambda (list_of_tokens)                    ; (2)
+            (cond
+                (( null? list_of_tokens) #f)        ; (3)
+                ((member? (car list_of_tokens)      ; (4)
+                    class_of_tokens)
+                 (cons_parse                        ; (5)
+                     (car list_of_tokens)           ; (6)
+                     (cdr list_of_tokens))          ; (7)
+                 )
+                (else #f ) ))                       ; (8)
+        ))
+</code></pre>
+
+
+
+<p>
+We will need the definition of <tt> member? </tt>&#160; from Lecture 5:
+
+<pre><code>
+(define (member? x list)
+     (if (null? list) #f
+         (if (equal? x (car list)) #t
+              (member? x (cdr list)))))
+</code></pre>
+
+
+<p>
+If we are using  UMASS Scheme we  can define a record  class for parses  as
+follows:
+
+
+<pre><code>
+(define class_parse (record-class 'parse '(full full)))
+
+(define cons_parse   (car class_parse))
+(define sel_parse    (caddr class_parse))
+(define tree_parse   (car sel_parse))
+(define rest_parse   (cadr sel_parse))
+</code></pre>
+
+<p>
+What <tt>  mk_parser_singleton  </tt>&#160; does  then  is return  the  <tt>
+lambda </tt>&#160;-expression:
+
+<pre><code>
+(lambda (list_of_tokens)
+    (if (<tt> member? </tt>&#160; (car list_of_tokens) class_of_tokens)
+        (cons_parse (car list_of_tokens) (cdr list_of_tokens))
+        #f ) )
+</code></pre>
+
+<p> but this is  just the same  as the body  of <tt> parse_noun  </tt>&#160;
+with <tt> noun </tt>&#160; replaced by <tt> class_of_tokens </tt>. Note that
+UMASS Scheme, not  being an  interpreter, actually  creates a  machine-code
+block which is equivalent to the <tt> lambda </tt>&#160;-expression above.
+
+<pre><code>
+    (mk_parser_singleton '(cat dog canary))
+</code></pre>
+
+<p>
+prints out as follows:
+
+<pre>
+    &lt;Compiled function: &lt;lambda in mk_parser_singleton > >
+</pre>
+
+<p>
+Here again is the body of <tt> parse_noun </tt>&#160;:
+
+<pre><code>
+    (lambda(list_of_tokens)
+    (if (member? (car list_of_tokens) noun) list_of_tokens
+        #f ) ))
+</code></pre>
+
+<p>
+We can now  use our  new function  to redo  some of  our previous  grammatical
+definitions more succinctly:
+
+<pre><code>
+(define parse_noun
+   (mk_parser_singleton '(cat dog child woman man bone cabbage canary)))
+</code></pre>
+
+<pre><code>
+(example '(parse_noun '(the fat)) #f)
+(example '(parse_noun '(cat eats))
+    (cons_parse 'cat '(eats)))
+</code></pre>
+
+
+<pre><code>
+(define parse_determiner
+   (mk_parser_singleton '(a the)))
+</code></pre>
+
+<pre><code>
+(define parse_verb
+    (mk_parser_singleton '(likes eats hugs)))
+</code></pre>
+
+
+
+<p>
+Now, using this new definition to make <tt> parse_noun </tt>&#160;,
+
+<pre><code>
+(define parse_noun
+   (mk_parser_singleton '(cat dog child woman man bone cabbage canary)))
+</code></pre>
+
+<pre><code>
+(define parse_determiner
+   (mk_parser_singleton '(a the)))
+</code></pre>
+
+<pre><code>
+(define parse_verb
+    (mk_parser_singleton '(likes eats hugs)))
+</code></pre>
+
+
+
+
+<p>
+we will find that:
+
+
+<pre><code>
+(example '(parse_noun '(the fat)) #f)
+(example '(parse_noun '(cat eats))
+    (cons_parse 'cat '(eats)))
+(example '(parse_noun '()) #f)
+</code></pre>
+
+<h2><a name = "higher_order">
+How can we understand functions which return functions as results?
+</a></h2>
+
+<p> We  can  understand  what  happens using  the  substitution  model  for
+evaluation of Scheme.  When we do  <tt>(mk_parser_singleton '(a  the))</tt>
+substitute <tt>'(a  the)</tt> for  <tt> class_of_tokens  </tt>&#160; in  the
+body of <tt> mk_parser_singleton </tt>&#160;, obtaining:
+
+<pre><code>
+    (lambda (list_of_tokens)
+      (if (member? (car list_of_tokens) '(a the))
+             (cons_parse
+                 (car list_of_tokens)
+                 (cdr list_of_tokens))
+        #f ) )
+</code></pre>
+
+<p> This  is  then  made  to be  the  value  of  <tt>parse_determiner</tt>.
+Likewise, when we create the parser <tt> parse_noun </tt>&#160; we  obtain a
+distinct <tt>  lambda </tt>&#160;  expression. This  model is  adequate  for
+understanding Scheme as a functional language.
+
+<p> Warning:  this will  work fine  in Scheme.  It will  not work  in  most
+programming languages, which  either do not  allow functions/procedures  to
+return functions/procedures as results,  or, if (like C)  they do, they  do
+not handle the free variables correctly.
+
+<hr>
+<a name = "mk_parser_seq"> </a>
+<h2>Combining two parsers sequentially.</h2>
+<hr>
+<h3><tt>mk_parser_seq</tt></h3>
+
+<p>
+Now our  other kind  of parsing  involved combining  two existing  parsers  to
+obtain a  new parser  which used  the first  existing parser  to recognise  an
+initial  subsequence,  and  the  second  existing  parser  to  recognise  what
+remained. We  can also  write a  function which  is a  generalisation of  this
+process:
+
+<p>
+Recall our definition of <tt> parse_sentence </tt>&#160;:
+
+<pre><code>
+
+(define parse_sentence                                       ;(1)
+    (lambda(list_of_tokens)                                  ;(2)
+        (let ((p1 (parse_noun_phrase list_of_tokens)))       ;(3) **
+            (if p1                                           ;(4)
+                (let ((p2 (parse_verb_phrase                 ;(5) **
+                             (rest_parse p1))))              ;(6)
+                    (if p2                                   ;(7)
+                        (cons_parse                          ;(8)
+                            (list 'sentence                  ;(9)  **
+                                (tree_parse p1)              ;(10)
+                                (tree_parse p2))             ;(11)
+                            (rest_parse p2)                  ;(12)
+                            )                                ;(13)
+                        #f)                                  ;(14)
+                    ) ;end let                               ;(15)
+                #f)                                          ;(16)
+            );end let                                        ;(17)
+        ); end lambda                                        ;(18)
+    ); end def. parse_sentence                               ;(19)
+
+</code></pre>
+
+<p>
+This  function can be generalised by making the two parsers
+<tt>parse_noun_phrase</tt> [line (3) above] and
+<tt>parse_verb_phrase</tt> [line (5) above]  be parameters of
+a new function. However it is also necessary to generalise on the
+building of parse-tree that is implemented starting at line (9). Clearly,
+we could generalise on <tt>'sentence</tt>, by making it a parameter in
+which is passed the name of the grammatical structure that has been
+recognised. However we can obtain greater generality by passing in a
+<em>builder</em> function, which will create a <em> semantically
+appropriate</em> representation. The need for this is seen if we consider a
+fragment of a grammar for a language like Pascal.
+
+<pre>
+    <b> expression -> term</b> + <b>expression </b>
+</pre>
+
+The tree we would want to build to represent an <b>expression</b> such as
+<tt> 2+3 </tt> would probably be something like <tt>'(+ 2 3)</tt>,
+precisely because in writing a compiler it is important to have immediate
+access to the <em> operation </em> involved, in this case <tt>"+"</tt>.
+So, in building abstract syntax (a parse tree), we should not be slavishly
+stuck to the order in which constructs appear in the external syntax.
+
+<p>
+Thus, we can define <tt>mk_parser_seq</tt> as (1) taking two parsers
+<tt>parser_1</tt> and <tt>parser_2</tt> as parameters, together with a
+<em>parse-tree builder</em> <tt>build_parse</tt>.
+
+
+<pre><code>
+
+(define mk_parser_seq
+    (lambda (parser_1 parser_2 build_parse)           ;(1)
+        (lambda (list_of_tokens)                      ;(2)
+            (let ((p1 (parser_1 list_of_tokens)))     ;(3)
+                (if p1                                ;(4)
+                    (let ((p2 (parser_2               ;(5)
+                                 (rest_parse p1))))   ;(6)
+                        (if p2                        ;(7)
+                            (cons_parse               ;(8)
+                                (build_parse          ;(9)
+                                    (tree_parse p1)   ;(10)
+                                    (tree_parse p2))  ;(11)
+                                (rest_parse p2)       ;(12)
+                                )                     ;(13)
+                            #f)                       ;(14)
+                        ) ;end let                    ;(15)
+                    #f)                               ;(16)
+                );end let                             ;(17)
+            ); end lambda                             ;(18)
+        ); end lambda                                 ;(19)
+    ); end def. mk_parser_seq                         ;(20)
+
+
+
+</code></pre>
+
+<a name = "mk_builder">
+<h3> <tt> mk_builder</tt> helps build the abstract syntax tree.</h3>
+
+<p> Given <tt>  mk_parser_seq </tt>&#160; we  are almost ready  to redo  our
+entire grammar. We do however need a utility function to build our abstract
+syntax - this will be passed as the <tt> build_parse </tt>&#160; argument of
+<tt> mk_parser_seq </tt>&#160;.
+
+
+<pre><code>
+(define (mk_builder label)
+   (lambda l (cons label l))
+)
+</code></pre>
+
+<p>
+Now we can redefine our parsers in two lines of Scheme each.
+
+<pre><code>
+(define parse_noun_phrase
+        (mk_parser_seq
+            parse_determiner
+            parse_noun
+            (mk_builder 'noun_phrase)))
+
+(define parse_verb_phrase
+        (mk_parser_seq
+            parse_verb
+            parse_noun_phrase
+            (mk_builder 'verb_phrase)))
+
+(define parse_sentence
+        (mk_parser_seq
+            parse_noun_phrase
+            parse_verb_phrase
+            (mk_builder 'sentence)))
+</code></pre>
+
+<p>
+Let us test our our new sentence parser:
+
+
+<pre><code>
+(example
+    '(parse_sentence '(the cat eats the canary))
+    (cons_parse
+        '(sentence (noun_phrase the cat)        ; parse-tree
+            (verb_phrase eats
+                (noun_phrase the canary)))       ; end of parse-tree
+        '()                                      ; unparsed
+        )                                        ; end of parse
+    )
+</code></pre>
+
+
+
+<p> If we give  it a non-sentence like  <tt>'(canary the cat eats)</tt>  we
+get:
+
+<pre><code>
+(example
+    '(parse_sentence '(canary the cat eats))
+    #f)
+</code></pre>
+
+
+<h4> Error Reporting - An exercise for the reader</h4>
+
+Suppose we have an actual user for our parser-makers. That person is soon
+going to come back saying "These parsers are making my customers unhappy,
+since if they are given an ungrammatical sentence they just fail, giving no
+indication of what's wrong". As an exercise, you could adapt the
+parser-making  functions above always to return a parse-record that
+contains a status report component, <tt>#t</tt> or <tt>#f</tt>. If the
+status is
+<tt>#f</tt>, then the <tt>rest_parse</tt> component of the parse-record
+contains the unparsed text at the place in which the error was detected.
+Moreover, another new component will contain a list of the possible tokens
+that the parser <em>would </em> have accepted as a legal continuation.

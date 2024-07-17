@@ -1,0 +1,38 @@
+
+Discussion Section 23 SEP 98
+
+These problems are to be done in groups.
+
+Each group should prepare answers to all 3 problems. At 10:40 each
+group will give its answer to a "grading group", and will receive
+an answer from another group. The answer should be graded out
+of 10.  At 10:50 the graded papers will be given back.
+
+
+
+
+
+
+(1) Write a Scheme function "product" to multiply the members of a list.
+
+(product '(3 4 5)) ==> 60
+
+[3 marks]
+
+(2) Write a Scheme function  "last" to find the last member of a list.
+
+(last '(4 5 6))          ==> 6
+
+(last '(11 23 44 55))    ==> 55
+
+[3 marks]
+
+(3) Write a Scheme function  "alternate" which takes a list as argument
+and returns a new list which contains every alternate member of the first
+list.
+
+(alternate '(4 5 6 7 8))  ==> (4 6 8)
+
+(alternate '(11 22 33 44))  ==> (11 33)
+
+[4 marks]

@@ -1,0 +1,6244 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 54 72 558 720
+%%Creator: Mozilla (NetScape) HTML->PS
+%%DocumentData: Clean7Bit
+%%Orientation: Portrait
+%%Pages: 12
+%%PageOrder: Ascend
+%%Title: Substitution, Free and Bound Variables
+%%EndComments
+%%BeginProlog
+[ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /.notdef /.notdef /space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright
+ /parenleft /parenright /asterisk /plus /comma /hyphen /period /slash /zero /one
+ /two /three /four /five /six /seven /eight /nine /colon /semicolon
+ /less /equal /greater /question /at /A /B /C /D /E
+ /F /G /H /I /J /K /L /M /N /O
+ /P /Q /R /S /T /U /V /W /X /Y
+ /Z /bracketleft /backslash /bracketright /asciicircum /underscore /quoteleft /a /b /c
+ /d /e /f /g /h /i /j /k /l /m
+ /n /o /p /q /r /s /t /u /v /w
+ /x /y /z /braceleft /bar /braceright /asciitilde /.notdef /.notdef /.notdef
+ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /space /exclamdown /cent /sterling /currency /yen /brokenbar /section /dieresis /copyright
+ /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron /degree /plusminus /twosuperior /threesuperior
+ /acute /mu /paragraph /periodcentered /cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf
+ /threequarters /questiondown /Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla
+ /Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis /Eth /Ntilde
+ /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply /Oslash /Ugrave /Uacute /Ucircumflex
+ /Udieresis /Yacute /Thorn /germandbls /agrave /aacute /acircumflex /atilde /adieresis /aring
+ /ae /ccedilla /egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis
+ /eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide /oslash /ugrave
+ /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis] /isolatin1encoding exch def
+/c { matrix currentmatrix currentpoint translate
+     3 1 roll scale newpath 0 0 1 0 360 arc setmatrix } bind def
+/F0
+    /Times-Roman findfont
+    dup length dict begin
+	{1 index /FID ne {def} {pop pop} ifelse} forall
+	/Encoding isolatin1encoding def
+    currentdict end
+definefont pop
+/f0 { /F0 findfont exch scalefont setfont } bind def
+/F1
+    /Times-Bold findfont
+    dup length dict begin
+	{1 index /FID ne {def} {pop pop} ifelse} forall
+	/Encoding isolatin1encoding def
+    currentdict end
+definefont pop
+/f1 { /F1 findfont exch scalefont setfont } bind def
+/F2
+    /Times-Italic findfont
+    dup length dict begin
+	{1 index /FID ne {def} {pop pop} ifelse} forall
+	/Encoding isolatin1encoding def
+    currentdict end
+definefont pop
+/f2 { /F2 findfont exch scalefont setfont } bind def
+/F3
+    /Times-BoldItalic findfont
+    dup length dict begin
+	{1 index /FID ne {def} {pop pop} ifelse} forall
+	/Encoding isolatin1encoding def
+    currentdict end
+definefont pop
+/f3 { /F3 findfont exch scalefont setfont } bind def
+/F4
+    /Courier findfont
+    dup length dict begin
+	{1 index /FID ne {def} {pop pop} ifelse} forall
+	/Encoding isolatin1encoding def
+    currentdict end
+definefont pop
+/f4 { /F4 findfont exch scalefont setfont } bind def
+/F5
+    /Courier-Bold findfont
+    dup length dict begin
+	{1 index /FID ne {def} {pop pop} ifelse} forall
+	/Encoding isolatin1encoding def
+    currentdict end
+definefont pop
+/f5 { /F5 findfont exch scalefont setfont } bind def
+/F6
+    /Courier-Oblique findfont
+    dup length dict begin
+	{1 index /FID ne {def} {pop pop} ifelse} forall
+	/Encoding isolatin1encoding def
+    currentdict end
+definefont pop
+/f6 { /F6 findfont exch scalefont setfont } bind def
+/F7
+    /Courier-BoldOblique findfont
+    dup length dict begin
+	{1 index /FID ne {def} {pop pop} ifelse} forall
+	/Encoding isolatin1encoding def
+    currentdict end
+definefont pop
+/f7 { /F7 findfont exch scalefont setfont } bind def
+/rhc {
+    {
+        currentfile read {
+	    dup 97 ge
+		{ 87 sub true exit }
+		{ dup 48 ge { 48 sub true exit } { pop } ifelse }
+	    ifelse
+	} {
+	    false
+	    exit
+	} ifelse
+    } loop
+} bind def
+
+/cvgray { % xtra_char npix cvgray - (string npix long)
+    dup string
+    0
+    {
+	rhc { cvr 4.784 mul } { exit } ifelse
+	rhc { cvr 9.392 mul } { exit } ifelse
+	rhc { cvr 1.824 mul } { exit } ifelse
+	add add cvi 3 copy put pop
+	1 add
+	dup 3 index ge { exit } if
+    } loop
+    pop
+    3 -1 roll 0 ne { rhc { pop } if } if
+    exch pop
+} bind def
+
+/smartimage12rgb { % w h b [matrix] smartimage12rgb -
+    /colorimage where {
+	pop
+	{ currentfile rowdata readhexstring pop }
+	false 3
+	colorimage
+    } {
+	exch pop 8 exch
+	3 index 12 mul 8 mod 0 ne { 1 } { 0 } ifelse
+	4 index
+	6 2 roll
+	{ 2 copy cvgray }
+	image
+	pop pop
+    } ifelse
+} def
+/cshow { dup stringwidth pop 2 div neg 0 rmoveto show } bind def
+/rshow { dup stringwidth pop neg 0 rmoveto show } bind def
+%%EndProlog
+%%Page: 1 1
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+134 697.5 moveto
+24 f1
+(Computer Science 591i) show
+45.3 669.9 moveto
+24 f1
+(Substitution, Free and Bound Variables ) show
+0 644.9 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+0 614.1 moveto
+12 f0
+(In the last lecture we introduced the ) show
+gsave
+/rowdata 12 string def
+174.9 614.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+180.5 614.1 moveto
+12 f0
+(-calculus as providing not only theoretical characterisation of) show
+0 600.8 moveto
+12 f0
+(computation but as being the basis a rigorous characterisation of a class of programming languages) show
+0 587.5 moveto
+12 f0
+(called ) show
+33.3 587.5 moveto
+12 f2
+(functional programming languages) show
+203.3 587.5 moveto
+12 f0
+(. It was, we alleged, the case that it is possible to verify) show
+0 574.2 moveto
+12 f0
+(programs written in such languages in a simple way related to ordinary mathematical proof. ) show
+0 547.6 moveto
+12 f0
+(We can make our understanding of the role of the ) show
+gsave
+/rowdata 12 string def
+241.2 547.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+246.8 547.6 moveto
+12 f0
+(-calculus more precise as follows: ) show
+18.1 525.1 moveto
+3.3 3.3 c  fill 
+28 521 moveto
+12 f0
+(A ) show
+40.5 521 moveto
+12 f2
+(program) show
+82.5 521 moveto
+12 f0
+( is an expression ) show
+165.1 521 moveto
+12 f2
+(E) show
+173.4 516.6 moveto
+10 f2
+(prg) show
+187.2 521 moveto
+12 f0
+(, say, of the ) show
+gsave
+/rowdata 12 string def
+245.8 521 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+251.4 521 moveto
+12 f0
+(-calculus ) show
+18.1 507.9 moveto
+3.3 3.3 c  fill 
+28 503.8 moveto
+12 f0
+(A ) show
+39.6 503.8 moveto
+12 f2
+(data-set) show
+78.4 503.8 moveto
+12 f0
+( is also an expression ) show
+183.3 503.8 moveto
+12 f2
+(E) show
+190.9 499.4 moveto
+10 f2
+(data) show
+208.6 503.8 moveto
+12 f0
+( of the ) show
+gsave
+/rowdata 12 string def
+242.2 503.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+247.8 503.8 moveto
+12 f0
+(-calculus. ) show
+18.1 490.7 moveto
+3.3 3.3 c  fill 
+28.1 486.6 moveto
+12 f2
+(Running ) show
+71.7 486.6 moveto
+12 f0
+(a program ) show
+123.6 486.6 moveto
+12 f2
+(E) show
+131.9 482.2 moveto
+10 f2
+(prg) show
+145.7 486.6 moveto
+12 f0
+( with a given data-set ) show
+251.3 486.6 moveto
+12 f2
+(E) show
+258.9 482.2 moveto
+10 f2
+(data) show
+276.6 486.6 moveto
+12 f0
+( corresponds to forming the application) show
+28 469.4 moveto
+12 f2
+(E) show
+36.3 465 moveto
+10 f2
+(prg) show
+50.1 469.4 moveto
+12 f2
+(E) show
+57.7 465 moveto
+10 f2
+(data) show
+75.4 469.4 moveto
+12 f0
+( and then using ) show
+151.3 469.4 moveto
+12 f2
+(reduction rules) show
+224.2 469.4 moveto
+12 f0
+( to transform that application into a simple form that can) show
+28 452.2 moveto
+12 f0
+(reasonably be considered as the result of the computation. We gave a preliminary definition of) show
+28 438.9 moveto
+12 f0
+(beta-reduction, and mentioned delta-reduction as "working out" applications involving constants. ) show
+0 412.3 moveto
+12 f0
+(Thus, from the ) show
+gsave
+/rowdata 12 string def
+73.9 412.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+79.5 412.3 moveto
+12 f0
+(-calculus perspective, there is no essential distinction between program and data - it is) show
+0 399 moveto
+12 f0
+(only a matter of point of view. ) show
+0 372.4 moveto
+12 f0
+(This means in particular that if we want to ) show
+207.2 372.4 moveto
+12 f2
+(prove) show
+234.5 372.4 moveto
+12 f0
+( that a program is correct, then we must prove that the) show
+0 359.1 moveto
+12 f0
+(corresponding ) show
+gsave
+/rowdata 12 string def
+71.6 359.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+77.2 359.1 moveto
+12 f0
+(-calculus expression has a particular property.) show
+0 332.5 moveto
+12 f0
+(In this lecture we will develop these ideas further. ) show
+0 323.4 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+18.1 296.7 moveto
+3.3 3.3 c  fill 
+28 292.6 moveto
+12 f0
+(We will make our definition of beta-reduction ) show
+252.2 292.6 moveto
+12 f0
+(precise enough to be programmed) show
+415.4 292.6 moveto
+12 f0
+(.) show
+18.1 270.1 moveto
+3.3 3.3 c  fill 
+28 266 moveto
+12 f0
+(We have characterised computation as "applying reduction rules" to an expression of the) show
+gsave
+/rowdata 12 string def
+28 252.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+33.6 252.7 moveto
+12 f0
+(-calculus. But a given expression may present several ) show
+293.8 252.7 moveto
+12 f0
+(opportunities) show
+357.1 252.7 moveto
+12 f0
+( for applying reduction rules) show
+28 239.4 moveto
+12 f0
+(in different places. To find out how to ensure that the result of a computation is uniquely defined,) show
+28 226.1 moveto
+12 f0
+(we study ) show
+73.9 226.1 moveto
+12 f0
+(normal forms) show
+138.8 226.1 moveto
+12 f0
+( and normal-order reduction.) show
+18.1 203.6 moveto
+3.3 3.3 c  fill 
+28 199.5 moveto
+12 f0
+(The essential basis of our proving programs "correct" is to show that two apparently different) show
+28 186.2 moveto
+12 f0
+(expressions ) show
+86.9 186.2 moveto
+12 f2
+(E) show
+94.5 181.8 moveto
+10 f2
+(1) show
+99.5 186.2 moveto
+12 f0
+( and ) show
+122.8 186.2 moveto
+12 f2
+(E) show
+130.4 181.8 moveto
+10 f2
+(2) show
+135.4 186.2 moveto
+12 f0
+( of the ) show
+gsave
+/rowdata 12 string def
+169 186.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+174.6 186.2 moveto
+12 f0
+(-calculus always "give the same result" when applied to any) show
+28 169 moveto
+12 f0
+(data-expression. In practice we have to qualify "always" to "always when in certain specified) show
+28 155.7 moveto
+12 f0
+(circumstances". For example we may say that the abstractions ) show
+gsave
+/rowdata 12 string def
+328.8 155.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+334.4 155.7 moveto
+12 f2
+( x . \(+ 5 x\)) show
+385.1 155.7 moveto
+12 f0
+( and ) show
+gsave
+/rowdata 12 string def
+408.4 155.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+414 155.7 moveto
+12 f2
+( x. \(+ x 5\) ) show
+464.7 155.7 moveto
+12 f0
+(always) show
+28 142.4 moveto
+12 f0
+(give the same result when applied to an integer. ) show
+18.1 133.2 moveto
+3.3 3.3 c  fill 
+28 129.1 moveto
+12 f0
+(An essential issue we have to tackle is "what do we mean by equality in the ) show
+gsave
+/rowdata 12 string def
+393.5 129.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+399.1 129.1 moveto
+12 f0
+(-calculus?". We) show
+28 115.8 moveto
+12 f0
+(would like, say, to regard ) show
+gsave
+/rowdata 12 string def
+152.9 115.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+158.5 115.8 moveto
+12 f2
+( x . \(+ 5 x\)) show
+209.2 115.8 moveto
+12 f0
+( and ) show
+gsave
+/rowdata 12 string def
+232.5 115.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+238.1 115.8 moveto
+12 f2
+( y . \(+ 5 y\)) show
+288.8 115.8 moveto
+12 f0
+( as being equal - to be able to write, with a) show
+28 102.5 moveto
+12 f0
+(good conscience,) show
+gsave
+/rowdata 12 string def
+56 75.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+61.6 75.9 moveto
+12 f0
+( x . \(+ 5 x\) = ) show
+gsave
+/rowdata 12 string def
+125.1 75.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+130.7 75.9 moveto
+12 f0
+( y . \(+ 5 y\) ) show
+pagelevel restore
+showpage
+%%Page: 2 2
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+28 697.3 moveto
+12 f0
+(is a great convenience, because it means that we can harness a whole load of mathematical) show
+28 684 moveto
+12 f0
+(expectations about equality to our understanding of program-verification. ) show
+0 661.6 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+0 630.8 moveto
+12 f0
+(For example, suppose we want to prove that a sorting function that we have written, say ) show
+425.2 630.8 moveto
+10 f4
+(merge_sort) show
+485.2 630.8 moveto
+12 f0
+(, is) show
+0 617.5 moveto
+12 f0
+(correct. Then, within the rigorous functional-paradigm, ) show
+268.2 617.5 moveto
+10 f4
+(merge_sort) show
+328.2 617.5 moveto
+12 f0
+( should be exactly equivalent to an) show
+0 604.2 moveto
+12 f0
+(expression of the ) show
+gsave
+/rowdata 12 string def
+84.9 604.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+90.5 604.2 moveto
+12 f0
+(-calculus. What does it mean to say that ) show
+284.8 604.2 moveto
+10 f4
+(merge_sort) show
+344.8 604.2 moveto
+12 f0
+( is correct? There are two) show
+0 590.9 moveto
+12 f0
+(criteria: ) show
+18.1 568.4 moveto
+3.3 3.3 c  fill 
+28 564.3 moveto
+12 f0
+(For any list ) show
+85.6 564.3 moveto
+10 f4
+(l) show
+91.6 564.3 moveto
+12 f0
+( of data \(possibly a list satisfying some criterion that is part of the specification of) show
+28 551 moveto
+10 f4
+(merge_sort) show
+88 551 moveto
+12 f0
+(\) the result of evaluating ) show
+28 527.1 moveto
+10 f4
+(        \(merge_sort l\) ) show
+28 503.4 moveto
+12 f0
+(is sorted. How do we render this English requirement into a formalism? Well it's fairly easy to) show
+28 490.1 moveto
+12 f0
+(write a function ) show
+106.9 490.1 moveto
+10 f4
+(sorted) show
+142.9 490.1 moveto
+12 f0
+( that determines if a list ) show
+258.8 490.1 moveto
+12 f2
+(is) show
+266.8 490.1 moveto
+12 f0
+( sorted - a list is sorted if it is empty, or contains) show
+28 476.8 moveto
+12 f0
+(one element, or if the first two elements are in order and tail of the list \(everything but the first) show
+28 463.5 moveto
+12 f0
+(element\) is sorted. So our requirement can be expressed as ) show
+28 439.6 moveto
+10 f4
+(     ) show
+gsave
+/rowdata 12 string def
+58 439.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+63.6 439.6 moveto
+10 f4
+( l .\(sorted \(merge_sort l\)\) =) show
+28 429.1 moveto
+10 f4
+(     ) show
+gsave
+/rowdata 12 string def
+58 429.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+63.6 429.1 moveto
+10 f4
+( l . true) show
+18.1 409.5 moveto
+3.3 3.3 c  fill 
+28 405.4 moveto
+12 f0
+(The other requirement is that ) show
+170.3 405.4 moveto
+10 f4
+(\(merge_sort l\)) show
+254.3 405.4 moveto
+12 f0
+( contain exactly the same elements as ) show
+437.2 405.4 moveto
+10 f4
+(l) show
+443.2 405.4 moveto
+12 f0
+( itself. ) show
+0 383 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+0 352.2 moveto
+12 f0
+(In order to understand how to implement software that can reliably support proof of facts like these we) show
+0 335.6 moveto
+12 f0
+(need to characterise ) show
+98.2 335.6 moveto
+12 f2
+(exactly) show
+132.1 335.6 moveto
+12 f0
+( many important aspects of the ) show
+gsave
+/rowdata 12 string def
+282.7 335.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+288.3 335.6 moveto
+12 f0
+(-calculus. Let's start by defining) show
+gsave
+/rowdata 35 string def
+0 319 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+16.1 319 moveto
+12 f0
+(-reduction so precisely that we can write a program to implement it. ) show
+0 286.3 moveto
+18 f1
+(Conversion, Reduction and Abstraction) show
+0 252.3 moveto
+12 f0
+(Previously we defined ) show
+gsave
+/rowdata 35 string def
+110.3 255.1 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+129.2 252.3 moveto
+12 f0
+(-reduction) show
+178.5 252.3 moveto
+12 f0
+( in terms of substituting an argument given to an abstraction for the) show
+0 239 moveto
+12 f0
+(variable of the abstraction in the body of the abstraction, or, symbolically, ) show
+28 211.9 moveto
+12 f0
+(\() show
+gsave
+/rowdata 12 string def
+31.9 211.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+37.5 211.9 moveto
+12 f0
+( ) show
+40.5 211.9 moveto
+12 f1
+(x.E) show
+57.5 207.3 moveto
+10 f1
+(1) show
+62.5 211.9 moveto
+12 f0
+(\)) show
+66.4 211.9 moveto
+12 f1
+(E) show
+74.4 207.3 moveto
+10 f1
+(2) show
+79.4 211.9 moveto
+12 f0
+( ) show
+gsave
+/rowdata 44 string def
+82.4 211.9 translate
+20.3 8.4 scale
+29 12 4 [29 0 0 -12 0 12]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+fffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff000000fffffffff
+ffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+fffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000fffffffffffffff0000000000000000000000000000000000000000000000000000
+000000000000000000000000fffffffff000ffffff0000fffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff000000ffffffffffff0000000000000ffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff000ffffffffffff000fff0000000000fffffffffffffff
+fffffffffffffffffffffffffffffffffffffff000fffffffffffffff000ffffff0000000ffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000ffffff000
+0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+000000000fff0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fff000fffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffff000fffffffffffffff0
+grestore
+102.7 211.9 moveto
+12 f0
+( ) show
+105.7 211.9 moveto
+12 f1
+(E) show
+113.7 207.3 moveto
+10 f1
+(1) show
+118.7 211.9 moveto
+12 f0
+([) show
+122.6 211.9 moveto
+12 f1
+(x) show
+128.6 211.9 moveto
+12 f0
+(:=E) show
+146 207.5 moveto
+10 f0
+(2) show
+151 211.9 moveto
+12 f0
+(] ) show
+0 181.2 moveto
+12 f0
+(So, for example ) show
+28 154.6 moveto
+12 f0
+(\(\() show
+gsave
+/rowdata 12 string def
+35.9 154.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+41.5 154.6 moveto
+12 f0
+( x . * x 7\) 22\) ) show
+gsave
+/rowdata 44 string def
+109.4 154.6 translate
+20.3 8.4 scale
+29 12 4 [29 0 0 -12 0 12]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+fffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff000000fffffffff
+ffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+fffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000fffffffffffffff0000000000000000000000000000000000000000000000000000
+000000000000000000000000fffffffff000ffffff0000fffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff000000ffffffffffff0000000000000ffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff000ffffffffffff000fff0000000000fffffffffffffff
+fffffffffffffffffffffffffffffffffffffff000fffffffffffffff000ffffff0000000ffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000ffffff000
+0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+000000000fff0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fff000fffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffff000fffffffffffffff0
+grestore
+129.7 154.6 moveto
+12 f0
+( \(* 22 7\) ) show
+0 124.7 moveto
+12 f0
+(Now we'd like to think of ) show
+gsave
+/rowdata 35 string def
+127.3 124.7 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+143.4 124.7 moveto
+12 f0
+( reduction as leaving the expression \() show
+gsave
+/rowdata 12 string def
+322 124.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+327.6 124.7 moveto
+12 f0
+( ) show
+330.6 124.7 moveto
+12 f1
+(x.E) show
+347.6 120.1 moveto
+10 f1
+(1) show
+352.6 124.7 moveto
+12 f0
+(\)) show
+356.5 124.7 moveto
+12 f1
+(E) show
+364.5 120.1 moveto
+10 f1
+(2) show
+369.5 124.7 moveto
+12 f0
+( unchanged \(or in other) show
+0 107.3 moveto
+12 f0
+(words, the reduced form "means the same thing" as the original. Indeed, in the example above, we) show
+0 94 moveto
+12 f0
+(would like to claim that the expression ) show
+188.9 94 moveto
+10 f4
+(\(sorted \(merge_sort l\)\)) show
+326.9 94 moveto
+12 f0
+( means the same thing as the) show
+0 77.4 moveto
+12 f0
+(expression ) show
+54.3 77.4 moveto
+10 f4
+(true) show
+78.3 77.4 moveto
+12 f0
+(. So, we are interested in the inverse operation to ) show
+gsave
+/rowdata 35 string def
+315.5 77.4 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+331.6 77.4 moveto
+12 f0
+(reduction, which we'll call) show
+pagelevel restore
+showpage
+%%Page: 3 3
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+gsave
+/rowdata 35 string def
+0 705.9 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+16.1 705.9 moveto
+12 f0
+(abstraction. We'll write the arrow the other way round to indicate abstraction. ) show
+28 679.3 moveto
+12 f0
+(\(\() show
+gsave
+/rowdata 12 string def
+35.9 679.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+41.5 679.3 moveto
+12 f0
+( x . * x 7\) 22\) <-- \(* 22 7\) ) show
+0 649.4 moveto
+12 f0
+(Finally, if we consider transformation in both directions, we'll refer to this as ) show
+gsave
+/rowdata 35 string def
+373.6 649.4 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+389.7 649.4 moveto
+12 f0
+(-conversion. For) show
+0 636.1 moveto
+12 f0
+(example: ) show
+28 609.5 moveto
+12 f0
+(\(\() show
+gsave
+/rowdata 12 string def
+35.9 609.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+41.5 609.5 moveto
+12 f0
+( x . * x 7\) 22\) ) show
+gsave
+/rowdata 39 string def
+109.4 609.5 translate
+18.2 5.6 scale
+26 8 4 [26 0 0 -8 0 8]
+ smartimage12rgb
+fffffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+ffffff000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000000ffffff
+ffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000ffffff
+000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000fff
+000000000000000000000000000000000000000000000000000000000000000000000000000000
+fff000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000fff
+ffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000ffffff
+fffffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+grestore
+127.6 609.5 moveto
+12 f0
+( \(* 22 7\) ) show
+0 582.9 moveto
+12 f0
+(Or we could just as well write: ) show
+28 556.3 moveto
+12 f0
+(\(* 22 7\) ) show
+gsave
+/rowdata 39 string def
+68.9 556.3 translate
+18.2 5.6 scale
+26 8 4 [26 0 0 -8 0 8]
+ smartimage12rgb
+fffffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+ffffff000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000000ffffff
+ffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000ffffff
+000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000fff
+000000000000000000000000000000000000000000000000000000000000000000000000000000
+fff000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000fff
+ffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000ffffff
+fffffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+grestore
+87.1 556.3 moveto
+12 f0
+( \(\() show
+gsave
+/rowdata 12 string def
+98 556.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+103.6 556.3 moveto
+12 f0
+( x . * x 7\) 22\) ) show
+0 526.4 moveto
+12 f0
+(Since we'll meet other reduction and conversion rules, if we need to emphasise that the ) show
+gsave
+/rowdata 35 string def
+421.9 526.4 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+438 526.4 moveto
+12 f0
+(-rule is) show
+0 509.8 moveto
+12 f0
+(involved we'll subscript the arrow with a ) show
+gsave
+/rowdata 35 string def
+200.3 509.8 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+216.4 509.8 moveto
+12 f0
+(. ) show
+0 477.1 moveto
+18 f1
+(Bound and Free variables) show
+0 445.9 moveto
+12 f0
+(When we defined ) show
+gsave
+/rowdata 35 string def
+87.6 445.9 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+103.7 445.9 moveto
+12 f0
+(-reduction, we were not very precise about what we meant by substitution. Now is) show
+0 432.6 moveto
+12 f0
+(the time to remedy this, ) show
+0 406 moveto
+12 f0
+(First we need to define the idea of a ) show
+174.9 406 moveto
+12 f2
+(bound variable) show
+247.8 406 moveto
+12 f0
+(. This is essential to giving a precise sense to the) show
+0 392.7 moveto
+12 f2
+(scope) show
+27.3 392.7 moveto
+12 f0
+( of a variable, and thereby being able to avoid confusing what are essentially two different) show
+0 379.4 moveto
+12 f0
+(variables which happen to have the same name. ) show
+0 370.3 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+0 339 moveto
+12 f1
+(Bound and Free Occurences of a Variable) show
+0 312.4 moveto
+12 f0
+(An expression ) show
+71.9 312.4 moveto
+12 f2
+(E) show
+79.5 308 moveto
+10 f2
+(1) show
+84.5 312.4 moveto
+12 f0
+( is said to ) show
+133.1 312.4 moveto
+12 f2
+(occur) show
+160.7 312.4 moveto
+12 f0
+( in an expression ) show
+244.6 312.4 moveto
+12 f2
+(E) show
+252.2 308 moveto
+10 f2
+(2) show
+257.2 312.4 moveto
+12 f0
+( if it is a sub-expression of ) show
+387.5 312.4 moveto
+12 f2
+(E) show
+395.1 308 moveto
+10 f2
+(2) show
+400.1 312.4 moveto
+12 f0
+(. There can be) show
+0 295.2 moveto
+12 f0
+(several occurrences of ) show
+110.2 295.2 moveto
+12 f2
+(E) show
+117.8 290.8 moveto
+10 f2
+(1) show
+122.8 295.2 moveto
+12 f0
+( in ) show
+138.1 295.2 moveto
+12 f2
+(E) show
+145.7 290.8 moveto
+10 f2
+(2) show
+150.7 295.2 moveto
+12 f0
+(. Note that if ) show
+214.3 295.2 moveto
+12 f2
+(E) show
+221.9 290.8 moveto
+10 f2
+(1) show
+226.9 295.2 moveto
+12 f0
+( is a variable ) show
+290.8 295.2 moveto
+12 f2
+(v) show
+296.1 295.2 moveto
+12 f0
+(, say, then if ) show
+358 295.2 moveto
+12 f2
+(v) show
+363.3 295.2 moveto
+12 f0
+( is the variable bound in a) show
+gsave
+/rowdata 12 string def
+0 278 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+5.6 278 moveto
+12 f0
+(-abstraction, this does not constitute an occurrences. For example ) show
+322.5 278 moveto
+12 f2
+(v) show
+327.8 278 moveto
+12 f0
+( does not occur in ) show
+416.1 278 moveto
+12 f2
+(\() show
+gsave
+/rowdata 12 string def
+420 278 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+425.6 278 moveto
+12 f2
+( v. 2\)) show
+449.9 278 moveto
+12 f0
+(, while ) show
+485.8 278 moveto
+12 f2
+(x) show
+0 260.8 moveto
+12 f0
+(has two occurrences in ) show
+112.6 260.8 moveto
+12 f2
+(\(+ x x\)) show
+145.3 260.8 moveto
+12 f0
+(. ) show
+0 234.2 moveto
+12 f0
+(Let ) show
+18.9 234.2 moveto
+12 f2
+(E) show
+26.5 234.2 moveto
+12 f0
+( be an expression of the ) show
+gsave
+/rowdata 12 string def
+143.1 234.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+148.7 234.2 moveto
+12 f0
+(-calculus, and let ) show
+233.3 234.2 moveto
+12 f2
+(v) show
+238.6 234.2 moveto
+12 f0
+( be a variable. We say that an occurrence of ) show
+451.5 234.2 moveto
+12 f2
+(v) show
+456.8 234.2 moveto
+12 f0
+( in ) show
+472.1 234.2 moveto
+12 f2
+(E) show
+479.7 234.2 moveto
+12 f0
+( is) show
+0 220.9 moveto
+12 f2
+(bound) show
+30.3 220.9 moveto
+12 f0
+( if it is inside a sub-expression of ) show
+192.2 220.9 moveto
+12 f2
+(E) show
+199.8 220.9 moveto
+12 f0
+( of the form ) show
+gsave
+/rowdata 12 string def
+259.7 220.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+265.3 220.9 moveto
+12 f2
+( v.E) show
+284.2 216.5 moveto
+10 f2
+(2) show
+289.2 220.9 moveto
+12 f0
+(. An occurrence is said to be ) show
+430.1 220.9 moveto
+12 f2
+(free) show
+448.7 220.9 moveto
+12 f0
+( otherwise.) show
+0 203.7 moveto
+12 f0
+(Thus ) show
+27 203.7 moveto
+12 f2
+(v) show
+32.3 203.7 moveto
+12 f0
+( occurs bound in ) show
+gsave
+/rowdata 12 string def
+114.9 203.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+120.5 203.7 moveto
+12 f2
+( v. x v) show
+148.4 203.7 moveto
+12 f0
+( and in ) show
+184 203.7 moveto
+12 f2
+(\(y ) show
+gsave
+/rowdata 12 string def
+196.3 203.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+201.9 203.7 moveto
+12 f2
+( v. v\)) show
+225.5 203.7 moveto
+12 f0
+( but it occurs free in ) show
+gsave
+/rowdata 12 string def
+324.8 203.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+330.4 203.7 moveto
+12 f2
+( x. v x) show
+358.4 203.7 moveto
+12 f0
+(. ) show
+0 177.1 moveto
+12 f0
+(Note that we are speaking of an ) show
+154.9 177.1 moveto
+12 f2
+(occurrence) show
+208.8 177.1 moveto
+12 f0
+( of a variable as being bound - a variable can occur both) show
+0 163.8 moveto
+12 f0
+(bound and free in a given expression. For example, in ) show
+261.2 163.8 moveto
+12 f2
+(v ) show
+gsave
+/rowdata 12 string def
+269.5 163.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+275.1 163.8 moveto
+12 f2
+( v. v) show
+294.7 163.8 moveto
+12 f0
+(, the first occurrence of ) show
+409.3 163.8 moveto
+12 f2
+(v) show
+414.6 163.8 moveto
+12 f0
+( is free, and the) show
+0 150.5 moveto
+12 f0
+(last is bound. ) show
+0 123.4 moveto
+12 f1
+(The FV function finds the free variables of an expression) show
+0 96.8 moveto
+12 f0
+(In order to define substitution we will need to be able to operate on the ) show
+342.9 96.8 moveto
+12 f2
+(set of free variables of an) show
+0 83.5 moveto
+12 f2
+(expression) show
+51.3 83.5 moveto
+12 f0
+(. ) show
+pagelevel restore
+showpage
+%%Page: 4 4
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+0 704.9 moveto
+12 f0
+(We can define a function ) show
+123.6 704.9 moveto
+12 f2
+(FV) show
+139.1 704.9 moveto
+12 f0
+( which forms the free-variables of an expression as: ) show
+0 678.3 moveto
+12 f0
+(FV1 ) show
+28 678.3 moveto
+12 f2
+(FV\(v\) = {v}) show
+85 678.3 moveto
+12 f0
+( for a variable ) show
+154.9 678.3 moveto
+12 f2
+(v) show
+0 665 moveto
+12 f0
+(FV2 ) show
+28 665 moveto
+12 f2
+(FV\(c\) = {}) show
+79.6 665 moveto
+12 f0
+( for a constant ) show
+150.9 665 moveto
+12 f2
+(c) show
+0 651.7 moveto
+12 f0
+(FV3 ) show
+28 651.7 moveto
+12 f2
+(FV\(E) show
+54.2 647.3 moveto
+10 f2
+(1) show
+59.2 651.7 moveto
+12 f2
+(E) show
+66.8 647.3 moveto
+10 f2
+(2) show
+71.8 651.7 moveto
+12 f2
+(\) = FV\(E) show
+116.1 647.3 moveto
+10 f2
+(1) show
+121.1 651.7 moveto
+12 f2
+(\) ) show
+gsave
+/rowdata 12 string def
+128 651.7 translate
+5.6 6.3 scale
+8 9 4 [8 0 0 -9 0 9]
+ smartimage12rgb
+000ffffffffffffffffff000000ffffffffffffffffff000000ffffffffffffffffff000000fff
+fffffffffffffff000000ffffffffffffffffff000000ffffffffffffffffff000000fffffffff
+fffffffff000000fffffffffffffff000000fff000000000000000000fff
+grestore
+133.6 651.7 moveto
+12 f2
+( FV\(E) show
+162.8 647.3 moveto
+10 f2
+(2) show
+167.8 651.7 moveto
+12 f2
+(\)) show
+171.7 651.7 moveto
+12 f0
+( ) show
+0 634.5 moveto
+12 f0
+(FV4 ) show
+28 634.5 moveto
+12 f2
+(FV\() show
+gsave
+/rowdata 12 string def
+46.6 634.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+52.2 634.5 moveto
+12 f2
+( v .E\) = FV\(E\) - {v}) show
+0 607.9 moveto
+12 f0
+(Here FV1 says that the set of free variables of an expression that consists of a single variable is the set) show
+0 594.6 moveto
+12 f0
+(consisting of just that variable, while FV2 says that the set of free variables of a constant expression is) show
+0 581.3 moveto
+12 f0
+(empty. FV3 says that the free variables of an application ) show
+274.2 581.3 moveto
+12 f2
+(E) show
+281.8 576.9 moveto
+10 f2
+(1) show
+286.8 581.3 moveto
+12 f2
+(E) show
+294.4 576.9 moveto
+10 f2
+(2) show
+299.4 581.3 moveto
+12 f0
+( is the union of the free variables of the) show
+0 564.1 moveto
+12 f0
+(two expressions ) show
+79.9 564.1 moveto
+12 f2
+(E) show
+87.5 559.7 moveto
+10 f2
+(1) show
+92.5 564.1 moveto
+12 f0
+( and ) show
+115.8 564.1 moveto
+12 f2
+(E) show
+123.4 559.7 moveto
+10 f2
+(2) show
+128.4 564.1 moveto
+12 f0
+(, while FV4 says that the set of free variables of a ) show
+gsave
+/rowdata 12 string def
+369.3 564.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+374.9 564.1 moveto
+12 f0
+(-abstraction is the set of) show
+0 546.9 moveto
+12 f0
+(free variables of its body minus the variable bound by the abstraction. ) show
+0 520.3 moveto
+12 f0
+(For example ) show
+63.3 520.3 moveto
+12 f2
+(FV \(') show
+gsave
+/rowdata 12 string def
+88.9 520.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+94.5 520.3 moveto
+12 f2
+( x. \(f x y\)'\) = {f,y}) show
+180.1 520.3 moveto
+12 f0
+( ) show
+0 493.7 moveto
+12 f0
+(An expression ) show
+71.9 493.7 moveto
+12 f2
+(E) show
+79.5 493.7 moveto
+12 f0
+( is said to be ) show
+142.5 493.7 moveto
+12 f2
+(closed) show
+173.4 493.7 moveto
+12 f0
+( if it has no free variables, i.e. ) show
+319 493.7 moveto
+12 f2
+(FV\(E\) = {}) show
+372.6 493.7 moveto
+12 f0
+(. ) show
+gsave
+/rowdata 18 string def
+0 464.8 translate
+8.4 6.3 scale
+12 9 4 [12 0 0 -9 0 9]
+ smartimage12rgb
+ffffffffffff000000000cccfffffffffffffffffffff000000fffccc000ffffffccc000ffffff
+000ffffffffffff000000fff000cccfff000333fffffffffffffff000fff333fffccc000000fff
+ffffffffffff000000fffffffff000ffffffffffffffffff000000fffffffff000ffffffffffff
+fff000000ffffffffffff000000fffffffff000333000ffffffffffffccc333333000333000fff
+000000333fff
+grestore
+8.4 464.8 moveto
+14 f1
+(-conversion) show
+0 437.8 moveto
+12 f0
+(It is clear that the variable used in a ) show
+gsave
+/rowdata 12 string def
+173.6 437.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+179.2 437.8 moveto
+12 f0
+(-abstraction ought to be regarded as arbitrary. Thus ) show
+gsave
+/rowdata 12 string def
+428.1 437.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+433.7 437.8 moveto
+12 f2
+( x. + x 2) show
+473.4 437.8 moveto
+12 f0
+( and ) show
+gsave
+/rowdata 12 string def
+496.7 437.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+0.2 424.5 moveto
+12 f2
+(y. + y 2) show
+36.9 424.5 moveto
+12 f0
+( are, intuitively, the same function. ) show
+0 397.9 moveto
+12 f0
+(There is indeed a rule of the ) show
+gsave
+/rowdata 12 string def
+137.6 397.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+143.2 397.9 moveto
+12 f0
+( calculus, called ) show
+gsave
+/rowdata 18 string def
+223.1 397.9 translate
+8.4 6.3 scale
+12 9 4 [12 0 0 -9 0 9]
+ smartimage12rgb
+ffffffffffff000000000cccfffffffffffffffffffff000000fffccc000ffffffccc000ffffff
+000ffffffffffff000000fff000cccfff000333fffffffffffffff000fff333fffccc000000fff
+ffffffffffff000000fffffffff000ffffffffffffffffff000000fffffffff000ffffffffffff
+fff000000ffffffffffff000000fffffffff000333000ffffffffffffccc333333000333000fff
+000000333fff
+grestore
+231.5 397.9 moveto
+12 f0
+(-conversion, which allows the above to expressions to) show
+0 384.6 moveto
+12 f0
+(be treated as equivalent. It is a little tricky however, since one does ) show
+324.9 384.6 moveto
+12 f2
+(not) show
+340.4 384.6 moveto
+12 f0
+( want to convert ) show
+gsave
+/rowdata 12 string def
+421 384.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+426.6 384.6 moveto
+12 f2
+( x. y x) show
+454.6 384.6 moveto
+12 f0
+( to ) show
+gsave
+/rowdata 12 string def
+469.9 384.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+475.5 384.6 moveto
+12 f2
+( y. y y) show
+0 371.3 moveto
+12 f0
+(- the rule is that we may only replace the variable bound in a ) show
+gsave
+/rowdata 12 string def
+293.9 371.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+299.5 371.3 moveto
+12 f0
+(-abstraction by one that does not occur) show
+0 358 moveto
+12 f0
+(free in the body. The ) show
+gsave
+/rowdata 18 string def
+103.3 358 translate
+8.4 6.3 scale
+12 9 4 [12 0 0 -9 0 9]
+ smartimage12rgb
+ffffffffffff000000000cccfffffffffffffffffffff000000fffccc000ffffffccc000ffffff
+000ffffffffffff000000fff000cccfff000333fffffffffffffff000fff333fffccc000000fff
+ffffffffffff000000fffffffff000ffffffffffffffffff000000fffffffff000ffffffffffff
+fff000000ffffffffffff000000fffffffff000333000ffffffffffffccc333333000333000fff
+000000333fff
+grestore
+111.7 358 moveto
+12 f0
+( conversion rule is thus: ) show
+gsave
+/rowdata 12 string def
+28 331.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+33.6 331.4 moveto
+12 f0
+( x.E ) show
+gsave
+/rowdata 45 string def
+55.9 331.4 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+76.9 331.4 moveto
+12 f0
+( ) show
+gsave
+/rowdata 12 string def
+79.9 331.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+85.5 331.4 moveto
+12 f0
+( y.E) show
+0 304.8 moveto
+12 f0
+(provided ) show
+28 278.2 moveto
+12 f0
+(y ) show
+gsave
+/rowdata 14 string def
+37 278.2 translate
+6.3 9.8 scale
+9 14 4 [9 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff0000000fffffffffffffffffffff000fff0ffffffffffffffffff000
+000fff0ffffff000000000000000000fff0fff000000ffffff000000ffffff0000000fffffffff
+000fffffffff0000fffffffff000000fffffffff0000000000000000000000000fff0000ffffff
+000000ffffffffffff0000000fff000fffffffffffffff0fff000000000fffffffffffffff0fff
+fff000000000000000000fff0fff000000ffffffffffffffffff0fff000ffffffffffffffffff
+fff0
+grestore
+43.3 278.2 moveto
+12 f0
+( FV\(E\)) show
+0 255.8 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+0 224.5 moveto
+12 f1
+(The Pitfalls of Substitution) show
+0 197.9 moveto
+12 f0
+(Now let's return to the problem of defining substitution. ) show
+0 171.3 moveto
+12 f0
+(Consider for example: ) show
+28 144.7 moveto
+12 f0
+(\(\() show
+gsave
+/rowdata 12 string def
+35.9 144.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+41.5 144.7 moveto
+12 f0
+( x. + x \() show
+gsave
+/rowdata 12 string def
+79.2 144.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+84.8 144.7 moveto
+12 f0
+( x.\(+ x 5\) 4\) 3\) ) show
+0 118.1 moveto
+12 f0
+(clearly we shouldn't substitute 3 for ) show
+176.2 118.1 moveto
+12 f2
+(x) show
+181.5 118.1 moveto
+12 f0
+( in the ) show
+214.5 118.1 moveto
+12 f2
+(inner) show
+240.1 118.1 moveto
+12 f0
+( ) show
+gsave
+/rowdata 12 string def
+243.1 118.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+248.7 118.1 moveto
+12 f0
+(-abstraction, since that is essentially a different ) show
+477.6 118.1 moveto
+12 f2
+(x) show
+482.9 118.1 moveto
+12 f0
+( -) show
+0 104.8 moveto
+12 f0
+(the outer ) show
+45.6 104.8 moveto
+12 f2
+(x) show
+50.9 104.8 moveto
+12 f0
+( is out-of-scope in the inner ) show
+gsave
+/rowdata 12 string def
+186.2 104.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+191.8 104.8 moveto
+12 f0
+(-abstraction. So our beta-reduction is ) show
+28 78.2 moveto
+12 f0
+(\(\(+ 3 \() show
+gsave
+/rowdata 12 string def
+58.7 78.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+64.3 78.2 moveto
+12 f0
+( x.\(+ x 5\) 4\)\) ) show
+pagelevel restore
+showpage
+%%Page: 5 5
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+0 699.6 moveto
+12 f0
+(On the other hand if we have an inner-) show
+gsave
+/rowdata 12 string def
+185.2 699.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+190.8 699.6 moveto
+12 f0
+(-abstraction whose variable is different ) show
+28 673 moveto
+12 f0
+(\(\() show
+gsave
+/rowdata 12 string def
+35.9 673 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+41.5 673 moveto
+12 f0
+( x. + x \() show
+gsave
+/rowdata 12 string def
+79.2 673 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+84.8 673 moveto
+12 f0
+( y.\(+ y x\) 4\) 3\) ) show
+0 646.4 moveto
+12 f0
+(it is correct to substitute inside the inner ) show
+gsave
+/rowdata 12 string def
+195.3 646.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+200.9 646.4 moveto
+12 f0
+(-abstraction, obtaining: ) show
+28 619.8 moveto
+12 f0
+(\( + 3 \() show
+gsave
+/rowdata 12 string def
+57.7 619.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+63.3 619.8 moveto
+12 f0
+( y.\(+ y 3\) 4\) ) show
+0 593.2 moveto
+12 f0
+(So we have to make sure that, as we explore the expression we are substituting inside, if we encounter) show
+0 579.9 moveto
+12 f0
+(an inner ) show
+gsave
+/rowdata 12 string def
+41.9 579.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+47.5 579.9 moveto
+12 f0
+(-abstraction that has the same variable as the one we're replacing, that we don't continue) show
+0 566.6 moveto
+12 f0
+(substituting inside the expression. This is embodied in rule S5 below. ) show
+0 540 moveto
+12 f0
+(However, there is yet another pitfall for the naive implementor of ) show
+gsave
+/rowdata 35 string def
+317.2 536.7 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+333.3 540 moveto
+12 f0
+(-reduction. Suppose we want to) show
+0 526 moveto
+12 f0
+(reduce and one of the ) show
+107.9 526 moveto
+12 f2
+(free variables) show
+174.2 526 moveto
+12 f0
+( of ) show
+190.1 526 moveto
+12 f2
+(E) show
+197.7 521.6 moveto
+10 f2
+(2) show
+202.7 526 moveto
+12 f0
+( is the bound variable of a ) show
+gsave
+/rowdata 12 string def
+330.3 526 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+335.9 526 moveto
+12 f0
+(-abstraction inside ) show
+427.2 526 moveto
+12 f2
+(E) show
+434.8 521.6 moveto
+10 f2
+(1) show
+439.8 526 moveto
+12 f0
+(, then we are) show
+0 508.8 moveto
+12 f0
+(facing a problem called ) show
+115.9 508.8 moveto
+12 f2
+(variable capture) show
+195.5 508.8 moveto
+12 f0
+(. The problem is exemplified in ) show
+28 482.2 moveto
+12 f0
+(\() show
+gsave
+/rowdata 12 string def
+31.9 482.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+37.5 482.2 moveto
+12 f0
+( x. \() show
+gsave
+/rowdata 12 string def
+56.4 482.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+62 482.2 moveto
+12 f0
+( y. + x y\)\) \(+ y 3\) ) show
+0 455.6 moveto
+12 f0
+(which does ) show
+57.3 455.6 moveto
+12 f2
+(not) show
+72.8 455.6 moveto
+12 f0
+( reduce to ) show
+28 428.5 moveto
+12 f0
+(\() show
+gsave
+/rowdata 12 string def
+31.9 428.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+37.5 428.5 moveto
+12 f0
+( y. + \(+ y 3\) y\)\) ------- ) show
+145.9 428.5 moveto
+12 f1
+(WRONG) show
+193.9 428.5 moveto
+12 f0
+( ) show
+0 401.9 moveto
+12 f0
+(Instead, we need to perform an ) show
+gsave
+/rowdata 18 string def
+151.6 401.9 translate
+8.4 6.3 scale
+12 9 4 [12 0 0 -9 0 9]
+ smartimage12rgb
+ffffffffffff000000000cccfffffffffffffffffffff000000fffccc000ffffffccc000ffffff
+000ffffffffffff000000fff000cccfff000333fffffffffffffff000fff333fffccc000000fff
+ffffffffffff000000fffffffff000ffffffffffffffffff000000fffffffff000ffffffffffff
+fff000000ffffffffffff000000fffffffff000333000ffffffffffffccc333333000333000fff
+000000333fff
+grestore
+160 401.9 moveto
+12 f0
+(-conversion on the inner ) show
+gsave
+/rowdata 12 string def
+279.9 401.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+285.5 401.9 moveto
+12 f0
+(-expression so that the bound-variable does) show
+0 388.6 moveto
+12 f0
+(not occur free in the argument of the beta-redex. ) show
+28 362 moveto
+12 f0
+(\() show
+gsave
+/rowdata 12 string def
+31.9 362 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+37.5 362 moveto
+12 f0
+( x. \() show
+gsave
+/rowdata 12 string def
+56.4 362 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+62 362 moveto
+12 f0
+( z. + x z\)\) \(+ y 3\) ) show
+0 335.4 moveto
+12 f0
+(and now we can go ahead, obtaining \() show
+gsave
+/rowdata 12 string def
+181.9 335.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+187.5 335.4 moveto
+12 f0
+( z. + \(+ y 3\) z\) ) show
+0 308.3 moveto
+12 f1
+(The definition of substitution ) show
+0 281.7 moveto
+12 f0
+(Substitution, forming ) show
+105.6 281.7 moveto
+12 f2
+(E) show
+113.2 277.3 moveto
+10 f2
+(1) show
+118.2 281.7 moveto
+12 f2
+([v:=E) show
+147.9 277.3 moveto
+10 f2
+(2) show
+152.9 281.7 moveto
+12 f2
+(]) show
+157.5 281.7 moveto
+12 f0
+(, `) show
+167.4 281.7 moveto
+12 f2
+(E) show
+175 277.3 moveto
+10 f2
+(1) show
+180 281.7 moveto
+12 f0
+( with ) show
+207.3 281.7 moveto
+12 f2
+(E) show
+214.9 277.3 moveto
+10 f2
+(2) show
+219.9 281.7 moveto
+12 f0
+( substituted for ) show
+294.9 281.7 moveto
+12 f2
+(v) show
+300.2 281.7 moveto
+12 f0
+(' is a straightforward matter of rewriting) show
+0 264.5 moveto
+12 f0
+(sub-terms except when we come to a ) show
+gsave
+/rowdata 12 string def
+180.2 264.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+185.8 264.5 moveto
+12 f0
+(-abstraction which binds the variable ) show
+366.1 264.5 moveto
+12 f2
+(v) show
+371.4 264.5 moveto
+12 f0
+( or a variable free in ) show
+471.3 264.5 moveto
+12 f2
+(E) show
+478.9 260.1 moveto
+10 f2
+(2) show
+483.9 264.5 moveto
+12 f0
+(.) show
+0 247.3 moveto
+12 f0
+(We can define it by cases, using ) show
+157.2 247.3 moveto
+12 f2
+(v,u) show
+171.5 247.3 moveto
+12 f0
+( for variables, ) show
+240.8 247.3 moveto
+12 f2
+(E,E) show
+258.7 242.9 moveto
+10 f2
+(1) show
+263.7 247.3 moveto
+12 f2
+(...) show
+272.7 247.3 moveto
+12 f0
+( for expressions, with ) show
+379 247.3 moveto
+12 f2
+(C) show
+387.2 247.3 moveto
+12 f0
+( for the set of constants:) show
+28 216.8 moveto
+12 f0
+(S1 - ) show
+50.6 216.8 moveto
+12 f2
+(v[v:=E] = E) show
+111.7 216.8 moveto
+12 f0
+( ) show
+28 203.5 moveto
+12 f0
+(S2 - ) show
+50.6 203.5 moveto
+12 f2
+(u[v:=E] = u) show
+110.7 203.5 moveto
+12 f0
+(, when ) show
+145.6 203.5 moveto
+12 f2
+(u ) show
+gsave
+/rowdata 15 string def
+154.6 203.5 translate
+7 9.8 scale
+10 14 4 [10 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff000000ffffffffffffffffffffffff000ffffffffffffffffffffffff
+000000ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffff000000
+000000000000000000000000ffffffffffff000000ffffffffffffffffffffffff000fffffffff
+ffffff000000000000000000000000000000fffffffff000ffffffffffffffffffffffff000000
+ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffffffffffffffff
+fff000ffffffffffffffffffffffff
+grestore
+161.6 203.5 moveto
+12 f2
+( v) show
+28 190.2 moveto
+12 f0
+(S3 - ) show
+50.6 190.2 moveto
+12 f2
+(c[v:=E] = c) show
+109.4 190.2 moveto
+12 f0
+(, for any ) show
+152.7 190.2 moveto
+12 f2
+(c ) show
+161 190.2 moveto
+12 f0
+(in) show
+170.3 190.2 moveto
+12 f2
+( C) show
+28 176.9 moveto
+12 f0
+(S4 - ) show
+50.6 176.9 moveto
+12 f2
+(\(E) show
+62.2 172.5 moveto
+10 f2
+(1) show
+67.2 176.9 moveto
+12 f2
+(E) show
+74.8 172.5 moveto
+10 f2
+(2) show
+79.8 176.9 moveto
+12 f2
+(\)[v:=E] =\(E) show
+140.5 172.5 moveto
+10 f2
+(1) show
+145.5 176.9 moveto
+12 f2
+([v:=E]E) show
+187.2 172.5 moveto
+10 f2
+(2) show
+192.2 176.9 moveto
+12 f2
+([v:=E]\)) show
+28 159.7 moveto
+12 f0
+(S5 - ) show
+gsave
+/rowdata 12 string def
+50.6 159.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+56.2 159.7 moveto
+12 f2
+( v. E [v:=E) show
+110.5 155.3 moveto
+10 f2
+(1) show
+115.5 159.7 moveto
+12 f2
+(] = ) show
+gsave
+/rowdata 12 string def
+134.2 159.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+139.8 159.7 moveto
+12 f2
+( v. E) show
+28 142.5 moveto
+12 f0
+(S6 - ) show
+50.6 142.5 moveto
+12 f2
+(\() show
+gsave
+/rowdata 12 string def
+54.5 142.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+60.1 142.5 moveto
+12 f2
+( u. E) show
+82.7 138.1 moveto
+10 f2
+(1) show
+87.7 142.5 moveto
+12 f2
+(\) [v:=E] = ) show
+gsave
+/rowdata 12 string def
+142.8 142.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+148.4 142.5 moveto
+12 f2
+( u. \(E) show
+175 138.1 moveto
+10 f2
+(1) show
+180 142.5 moveto
+12 f2
+( [v:=E]\)) show
+221 142.5 moveto
+12 f0
+(, when ) show
+255.9 142.5 moveto
+12 f2
+(u ) show
+gsave
+/rowdata 15 string def
+264.9 142.5 translate
+7 9.8 scale
+10 14 4 [10 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff000000ffffffffffffffffffffffff000ffffffffffffffffffffffff
+000000ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffff000000
+000000000000000000000000ffffffffffff000000ffffffffffffffffffffffff000fffffffff
+ffffff000000000000000000000000000000fffffffff000ffffffffffffffffffffffff000000
+ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffffffffffffffff
+fff000ffffffffffffffffffffffff
+grestore
+271.9 142.5 moveto
+12 f2
+( v) show
+280.2 142.5 moveto
+12 f0
+( and ) show
+303.5 142.5 moveto
+12 f2
+(u ) show
+gsave
+/rowdata 14 string def
+312.5 142.5 translate
+6.3 9.8 scale
+9 14 4 [9 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff0000000fffffffffffffffffffff000fff0ffffffffffffffffff000
+000fff0ffffff000000000000000000fff0fff000000ffffff000000ffffff0000000fffffffff
+000fffffffff0000fffffffff000000fffffffff0000000000000000000000000fff0000ffffff
+000000ffffffffffff0000000fff000fffffffffffffff0fff000000000fffffffffffffff0fff
+fff000000000000000000fff0fff000000ffffffffffffffffff0fff000ffffffffffffffffff
+fff0
+grestore
+318.8 142.5 moveto
+12 f2
+( FV\(E\)) show
+28 125.3 moveto
+12 f0
+(S7 - ) show
+50.6 125.3 moveto
+12 f2
+(\() show
+gsave
+/rowdata 12 string def
+54.5 125.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+60.1 125.3 moveto
+12 f2
+( u. E) show
+82.7 120.9 moveto
+10 f2
+(1) show
+87.7 125.3 moveto
+12 f2
+(\) [v:=E] = ) show
+gsave
+/rowdata 12 string def
+142.8 125.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+148.4 125.3 moveto
+12 f2
+( w. \(\(E) show
+181 120.9 moveto
+10 f2
+(1) show
+186 125.3 moveto
+12 f2
+([u:=w]\) [v:=E]\)) show
+266.5 125.3 moveto
+12 f0
+(,) show
+28 108.1 moveto
+12 f0
+(when ) show
+56.9 108.1 moveto
+12 f2
+(u ) show
+gsave
+/rowdata 15 string def
+65.9 108.1 translate
+7 9.8 scale
+10 14 4 [10 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff000000ffffffffffffffffffffffff000ffffffffffffffffffffffff
+000000ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffff000000
+000000000000000000000000ffffffffffff000000ffffffffffffffffffffffff000fffffffff
+ffffff000000000000000000000000000000fffffffff000ffffffffffffffffffffffff000000
+ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffffffffffffffff
+fff000ffffffffffffffffffffffff
+grestore
+72.9 108.1 moveto
+12 f2
+( v) show
+81.2 108.1 moveto
+12 f0
+( and ) show
+104.5 108.1 moveto
+12 f2
+(u ) show
+gsave
+/rowdata 12 string def
+113.5 108.1 translate
+5.6 6.3 scale
+8 9 4 [8 0 0 -9 0 9]
+ smartimage12rgb
+ffffff000000000000000000fff000000fffffffffffffff000000ffffffffffffffffff000fff
+ffffffffffffffffff000000000000000000000000000fffffffffffffffffffff000000ffffff
+fffffffffffffff000000000fffffffffffffffffffff000000000000000
+grestore
+119.1 108.1 moveto
+12 f2
+( FV\(E\)) show
+152 108.1 moveto
+12 f0
+( and ) show
+175.3 108.1 moveto
+12 f2
+(w ) show
+gsave
+/rowdata 14 string def
+186.3 108.1 translate
+6.3 9.8 scale
+9 14 4 [9 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff0000000fffffffffffffffffffff000fff0ffffffffffffffffff000
+000fff0ffffff000000000000000000fff0fff000000ffffff000000ffffff0000000fffffffff
+000fffffffff0000fffffffff000000fffffffff0000000000000000000000000fff0000ffffff
+000000ffffffffffff0000000fff000fffffffffffffff0fff000000000fffffffffffffff0fff
+fff000000000000000000fff0fff000000ffffffffffffffffff0fff000ffffffffffffffffff
+fff0
+grestore
+192.6 108.1 moveto
+12 f2
+( FV\(E\)) show
+0 81 moveto
+12 f1
+(Comments on S1-S7) show
+pagelevel restore
+showpage
+%%Page: 6 6
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+0 702.4 moveto
+12 f0
+(Cases S1-S4 need no comment. In case S5 the variable we are substituting for is rebound in a) show
+gsave
+/rowdata 12 string def
+0 689.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+5.6 689.1 moveto
+12 f0
+(-abstraction. Thus, inside the ) show
+gsave
+/rowdata 12 string def
+147.5 689.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+153.1 689.1 moveto
+12 f0
+( expression it no longer `means' the same thing - in some sense it is) show
+0 675.8 moveto
+12 f0
+(actually a different variable, so we should not substitute for it. In case S6, the ) show
+gsave
+/rowdata 12 string def
+373.9 675.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+379.5 675.8 moveto
+12 f0
+(-abstraction introduces a) show
+0 662.5 moveto
+12 f0
+(new variable ) show
+64.6 662.5 moveto
+12 f2
+(u) show
+70.6 662.5 moveto
+12 f0
+(, but, since it does not occur in ) show
+220.5 662.5 moveto
+12 f2
+(E) show
+228.1 662.5 moveto
+12 f0
+( there is no problem of confusing it with any variable) show
+0 649.2 moveto
+12 f0
+(occurring in ) show
+61.3 649.2 moveto
+12 f2
+(E) show
+68.9 649.2 moveto
+12 f0
+(. ) show
+0 622.6 moveto
+12 f0
+(However in case S7 there is a real problem - the new variable ) show
+298.2 622.6 moveto
+12 f2
+(u) show
+304.2 622.6 moveto
+12 f0
+( introduced in the ) show
+gsave
+/rowdata 12 string def
+391.5 622.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+397.1 622.6 moveto
+12 f0
+(-abstraction is the) show
+0 609.3 moveto
+12 f0
+(same as a variable occurring free in ) show
+173.6 609.3 moveto
+12 f2
+(E) show
+181.2 609.3 moveto
+12 f0
+(. The solution is to perform an ) show
+gsave
+/rowdata 18 string def
+329.8 609.3 translate
+8.4 6.3 scale
+12 9 4 [12 0 0 -9 0 9]
+ smartimage12rgb
+ffffffffffff000000000cccfffffffffffffffffffff000000fffccc000ffffffccc000ffffff
+000ffffffffffff000000fff000cccfff000333fffffffffffffff000fff333fffccc000000fff
+ffffffffffff000000fffffffff000ffffffffffffffffff000000fffffffff000ffffffffffff
+fff000000ffffffffffff000000fffffffff000333000ffffffffffffccc333333000333000fff
+000000333fff
+grestore
+338.2 609.3 moveto
+12 f0
+(-conversion, replacing it) show
+0 596 moveto
+12 f0
+(throughout the ) show
+gsave
+/rowdata 12 string def
+73.3 596 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+78.9 596 moveto
+12 f0
+(-abstraction by a variable ) show
+203.5 596 moveto
+12 f2
+(w) show
+211.5 596 moveto
+12 f0
+( that does not occur. We can always choose a ) show
+431.7 596 moveto
+12 f2
+(w) show
+439.7 596 moveto
+12 f0
+( for S7) show
+0 582.7 moveto
+12 f0
+(because we have an infinite supply of variables to choose from \(and any ) show
+gsave
+/rowdata 12 string def
+349.5 582.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+355.1 582.7 moveto
+12 f0
+(-calculus expression only) show
+0 569.4 moveto
+12 f0
+(contains finitely many\). ) show
+0 560.3 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+0 542.8 moveto
+12 f0
+(We now have our first opportunity to prove a result relevant to developing a theory of equality in the) show
+gsave
+/rowdata 12 string def
+0 529.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+5.6 529.5 moveto
+12 f0
+(-calculus. ) show
+0 520.4 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+0 487.3 moveto
+14 f1
+(Lemma Sub.1) show
+0 460.3 moveto
+12 f0
+(If ) show
+11.2 460.3 moveto
+12 f2
+(x) show
+gsave
+/rowdata 14 string def
+16.5 460.3 translate
+6.3 9.8 scale
+9 14 4 [9 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff0000000fffffffffffffffffffff000fff0ffffffffffffffffff000
+000fff0ffffff000000000000000000fff0fff000000ffffff000000ffffff0000000fffffffff
+000fffffffff0000fffffffff000000fffffffff0000000000000000000000000fff0000ffffff
+000000ffffffffffff0000000fff000fffffffffffffff0fff000000000fffffffffffffff0fff
+fff000000000000000000fff0fff000000ffffffffffffffffff0fff000ffffffffffffffffff
+fff0
+grestore
+22.8 460.3 moveto
+12 f2
+(FV\(E) show
+49 455.9 moveto
+10 f2
+(1) show
+54 460.3 moveto
+12 f2
+(\)) show
+57.9 460.3 moveto
+12 f0
+( then ) show
+84.5 460.3 moveto
+12 f2
+(E) show
+92.1 455.9 moveto
+10 f2
+(1) show
+97.1 460.3 moveto
+12 f2
+([x:=E) show
+126.8 455.9 moveto
+10 f2
+(2) show
+131.8 460.3 moveto
+12 f2
+(] = E) show
+158.1 455.9 moveto
+10 f2
+(1) show
+163.1 460.3 moveto
+12 f0
+( ) show
+0 447.3 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+0 414.2 moveto
+14 f1
+(Lemma Sub.2) show
+0 387.2 moveto
+12 f0
+(Let ) show
+18.9 387.2 moveto
+12 f2
+(E) show
+26.5 382.8 moveto
+10 f2
+(1) show
+31.5 387.2 moveto
+12 f0
+( and ) show
+54.8 387.2 moveto
+12 f2
+(E) show
+62.4 382.8 moveto
+10 f2
+(2) show
+67.4 387.2 moveto
+12 f0
+( be expressions of the ) show
+gsave
+/rowdata 12 string def
+174.3 387.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+179.9 387.2 moveto
+12 f0
+(-calculus Let ) show
+245.5 387.2 moveto
+12 f2
+(x) show
+250.8 387.2 moveto
+12 f0
+( be a variable, and let ) show
+356.6 387.2 moveto
+12 f2
+(y ) show
+gsave
+/rowdata 14 string def
+364.9 387.2 translate
+6.3 9.8 scale
+9 14 4 [9 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff0000000fffffffffffffffffffff000fff0ffffffffffffffffff000
+000fff0ffffff000000000000000000fff0fff000000ffffff000000ffffff0000000fffffffff
+000fffffffff0000fffffffff000000fffffffff0000000000000000000000000fff0000ffffff
+000000ffffffffffff0000000fff000fffffffffffffff0fff000000000fffffffffffffff0fff
+fff000000000000000000fff0fff000000ffffffffffffffffff0fff000ffffffffffffffffff
+fff0
+grestore
+371.2 387.2 moveto
+12 f2
+(FV\(E) show
+397.4 382.8 moveto
+10 f2
+(1) show
+402.4 387.2 moveto
+12 f2
+(\) ) show
+409.3 387.2 moveto
+12 f0
+(be a variable. Then) show
+0 370.2 moveto
+12 f2
+(E) show
+7.6 365.8 moveto
+10 f2
+(1) show
+12.6 370.2 moveto
+12 f2
+([x:=E) show
+42.3 365.8 moveto
+10 f2
+(2) show
+47.3 370.2 moveto
+12 f2
+(] = \(E) show
+77.6 365.8 moveto
+10 f2
+(1) show
+82.6 370.2 moveto
+12 f2
+([x:=y]\)[y:=E) show
+148.3 365.8 moveto
+10 f2
+(2) show
+153.3 370.2 moveto
+12 f2
+(] ) show
+0 339.2 moveto
+12 f1
+(Proof.) show
+0 312.6 moveto
+12 f0
+(We proceed by induction on the depth of expressions. ) show
+0 285.5 moveto
+12 f1
+(Base Case) show
+51.6 285.5 moveto
+12 f0
+( Let ) show
+73.5 285.5 moveto
+12 f2
+(E) show
+81.1 281.1 moveto
+10 f2
+(1) show
+86.1 285.5 moveto
+12 f0
+( be an expression of depth 0. Then we have the following cases: ) show
+18.1 259.1 moveto
+3.3 3.3 c  fill 
+28 255 moveto
+12 f2
+(E) show
+35.6 250.6 moveto
+10 f2
+(1) show
+40.6 255 moveto
+12 f2
+( = x ) show
+28 237.8 moveto
+12 f0
+(In this case we have, by S1:) show
+28 224.7 moveto
+12 f2
+(LHS = x [x:=E) show
+101.4 220.3 moveto
+10 f2
+(2) show
+106.4 224.7 moveto
+12 f2
+(] =E) show
+129.7 220.3 moveto
+10 f2
+(2) show
+28.1 207.5 moveto
+12 f2
+(RHS = \(x [x:=y]\)[y:=E) show
+142.3 203.1 moveto
+10 f2
+(2) show
+147.3 207.5 moveto
+12 f2
+(] = y[y:=E) show
+201 203.1 moveto
+10 f2
+(2) show
+206 207.5 moveto
+12 f2
+(] = E) show
+232.3 203.1 moveto
+10 f2
+(2) show
+237.3 207.5 moveto
+12 f0
+( ) show
+18.1 181.1 moveto
+3.3 3.3 c  fill 
+28 177 moveto
+12 f2
+(E) show
+35.6 172.6 moveto
+10 f2
+(1) show
+40.6 177 moveto
+12 f2
+( = u ) show
+63.7 177 moveto
+12 f0
+(, where ) show
+102 177 moveto
+12 f2
+(u ) show
+gsave
+/rowdata 15 string def
+111 177 translate
+7 9.8 scale
+10 14 4 [10 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff000000ffffffffffffffffffffffff000ffffffffffffffffffffffff
+000000ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffff000000
+000000000000000000000000ffffffffffff000000ffffffffffffffffffffffff000fffffffff
+ffffff000000000000000000000000000000fffffffff000ffffffffffffffffffffffff000000
+ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffffffffffffffff
+fff000ffffffffffffffffffffffff
+grestore
+118 177 moveto
+12 f2
+( x) show
+28 159.8 moveto
+12 f0
+(In this case we have, by S2) show
+28 146.7 moveto
+12 f2
+(LHS = u [x:=E) show
+102.1 142.3 moveto
+10 f2
+(2) show
+107.1 146.7 moveto
+12 f2
+(] = u) show
+28.1 129.7 moveto
+12 f2
+(RHS = \(u [x:=y]\)[y:=E) show
+142.9 125.3 moveto
+10 f2
+(2) show
+147.9 129.7 moveto
+12 f2
+(] = u[y:=E) show
+202.3 125.3 moveto
+10 f2
+(1) show
+207.3 129.7 moveto
+12 f2
+(]) show
+28 112.7 moveto
+12 f2
+(= u) show
+28 99.4 moveto
+12 f0
+(since ) show
+55.8 99.4 moveto
+12 f2
+(y ) show
+gsave
+/rowdata 14 string def
+64.1 99.4 translate
+6.3 9.8 scale
+9 14 4 [9 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff0000000fffffffffffffffffffff000fff0ffffffffffffffffff000
+000fff0ffffff000000000000000000fff0fff000000ffffff000000ffffff0000000fffffffff
+000fffffffff0000fffffffff000000fffffffff0000000000000000000000000fff0000ffffff
+000000ffffffffffff0000000fff000fffffffffffffff0fff000000000fffffffffffffff0fff
+fff000000000000000000fff0fff000000ffffffffffffffffff0fff000ffffffffffffffffff
+fff0
+grestore
+70.4 99.4 moveto
+12 f2
+(FV\(E) show
+96.6 95 moveto
+10 f2
+(1) show
+101.6 99.4 moveto
+12 f2
+(\) = {u} ) show
+18.1 86.3 moveto
+3.3 3.3 c  fill 
+28 82.2 moveto
+12 f2
+(E) show
+35.6 77.8 moveto
+10 f2
+(1) show
+40.6 82.2 moveto
+12 f2
+( = c ) show
+63 82.2 moveto
+12 f0
+(, among the constants ) show
+169.9 82.2 moveto
+12 f2
+(C) show
+pagelevel restore
+showpage
+%%Page: 7 7
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+28 709.2 moveto
+12 f0
+(In this case we have, by S3) show
+28 696.1 moveto
+12 f2
+(LHS = c [x:=E) show
+101.4 691.7 moveto
+10 f2
+(2) show
+106.4 696.1 moveto
+12 f2
+(] = c) show
+28.1 679.1 moveto
+12 f2
+(RHS = \(c [x:=y]\)[y:=E) show
+142.3 674.7 moveto
+10 f2
+(2) show
+147.3 679.1 moveto
+12 f2
+(] = c[y:=E) show
+201 674.7 moveto
+10 f2
+(1) show
+206 679.1 moveto
+12 f2
+(] = c) show
+0 623.3 moveto
+12 f1
+(Inductive step:) show
+76.3 623.3 moveto
+12 f0
+( Suppose for some ) show
+168.2 623.3 moveto
+12 f2
+(n) show
+174.2 623.3 moveto
+12 f0
+(, for all ) show
+212.1 623.3 moveto
+12 f2
+(i) show
+215.4 659.3 moveto
+36 0 rlineto 0 -36 rlineto -36 0 rlineto closepath  stroke 
+251.4 623.3 moveto
+12 f2
+(n) show
+0 610.2 moveto
+12 f2
+(E) show
+7.6 605.8 moveto
+10 f2
+(1) show
+12.6 610.2 moveto
+12 f2
+([x:=E) show
+42.3 605.8 moveto
+10 f2
+(2) show
+47.3 610.2 moveto
+12 f2
+(] = \(E) show
+77.6 605.8 moveto
+10 f2
+(1) show
+82.6 610.2 moveto
+12 f2
+([x:=y]\)[y:=E) show
+148.3 605.8 moveto
+10 f2
+(2) show
+153.3 610.2 moveto
+12 f2
+(] ) show
+0 579.7 moveto
+12 f0
+(Consider an expression ) show
+114.9 579.7 moveto
+12 f2
+(E) show
+122.5 579.7 moveto
+12 f0
+( of depth ) show
+168.1 579.7 moveto
+12 f2
+(n+1) show
+188.2 579.7 moveto
+12 f0
+(. We must show that our result holds for ) show
+384.1 579.7 moveto
+12 f2
+(E) show
+391.7 579.7 moveto
+12 f0
+(. ) show
+397.7 579.7 moveto
+12 f2
+(E) show
+405.3 579.7 moveto
+12 f0
+( can be formed by) show
+0 566.4 moveto
+12 f0
+(application \(case S4\) of the definition of substitution, or by ) show
+gsave
+/rowdata 12 string def
+286.9 566.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+292.5 566.4 moveto
+12 f0
+(-abstraction \(cases S5-S7\). ) show
+18.1 543.9 moveto
+3.3 3.3 c  fill 
+28 539.8 moveto
+12 f0
+(Suppose ) show
+71.6 539.8 moveto
+12 f2
+(E = \(F) show
+104.7 535.4 moveto
+10 f2
+(1) show
+109.7 539.8 moveto
+12 f2
+(F) show
+117.4 535.4 moveto
+10 f2
+(2) show
+122.4 539.8 moveto
+12 f2
+(\)) show
+126.3 539.8 moveto
+12 f0
+(. Then both ) show
+184.2 539.8 moveto
+12 f2
+(F) show
+191.9 535.4 moveto
+10 f2
+(1) show
+196.9 539.8 moveto
+12 f0
+( and ) show
+220.2 539.8 moveto
+12 f2
+(F) show
+227.9 535.4 moveto
+10 f2
+(2) show
+232.9 539.8 moveto
+12 f0
+( are of depth n or less.) show
+28 522.8 moveto
+12 f2
+(LHS = E[x:=E) show
+100.4 518.4 moveto
+10 f2
+(2) show
+105.4 522.8 moveto
+12 f2
+(] = \(F) show
+135.9 518.4 moveto
+10 f2
+(1) show
+140.9 522.8 moveto
+12 f2
+(F) show
+148.6 518.4 moveto
+10 f2
+(2) show
+153.6 522.8 moveto
+12 f2
+(\)[x:=E) show
+187.2 518.4 moveto
+10 f2
+(2) show
+192.2 522.8 moveto
+12 f2
+(]) show
+28 505.6 moveto
+12 f0
+(and by S4 this is ) show
+28 492.5 moveto
+12 f2
+(= \(F) show
+50.8 488.1 moveto
+10 f2
+(1) show
+55.8 492.5 moveto
+12 f2
+([x:=E) show
+85.5 488.1 moveto
+10 f2
+(2) show
+90.5 492.5 moveto
+12 f2
+(] F) show
+105.9 488.1 moveto
+10 f2
+(2) show
+110.9 492.5 moveto
+12 f2
+([x:=E) show
+140.6 488.1 moveto
+10 f2
+(2) show
+145.6 492.5 moveto
+12 f2
+(]\)) show
+28 475.3 moveto
+12 f0
+(which by the inductive hypothesis is ) show
+28 462.2 moveto
+12 f2
+(=\(\(F) show
+51.8 457.8 moveto
+10 f2
+(1) show
+56.8 462.2 moveto
+12 f2
+([x:=y]\)[y:=E) show
+122.5 457.8 moveto
+10 f2
+(2) show
+127.5 462.2 moveto
+12 f2
+(] F) show
+142.9 457.8 moveto
+10 f2
+(2) show
+147.9 462.2 moveto
+12 f2
+([x:=y][y:=E) show
+209.6 457.8 moveto
+10 f2
+(2) show
+214.6 462.2 moveto
+12 f2
+(]\)) show
+28.1 431.7 moveto
+12 f2
+(RHS = \(E[x:=y][y:=E) show
+137.3 427.3 moveto
+10 f2
+(2) show
+142.3 431.7 moveto
+12 f2
+(]) show
+146.9 431.7 moveto
+12 f0
+( ) show
+28 414.5 moveto
+12 f0
+(= \(\(F) show
+52.4 410.1 moveto
+10 f0
+(1) show
+57.4 414.5 moveto
+12 f0
+(F) show
+64 410.1 moveto
+10 f0
+(2) show
+69 414.5 moveto
+12 f0
+(\)[x:=y]\)[y:=E) show
+134.5 410.1 moveto
+10 f0
+(2) show
+139.5 414.5 moveto
+12 f0
+(]) show
+28 397.3 moveto
+12 f0
+(and by S4 this is) show
+28 384.2 moveto
+12 f2
+(= \(F) show
+50.8 379.8 moveto
+10 f2
+(1) show
+55.8 384.2 moveto
+12 f2
+([x:=y] F) show
+98.6 379.8 moveto
+10 f2
+(2) show
+103.6 384.2 moveto
+12 f2
+([x:=y]\)[y:=E) show
+169.3 379.8 moveto
+10 f2
+(2) show
+174.3 384.2 moveto
+12 f2
+(]) show
+28 367 moveto
+12 f0
+(and again using S4 we have) show
+28 353.9 moveto
+12 f2
+(= \(\(F) show
+54.8 349.5 moveto
+10 f2
+(1) show
+59.8 353.9 moveto
+12 f2
+([x:=y]\)[y:=E) show
+125.5 349.5 moveto
+10 f2
+(2) show
+130.5 353.9 moveto
+12 f2
+(] \(F) show
+149.9 349.5 moveto
+10 f2
+(2) show
+154.9 353.9 moveto
+12 f2
+([x:=y]\)[y:=E) show
+220.6 349.5 moveto
+10 f2
+(2) show
+225.6 353.9 moveto
+12 f2
+(]\)) show
+18.1 327.5 moveto
+3.3 3.3 c  fill 
+28 323.4 moveto
+12 f0
+(Suppose ) show
+71.6 323.4 moveto
+12 f2
+(E = ) show
+gsave
+/rowdata 12 string def
+93 323.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+98.9 323.4 moveto
+12 f2
+(x . F) show
+28 310.3 moveto
+12 f2
+(LHS = \() show
+gsave
+/rowdata 12 string def
+67.4 310.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+73.3 310.3 moveto
+12 f2
+(x . F\)[x:=E) show
+128.6 305.9 moveto
+10 f2
+(2) show
+133.6 310.3 moveto
+12 f2
+(]) show
+28 293.1 moveto
+12 f2
+(= \() show
+gsave
+/rowdata 12 string def
+43 293.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+48.9 293.1 moveto
+12 f2
+(x . F\)) show
+74.5 293.1 moveto
+12 f0
+( ) show
+28 279.8 moveto
+12 f0
+(by S5. ) show
+28.1 253.4 moveto
+12 f2
+(RHS = \() show
+gsave
+/rowdata 12 string def
+68.1 253.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+74 253.4 moveto
+12 f2
+(x . F\)[x:=y][y:=E) show
+161.4 249 moveto
+10 f2
+(2) show
+166.4 253.4 moveto
+12 f2
+(]) show
+28 236.2 moveto
+12 f2
+(= \() show
+gsave
+/rowdata 12 string def
+43 236.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+48.9 236.2 moveto
+12 f2
+(x . F\)[y:=E) show
+104.2 231.8 moveto
+10 f2
+(2) show
+109.2 236.2 moveto
+12 f2
+(]) show
+113.8 236.2 moveto
+12 f0
+( ) show
+116.8 236.2 moveto
+12 f2
+(= \() show
+gsave
+/rowdata 12 string def
+131.8 236.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+137.7 236.2 moveto
+12 f2
+(x . F\)) show
+28 219 moveto
+12 f0
+(by Lemma... since ) show
+119.5 219 moveto
+12 f2
+(y ) show
+gsave
+/rowdata 14 string def
+127.8 219 translate
+6.3 9.8 scale
+9 14 4 [9 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff0000000fffffffffffffffffffff000fff0ffffffffffffffffff000
+000fff0ffffff000000000000000000fff0fff000000ffffff000000ffffff0000000fffffffff
+000fffffffff0000fffffffff000000fffffffff0000000000000000000000000fff0000ffffff
+000000ffffffffffff0000000fff000fffffffffffffff0fff000000000fffffffffffffff0fff
+fff000000000000000000fff0fff000000ffffffffffffffffff0fff000ffffffffffffffffff
+fff0
+grestore
+134.1 219 moveto
+12 f2
+(FV\(E) show
+160.3 214.6 moveto
+10 f2
+(1) show
+165.3 219 moveto
+12 f2
+(\) ) show
+18.1 192.8 moveto
+3.3 3.3 c  fill 
+28 188.7 moveto
+12 f0
+(Suppose ) show
+71.6 188.7 moveto
+12 f2
+(E = ) show
+gsave
+/rowdata 12 string def
+93 188.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+98.6 188.7 moveto
+12 f2
+(u . F) show
+121.3 188.7 moveto
+12 f0
+( where ) show
+156.6 188.7 moveto
+12 f2
+(u) show
+gsave
+/rowdata 15 string def
+162.6 188.7 translate
+7 9.8 scale
+10 14 4 [10 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff000000ffffffffffffffffffffffff000ffffffffffffffffffffffff
+000000ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffff000000
+000000000000000000000000ffffffffffff000000ffffffffffffffffffffffff000fffffffff
+ffffff000000000000000000000000000000fffffffff000ffffffffffffffffffffffff000000
+ffffffffffffffffffffffff000ffffffffffffffffffffffff000000fffffffffffffffffffff
+fff000ffffffffffffffffffffffff
+grestore
+169.9 188.7 moveto
+12 f2
+(x) show
+175.2 188.7 moveto
+12 f2
+( and ) show
+199.2 188.7 moveto
+12 f2
+(u) show
+gsave
+/rowdata 14 string def
+205.2 188.7 translate
+6.3 9.8 scale
+9 14 4 [9 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff0000000fffffffffffffffffffff000fff0ffffffffffffffffff000
+000fff0ffffff000000000000000000fff0fff000000ffffff000000ffffff0000000fffffffff
+000fffffffff0000fffffffff000000fffffffff0000000000000000000000000fff0000ffffff
+000000ffffffffffff0000000fff000fffffffffffffff0fff000000000fffffffffffffff0fff
+fff000000000000000000fff0fff000000ffffffffffffffffff0fff000ffffffffffffffffff
+fff0
+grestore
+211.5 188.7 moveto
+12 f2
+(FV\(E) show
+237.7 184.3 moveto
+10 f2
+(2) show
+242.7 188.7 moveto
+12 f2
+(\)) show
+28 158.6 moveto
+12 f2
+(We have) show
+28 145.5 moveto
+12 f2
+(LHS = \() show
+gsave
+/rowdata 12 string def
+67.4 145.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+73 145.5 moveto
+12 f2
+(u . F\)[x:=E) show
+129 141.1 moveto
+10 f2
+(2) show
+134 145.5 moveto
+12 f2
+(]) show
+28 128.5 moveto
+12 f2
+(which, by S6) show
+28 115.4 moveto
+12 f2
+(= ) show
+gsave
+/rowdata 11 string def
+0 86.7 translate
+4.9 7 scale
+7 10 4 [7 0 0 -10 0 10]
+ smartimage12rgb
+fff000000fff0000000000ffffff000000ffffff0000000fff000fffffffff0000ffffff000fff
+ffffff0000fff000000ffffff0000000fff000000ffffff0000000fff000fffffffff000fff0fff
+ffffffffffff000fff0ffffffffffff000000fff0ffffffffffff000000fff0
+grestore
+4.9 86.7 moveto
+14 f1
+(-reduction) show
+pagelevel restore
+showpage
+%%Page: 8 8
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+0 707.9 moveto
+12 f2
+(We observed ) show
+64.6 707.9 moveto
+12 f2
+(early on ) show
+107.2 707.9 moveto
+12 f2
+(that the meaning of ) show
+28 681.7 moveto
+12 f2
+(\() show
+gsave
+/rowdata 12 string def
+31.9 681.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+37.5 681.7 moveto
+12 f2
+( x. + 5 x\) ) show
+0 655.5 moveto
+12 f2
+(and the meaning of ) show
+95.3 655.5 moveto
+10 f6
+(\(+ 5\) ) show
+131.3 655.5 moveto
+12 f2
+(were both the function "add 5". This observation can be generalised and) show
+0 642.4 moveto
+12 f2
+(encoded as a reduction rule. ) show
+0 616.2 moveto
+12 f2
+(For the pure ) show
+gsave
+/rowdata 12 string def
+63.6 616.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+69.2 616.2 moveto
+12 f2
+(-calculus, the ) show
+gsave
+/rowdata 11 string def
+136.8 616.2 translate
+4.9 7 scale
+7 10 4 [7 0 0 -10 0 10]
+ smartimage12rgb
+fff000000fff0000000000ffffff000000ffffff0000000fff000fffffffff0000ffffff000fff
+ffffff0000fff000000ffffff0000000fff000000ffffff0000000fff000fffffffff000fff0fff
+ffffffffffff000fff0ffffffffffff000000fff0ffffffffffff000000fff0
+grestore
+141.7 616.2 moveto
+12 f2
+( rule can be stated: ) show
+28 590 moveto
+12 f2
+(\() show
+gsave
+/rowdata 12 string def
+31.9 590 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+37.5 590 moveto
+12 f2
+( v . E v\) ) show
+gsave
+/rowdata 45 string def
+77.4 590 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+98.4 590 moveto
+12 f2
+( E) show
+109 590 moveto
+12 f2
+( provided ) show
+157.6 590 moveto
+12 f2
+(v ) show
+gsave
+/rowdata 14 string def
+165.9 590 translate
+6.3 9.8 scale
+9 14 4 [9 0 0 -14 0 14]
+ smartimage12rgb
+fffffffffffffffffffff0000000fffffffffffffffffffff000fff0ffffffffffffffffff000
+000fff0ffffff000000000000000000fff0fff000000ffffff000000ffffff0000000fffffffff
+000fffffffff0000fffffffff000000fffffffff0000000000000000000000000fff0000ffffff
+000000ffffffffffff0000000fff000fffffffffffffff0fff000000000fffffffffffffff0fff
+fff000000000000000000fff0fff000000ffffffffffffffffff0fff000ffffffffffffffffff
+fff0
+grestore
+172.2 590 moveto
+12 f2
+( FV\(E\)) show
+0 563.8 moveto
+12 f2
+(In an impure ) show
+gsave
+/rowdata 12 string def
+64.9 563.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+70.5 563.8 moveto
+12 f2
+(-calculus, it is customary to restrict the ) show
+gsave
+/rowdata 11 string def
+261.8 563.8 translate
+4.9 7 scale
+7 10 4 [7 0 0 -10 0 10]
+ smartimage12rgb
+fff000000fff0000000000ffffff000000ffffff0000000fff000fffffffff0000ffffff000fff
+ffffff0000fff000000ffffff0000000fff000000ffffff0000000fff000fffffffff000fff0fff
+ffffffffffff000fff0ffffffffffff000000fff0ffffffffffff000000fff0
+grestore
+266.7 563.8 moveto
+12 f2
+(-rule to the case in which ) show
+391.3 563.8 moveto
+12 f2
+(E) show
+398.9 563.8 moveto
+12 f2
+( denotes a function. ) show
+0 554.7 moveto
+504 0 rlineto 0 -1.4 rlineto -504 0 rlineto closepath  fill 
+0 518 moveto
+18 f1
+(Doing reduction systematically) show
+0 486.8 moveto
+12 f2
+(The ) show
+gsave
+/rowdata 35 string def
+21 486.8 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+37.1 486.8 moveto
+12 f2
+(, ) show
+gsave
+/rowdata 11 string def
+43.1 486.8 translate
+4.9 7 scale
+7 10 4 [7 0 0 -10 0 10]
+ smartimage12rgb
+fff000000fff0000000000ffffff000000ffffff0000000fff000fffffffff0000ffffff000fff
+ffffff0000fff000000ffffff0000000fff000000ffffff0000000fff000fffffffff000fff0fff
+ffffffffffff000fff0ffffffffffff000000fff0ffffffffffff000000fff0
+grestore
+48 486.8 moveto
+12 f2
+( and ) show
+gsave
+/rowdata 11 string def
+72 486.8 translate
+4.9 7.7 scale
+7 11 4 [7 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff0000000000000fffffffff000fff0000000fffffffff000fffffffff0fffffffff000
+000ffffff0fffffffff000000ffffff0ffffff000fff000000fff0fff000ffffff000000fff0000
+000fffffffff000fff0000000ffffff000000fff0000000ffffff000ffffff0fff000000000000
+ffffff0
+grestore
+76.9 486.8 moveto
+12 f2
+(-reductions which we have considered can, in general, be applied in various places in) show
+0 470.2 moveto
+12 f2
+(an expression. Consider, for example: ) show
+186.3 470.2 moveto
+12 f2
+(\() show
+gsave
+/rowdata 12 string def
+190.2 470.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+195.8 470.2 moveto
+12 f2
+( x.\(+ 1 x\)\)\(\() show
+gsave
+/rowdata 12 string def
+252.5 470.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+258.1 470.2 moveto
+12 f2
+( x.x\)2\)) show
+288.7 470.2 moveto
+12 f2
+(. This can be reduced using ) show
+gsave
+/rowdata 35 string def
+423.6 470.2 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+439.7 470.2 moveto
+12 f2
+(- reduction) show
+0 453.6 moveto
+12 f2
+(to ) show
+12.3 453.6 moveto
+12 f2
+(\() show
+gsave
+/rowdata 12 string def
+16.2 453.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+21.8 453.6 moveto
+12 f2
+( x.\(+ 1 x\)\)2) show
+76.5 453.6 moveto
+12 f2
+( or to ) show
+105.5 453.6 moveto
+12 f2
+(+ 1 \(\() show
+gsave
+/rowdata 12 string def
+133.5 453.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+139.1 453.6 moveto
+12 f2
+( x.x\)2\)) show
+169.7 453.6 moveto
+12 f2
+(. Another stage of ) show
+gsave
+/rowdata 35 string def
+258 453.6 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+274.1 453.6 moveto
+12 f2
+(- reduction arrives at ) show
+379.4 453.6 moveto
+12 f2
+(+ 1 2) show
+405.5 453.6 moveto
+12 f2
+( in both cases. In) show
+0 440.5 moveto
+12 f2
+(this section we ask `does it matter where we chose to do the reduction'. If ) show
+355.9 440.5 moveto
+12 f2
+(E) show
+363.5 440.5 moveto
+12 f2
+( is an expression of) show
+gsave
+/rowdata 12 string def
+0 427.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+5.6 427.4 moveto
+12 f2
+(-calculus then a ) show
+85.2 427.4 moveto
+12 f2
+(redex) show
+111.8 427.4 moveto
+12 f2
+( is a sub-expression of ) show
+222.1 427.4 moveto
+12 f2
+(E) show
+229.7 427.4 moveto
+12 f2
+( which can be reduced by one of our rules. ) show
+gsave
+/rowdata 11 string def
+0 398.7 translate
+4.9 7.7 scale
+7 11 4 [7 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff0000000000000fffffffff000fff0000000fffffffff000fffffffff0fffffffff000
+000ffffff0fffffffff000000ffffff0ffffff000fff000000fff0fff000ffffff000000fff0000
+000fffffffff000fff0000000ffffff000000fff0000000ffffff000ffffff0fff000000000000
+ffffff0
+grestore
+4.9 398.7 moveto
+14 f1
+(-reduction and laws) show
+0 371.9 moveto
+12 f2
+(Having introduced constants to make an impure ) show
+gsave
+/rowdata 12 string def
+234.3 371.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+239.9 371.9 moveto
+12 f2
+(-calculus, we have to admit ) show
+gsave
+/rowdata 11 string def
+374.5 371.9 translate
+4.9 7.7 scale
+7 11 4 [7 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff0000000000000fffffffff000fff0000000fffffffff000fffffffff0fffffffff000
+000ffffff0fffffffff000000ffffff0ffffff000fff000000fff0fff000ffffff000000fff0000
+000fffffffff000fff0000000ffffff000000fff0000000ffffff000ffffff0fff000000000000
+ffffff0
+grestore
+379.4 371.9 moveto
+12 f2
+(-reduction, and its) show
+0 358.8 moveto
+12 f2
+(inverse, into our rules for equality, together with the ) show
+255 358.8 moveto
+12 f2
+(laws) show
+277 358.8 moveto
+12 f2
+( of the algebra\(s\) to which the constants) show
+0 345.7 moveto
+12 f2
+(belong. Thus ) show
+gsave
+/rowdata 12 string def
+28 319.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+33.6 319.5 moveto
+12 f2
+( x. \(+ \(+ x 3\) 9\) \\equiv ) show
+gsave
+/rowdata 12 string def
+144.7 319.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+150.3 319.5 moveto
+12 f2
+( x. \(+ x 12\) ) show
+0 287 moveto
+18 f1
+(The fixed-point combinator lets us recurse) show
+0.6 259.3 moveto
+12 f2
+(A programming language has to allow us, in some sense, to perform an action repeatedly. In imperative) show
+0 246.2 moveto
+12 f2
+(languages you will have met constructs like ) show
+212.3 246.2 moveto
+10 f6
+(while) show
+242.3 246.2 moveto
+12 f2
+( and {\\bf for} loops. It is not immediately apparent) show
+0 233.1 moveto
+12 f2
+(that the ) show
+gsave
+/rowdata 12 string def
+39.3 233.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+44.9 233.1 moveto
+12 f2
+(-calculus has equivalent power, but it does! ) show
+0 206.9 moveto
+12 f2
+(Let us suppose we have an operator ) show
+175.6 206.9 moveto
+12 f2
+(Y) show
+183.1 206.9 moveto
+12 f2
+( which acts upon expressions of the ) show
+gsave
+/rowdata 12 string def
+356 206.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+361.6 206.9 moveto
+12 f2
+(-calculus according to the) show
+0 193.8 moveto
+12 f2
+(rule ) show
+28 167.6 moveto
+12 f2
+(YE = E\(YE\)) show
+0 138.9 moveto
+14 f1
+(Doing the factorial function with ) show
+198.7 138.9 moveto
+14 f3
+(Y) show
+207.9 138.9 moveto
+14 f1
+( ) show
+0 112.1 moveto
+12 f2
+(Consider the expression ) show
+28 85.9 moveto
+12 f2
+(F = ) show
+gsave
+/rowdata 12 string def
+49.4 85.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+55 85.9 moveto
+12 f2
+( u. ) show
+gsave
+/rowdata 12 string def
+70 85.9 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+75.6 85.9 moveto
+12 f2
+( x. \(if \(= x 0\) 1 \(* x \(u\(- x 1\)\)\)\)) show
+pagelevel restore
+showpage
+%%Page: 9 9
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+0 707.7 moveto
+12 f2
+(For some variable ) show
+91.6 707.7 moveto
+12 f2
+(n) show
+97.6 707.7 moveto
+12 f2
+( ) show
+28 681.5 moveto
+12 f2
+(\(YF\) n = \(F\(YF\)\) n) show
+0 651.8 moveto
+12 f2
+(using ) show
+gsave
+/rowdata 35 string def
+29 651.8 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+45.1 651.8 moveto
+12 f2
+(-reduction we obtain: ) show
+28 625.6 moveto
+12 f2
+(= \() show
+gsave
+/rowdata 12 string def
+43 625.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+48.6 625.6 moveto
+12 f2
+( x. if \(= x 0\) 1 \(* x \(YF \(- x 1\)\)\)\) n) show
+0 595.9 moveto
+12 f2
+(again using ) show
+gsave
+/rowdata 35 string def
+59.3 595.9 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+75.4 595.9 moveto
+12 f2
+(-reduction we obtain: ) show
+28 569.7 moveto
+12 f2
+(= if \(= n 0\) 1 \(* n \(YF \(- n 1\)\)\)) show
+0 543.5 moveto
+12 f2
+(that is to say, ) show
+67 543.5 moveto
+12 f2
+(YF) show
+81.4 543.5 moveto
+12 f2
+( satisfies the equation usually given for the factorial function ) show
+29.7 517.3 moveto
+12 f2
+(fact\(n\) = if n=0 then 1 else n*fact\(n-1\)) show
+0 488.6 moveto
+14 f3
+(YE) show
+17.8 488.6 moveto
+14 f1
+( is a fixed point of E) show
+0 461.8 moveto
+12 f2
+(We say that ) show
+58.9 461.8 moveto
+12 f2
+(YE) show
+73.1 461.8 moveto
+12 f2
+( is a ) show
+97.8 461.8 moveto
+12 f2
+(fixed point) show
+149 461.8 moveto
+12 f2
+( of ) show
+164.3 461.8 moveto
+12 f2
+(E) show
+171.9 461.8 moveto
+12 f2
+(, and we call ) show
+236.2 461.8 moveto
+12 f2
+(Y) show
+243.7 461.8 moveto
+12 f2
+( a ) show
+257.4 461.8 moveto
+12 f2
+(fixpoint combinator) show
+352.6 461.8 moveto
+12 f2
+(.[There is an interesting) show
+0 448.7 moveto
+12 f2
+(analogy in linear algebra - let ) show
+148.3 448.7 moveto
+12 f2
+(\\cal E) show
+176.9 448.7 moveto
+12 f2
+( be a function which returns the eigenvectors of a matrix. Then) show
+0.6 435.6 moveto
+12 f2
+(A\(\\cal E A\) \\equiv \\cal E A) show
+128.5 435.6 moveto
+12 f2
+(, where vectors are equivalent if they have the same direction. Thus) show
+0 422.5 moveto
+12 f2
+(eigenvectors are a fixed point of the matrix. Indeed, if we take ) show
+301.2 422.5 moveto
+12 f2
+(A) show
+308.5 422.5 moveto
+12 f2
+( to be a linear function over projective) show
+0 409.4 moveto
+12 f2
+(space, then \\cal E is a fixpoint combinator in the same sense as ) show
+306.6 409.4 moveto
+12 f2
+(Y) show
+314.1 409.4 moveto
+12 f2
+(] ) show
+0 380.7 moveto
+14 f1
+(Working out the factorial function) show
+0 353.9 moveto
+12 f2
+(For an exercise, let us evaluate ) show
+153.6 353.9 moveto
+12 f2
+(YF) show
+168 353.9 moveto
+12 f2
+( for a few natural numbers: ) show
+28 327.7 moveto
+12 f2
+(YF\(0\) = if \(= 0 0\) 1 \(* 0 \(YF \(- 0 1\)\)\)) show
+28 301.5 moveto
+12 f2
+(= if true 1 \(* 0 \(YF \(- 0 1\)\)\)) show
+28 275.3 moveto
+12 f2
+(= 1 ) show
+28 249.1 moveto
+12 f2
+(YF\(1\) = if \(= 1 0\) 1 \(* 1 \(YF \(- 1 1\)\)\)) show
+28 222.9 moveto
+12 f2
+(= if false 1 \(* 1 \(YF \(- 1 1\)\)\)) show
+28 196.7 moveto
+12 f2
+(= \(* 1 \(YF \(- 1 1\)\) ) show
+28 170.5 moveto
+12 f2
+(= \(* 1 \(YF 0\)\) ) show
+28 144.3 moveto
+12 f2
+(= \(* 1 1\) ) show
+28 118.1 moveto
+12 f2
+(= 1 ) show
+28 91.9 moveto
+12 f2
+(YF\(2\) = if \(= 2 0\) 2 \(* 2 \(YF \(- 2 1\)\)\)) show
+pagelevel restore
+showpage
+%%Page: 10 10
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+28 709.4 moveto
+12 f2
+(= if false 1 \(* 2 \(YF \(- 2 1\)\)\)) show
+28 683.2 moveto
+12 f2
+(= \(* 2 \(YF \(- 2 1\)\) ) show
+28 657 moveto
+12 f2
+(= \(* 2 \(YF 1\)\) ) show
+28 630.8 moveto
+12 f2
+(= \(* 2 1\) ) show
+28 604.6 moveto
+12 f2
+(= 2 ) show
+0 577.7 moveto
+12 f1
+(But we have freedom in where to reduce) show
+0.2 551.3 moveto
+12 f2
+(Note that ) show
+47.5 551.3 moveto
+12 f2
+(where chose to apply our reduction rules) show
+244.8 551.3 moveto
+12 f2
+( is significant in working out ) show
+385.4 551.3 moveto
+12 f2
+(YF) show
+399.8 551.3 moveto
+12 f2
+(. For example, we) show
+0 538.2 moveto
+12 f2
+(could have chosen to expand using ) show
+170.6 538.2 moveto
+12 f2
+(YF = F\(YF\)) show
+228 538.2 moveto
+12 f2
+(, and gone on forever. In the next section we will) show
+0 525.1 moveto
+12 f2
+(consider reduction strategies. ) show
+0 498.2 moveto
+12 f1
+(We can define ) show
+75.6 498.2 moveto
+12 f3
+(Y) show
+83.5 498.2 moveto
+12 f1
+( in ) show
+gsave
+/rowdata 12 string def
+99.5 498.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+105.1 498.2 moveto
+12 f1
+(-calculus!) show
+0 471.8 moveto
+12 f2
+(Up to now we have supposed that ) show
+164.3 471.8 moveto
+12 f2
+(Y) show
+171.8 471.8 moveto
+12 f2
+( is an operator that we have made available as an addition to the) show
+gsave
+/rowdata 12 string def
+0 458.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+5.6 458.7 moveto
+12 f2
+(-calculus. But it is not! We can define it as an expression in the ) show
+gsave
+/rowdata 12 string def
+311.9 458.7 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+317.5 458.7 moveto
+12 f2
+(-calculus: ) show
+28 432.5 moveto
+12 f2
+(Y = \() show
+gsave
+/rowdata 12 string def
+52.7 432.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+58.3 432.5 moveto
+12 f2
+( h. \() show
+gsave
+/rowdata 12 string def
+77.2 432.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+82.8 432.5 moveto
+12 f2
+( x.h \(x x\)\) \() show
+gsave
+/rowdata 12 string def
+135.7 432.5 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+141.3 432.5 moveto
+12 f2
+( x.h \(x x\)\)\)) show
+0 406.3 moveto
+12 f2
+(It is left as an exercise to the reader to verify that, for any expression ) show
+334.6 406.3 moveto
+12 f2
+(E) show
+342.2 406.3 moveto
+12 f2
+( of the ) show
+gsave
+/rowdata 12 string def
+375.2 406.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+380.8 406.3 moveto
+12 f2
+(-calculus, YE = E\(YE\),) show
+0 393.2 moveto
+12 f2
+(where Y is defined as above. ) show
+0 364.5 moveto
+14 f1
+(Choice of Redex is vital for Y) show
+0.6 337.7 moveto
+12 f2
+(A close look at our definition of the Y-combinator indicates that its very mode of letting the recursion) show
+0 324.6 moveto
+12 f2
+(genie out of the bottle makes the choice of redex important. A simplified version of ) show
+399.3 324.6 moveto
+12 f2
+(Y) show
+406.8 324.6 moveto
+12 f2
+( illustrates our) show
+0 311.5 moveto
+12 f2
+(difficulty: ) show
+28 285.3 moveto
+12 f2
+(\() show
+gsave
+/rowdata 12 string def
+31.9 285.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+37.5 285.3 moveto
+12 f2
+( x. x x\)\() show
+gsave
+/rowdata 12 string def
+73.4 285.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+79 285.3 moveto
+12 f2
+( x.x x\) ) show
+gsave
+/rowdata 45 string def
+110.9 285.3 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+gsave
+/rowdata 35 string def
+131.9 280.9 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+148 285.3 moveto
+12 f2
+( \() show
+gsave
+/rowdata 12 string def
+154.9 285.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+160.5 285.3 moveto
+12 f2
+( x. x x\)\() show
+gsave
+/rowdata 12 string def
+196.4 285.3 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+202 285.3 moveto
+12 f2
+( x.x x\) ) show
+0 255.6 moveto
+12 f2
+(Thus, this ) show
+gsave
+/rowdata 12 string def
+49.6 255.6 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+55.2 255.6 moveto
+12 f2
+( expression can be rewritten forever to itself using ) show
+gsave
+/rowdata 35 string def
+299.5 255.6 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+315.6 255.6 moveto
+12 f2
+(-reduction. Worse, consider: ) show
+28 229.4 moveto
+12 f2
+(\() show
+gsave
+/rowdata 12 string def
+31.9 229.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+37.5 229.4 moveto
+12 f2
+( x. x x x\)\() show
+gsave
+/rowdata 12 string def
+81.8 229.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+87.4 229.4 moveto
+12 f2
+( x.x x x\) ) show
+gsave
+/rowdata 45 string def
+127.7 229.4 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+gsave
+/rowdata 35 string def
+148.7 225 translate
+16.1 14 scale
+23 20 4 [23 0 0 -20 0 20]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffff0fffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff0ffffffffffffffffffffffffffffffffffffffffffffffff000000000ffffff
+ffffff0fffffffffffffffffffffffffffffffffffffffffffff000000fff000000fffffffff0
+ffffffffffffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0fffffffff
+fffffffffffffffffffffffffffffffff000fffffffff000000fffffffff0ffffffffffffffffff
+fffffffffffffffffffff000fff000000000000ffffffffffff0fffffffffffffffffffffffffff
+ffffffffffff000ffffff000000000ffffffffffff0ffffffffffffffffffffffffffffffffffff
+fff000ffffffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fff
+fffffffff000ffffffffffff0fffffffffffffffffffffffffffffffffffffff000fffffffff000
+000ffffffffffff0ffffffffffffffffffffffffffffffffffff000000fffffffff000fffffffff
+ffffff0ffffffffffffffffffffffffffffffffffff000000000000000000fffffffffffffff0
+ffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff0fffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0
+grestore
+164.8 229.4 moveto
+12 f2
+( \() show
+gsave
+/rowdata 12 string def
+171.7 229.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+177.3 229.4 moveto
+12 f2
+( x. x x x\)\() show
+gsave
+/rowdata 12 string def
+221.6 229.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+227.2 229.4 moveto
+12 f2
+( x.x x x\)\() show
+gsave
+/rowdata 12 string def
+268.5 229.4 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+274.1 229.4 moveto
+12 f2
+( x.x x x\) ) show
+0 203.2 moveto
+12 f2
+(here we have a ) show
+gsave
+/rowdata 12 string def
+75.3 203.2 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+80.9 203.2 moveto
+12 f2
+( expression that gets bigger and bigger every time it is rewritten. It should not surprise) show
+0 190.1 moveto
+12 f2
+(us that we might have difficulty in telling whether a sequence of reductions in the ) show
+gsave
+/rowdata 12 string def
+392.9 190.1 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+398.5 190.1 moveto
+12 f2
+(-calculus will) show
+0 177 moveto
+12 f2
+(terminate. If the ) show
+gsave
+/rowdata 12 string def
+79.9 177 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+85.5 177 moveto
+12 f2
+(-calculus is powerful enough to be a general purpose programming language, then it) show
+0 163.9 moveto
+12 f2
+(is powerful enough ) show
+0 135 moveto
+12 f2
+(If ) show
+gsave
+/rowdata 45 string def
+10.3 135 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+31.3 135 moveto
+12 f2
+( is a relation, then we say that ) show
+gsave
+/rowdata 45 string def
+178.9 135 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+199.9 139.4 moveto
+10 f2
+(*) show
+204.9 135 moveto
+12 f2
+( is the transitive and reflexive closure of ) show
+gsave
+/rowdata 45 string def
+400.8 135 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+421.8 135 moveto
+12 f2
+(. The * is often) show
+0 121.9 moveto
+12 f2
+(called the Kleene Star operation, after the mathematician Kleene. ) show
+0 93 moveto
+12 f2
+(Formally, ) show
+gsave
+/rowdata 45 string def
+50.6 93 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+71.6 97.4 moveto
+10 f2
+(*) show
+76.9 93 moveto
+12 f2
+(x) show
+82.2 93 moveto
+12 f2
+(, and if ) show
+119.1 93 moveto
+12 f2
+(x ) show
+gsave
+/rowdata 45 string def
+127.4 93 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+148.4 93 moveto
+12 f2
+( y) show
+156.7 93 moveto
+12 f2
+( and ) show
+180.9 93 moveto
+12 f2
+(y ) show
+gsave
+/rowdata 45 string def
+189.2 93 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+210.2 97.4 moveto
+10 f2
+(*) show
+215.2 93 moveto
+12 f2
+(z) show
+219.8 93 moveto
+12 f2
+( then ) show
+246.7 93 moveto
+12 f2
+(x ) show
+gsave
+/rowdata 45 string def
+255 93 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+276 97.4 moveto
+10 f2
+(*) show
+281 93 moveto
+12 f2
+( z) show
+288.6 93 moveto
+12 f2
+(. ) show
+pagelevel restore
+showpage
+%%Page: 11 11
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+0 709.4 moveto
+12 f2
+(Our reduction rules can be turned into ) show
+188.9 709.4 moveto
+12 f2
+(conversion rules) show
+268.5 709.4 moveto
+12 f2
+( by taking the symmetric closure. ) show
+28 683.2 moveto
+12 f2
+(E) show
+35.6 678.8 moveto
+10 f2
+(1) show
+40.6 683.2 moveto
+12 f2
+( ) show
+gsave
+/rowdata 39 string def
+43.6 683.2 translate
+18.2 5.6 scale
+26 8 4 [26 0 0 -8 0 8]
+ smartimage12rgb
+fffffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+ffffff000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000000ffffff
+ffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000ffffff
+000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000fff
+000000000000000000000000000000000000000000000000000000000000000000000000000000
+fff000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000fff
+ffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000ffffff
+fffffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+grestore
+61.8 683.2 moveto
+12 f2
+( E) show
+72.4 678.8 moveto
+10 f2
+(2) show
+77.4 683.2 moveto
+12 f2
+( iff E) show
+101 678.8 moveto
+10 f2
+(1) show
+106 683.2 moveto
+12 f2
+( ) show
+gsave
+/rowdata 45 string def
+109 683.2 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+130 683.2 moveto
+12 f2
+( E) show
+140.6 678.8 moveto
+10 f2
+(2) show
+145.6 683.2 moveto
+12 f2
+( or E) show
+169.8 678.8 moveto
+10 f2
+(2) show
+174.8 683.2 moveto
+12 f2
+( ) show
+gsave
+/rowdata 45 string def
+177.8 683.2 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+198.8 683.2 moveto
+12 f2
+( E) show
+209.4 678.8 moveto
+10 f2
+(1) show
+0.2 652.6 moveto
+12 f2
+(Now we have shown that ) show
+gsave
+/rowdata 45 string def
+122.5 652.6 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+143.5 657 moveto
+10 f2
+(*) show
+148.5 652.6 moveto
+12 f2
+( is an ) show
+177.5 652.6 moveto
+12 f2
+(infinite relation) show
+252.5 652.6 moveto
+12 f2
+(, since we have exhibited a series of `reductions' a) show
+0 639.5 moveto
+12 f2
+(each step of which we obtain a bigger expression \\ref{blowup}. In navigating this infinite maze of) show
+0 626.4 moveto
+12 f2
+(reduction, is there any guiding light, and can we recover if we take a wrong turn? The answers are) show
+0 613.3 moveto
+12 f2
+(``Yes! and Yes!'', as is shown by the following: ) show
+0 584.6 moveto
+14 f1
+(Normal Forms) show
+0.6 557.8 moveto
+12 f2
+(An expression ) show
+71.2 557.8 moveto
+12 f2
+(E) show
+78.8 557.8 moveto
+12 f2
+( of the ) show
+gsave
+/rowdata 12 string def
+111.8 557.8 translate
+5.6 7.7 scale
+8 11 4 [8 0 0 -11 0 11]
+ smartimage12rgb
+fffffffff000000fffffffffffffffffffff000fffffffffffffffffffff000000ffffffffffff
+ffffff000000fffffffffffffffffffff000ffffffffffffffffff000000000fffffffffffffff
+000000000ffffffffffff000ffffff000fffffffff000fffffffff000000fff000000fffffffff
+000000000000fffffffffffffff000
+grestore
+117.4 557.8 moveto
+12 f2
+(-calculus is said to be in ) show
+237.4 557.8 moveto
+12 f2
+(normal form) show
+297.7 557.8 moveto
+12 f2
+( if there is no expression ) show
+418.3 557.8 moveto
+12 f2
+(E') show
+429.6 557.8 moveto
+12 f2
+( for which ) show
+481.2 557.8 moveto
+12 f2
+(E) show
+gsave
+/rowdata 45 string def
+0 544.7 translate
+21 5.6 scale
+30 8 4 [30 0 0 -8 0 8]
+ smartimage12rgb
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff000000ffffffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000000000ffffffffffffffffff000000000000000000000000000000
+000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff000ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+fffffffffffffff000
+grestore
+21 544.7 moveto
+12 f2
+( E') show
+35.3 544.7 moveto
+12 f2
+(. ) show
+0 517.8 moveto
+12 f1
+(Choices for where to apply reduction rules) show
+0 491.4 moveto
+12 f2
+(For example) show
+28 465.2 moveto
+12 f2
+(\(+ \(+ 4 5\) \(* 8 3\)\) ) show
+0 439 moveto
+12 f2
+(might be reduced to) show
+28 412.8 moveto
+12 f2
+(\(+ 9 \(* 8 3\)\) ) show
+0 386.6 moveto
+12 f2
+(or to) show
+28 360.4 moveto
+12 f2
+(\(+ \(+ 4 5\) 24\) ) show
+0 333.5 moveto
+12 f1
+(Church Rosser Theorem I) show
+0 281.6 moveto
+12 f2
+(If ) show
+10.3 281.6 moveto
+12 f2
+(E) show
+17.9 277.2 moveto
+10 f2
+(1) show
+22.9 281.6 moveto
+12 f2
+( ) show
+25.9 317.6 moveto
+36 0 rlineto 0 -36 rlineto -36 0 rlineto closepath  stroke 
+61.9 281.6 moveto
+12 f2
+( E) show
+72.5 277.2 moveto
+10 f2
+(2) show
+77.5 281.6 moveto
+12 f2
+( then there exists an expression ) show
+230.8 281.6 moveto
+12 f2
+(E) show
+238.4 281.6 moveto
+12 f2
+( such that ) show
+288 281.6 moveto
+12 f2
+(E) show
+295.6 277.2 moveto
+10 f2
+(1) show
+300.6 281.6 moveto
+12 f2
+( ) show
+gsave
+/rowdata 42 string def
+303.6 281.6 translate
+19.6 7 scale
+28 10 4 [28 0 0 -10 0 10]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+ffffff000000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000
+fffffffff000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fff000fffffffffffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffff000000fffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffff000000fffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffff000ffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffff000fffffffffffffffffffffffffff
+grestore
+323.2 281.6 moveto
+12 f2
+( E) show
+333.8 281.6 moveto
+12 f2
+( and ) show
+357.8 281.6 moveto
+12 f2
+(E) show
+365.4 277.2 moveto
+10 f2
+(2) show
+gsave
+/rowdata 42 string def
+370.4 281.6 translate
+19.6 7 scale
+28 10 4 [28 0 0 -10 0 10]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+ffffff000000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000
+fffffffff000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fff000fffffffffffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffff000000fffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffff000000fffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffff000ffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffff000fffffffffffffffffffffffffff
+grestore
+390 281.6 moveto
+12 f2
+( E) show
+400.6 281.6 moveto
+12 f2
+( ) show
+403.6 281.6 moveto
+12 f3
+(Corollary:) show
+454.9 281.6 moveto
+12 f2
+( A normal) show
+1.7 264.6 moveto
+12 f2
+(form for an expression is unique. The strategy of always choosing to reduce the leftmost outermost) show
+0 251.5 moveto
+12 f2
+(redex first always produces a normal form if one exists. This is called normal order reduction. ) show
+0 224.6 moveto
+12 f1
+(Church Rosser Theorem II) show
+0 198.2 moveto
+12 f2
+(If ) show
+10.3 198.2 moveto
+12 f2
+(E) show
+17.9 193.8 moveto
+10 f2
+(1) show
+gsave
+/rowdata 42 string def
+22.9 198.2 translate
+19.6 7 scale
+28 10 4 [28 0 0 -10 0 10]
+ smartimage12rgb
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000
+000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000fffffffff
+ffffff000000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000
+fffffffff000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fff000fffffffffffffff000ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffff000000fffffffffffffffffffff000000000000000000000000000000000000000000
+000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffff000000fffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffff000ffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffff000fffffffffffffffffffffffffff
+grestore
+42.5 198.2 moveto
+12 f2
+( E) show
+53.1 193.8 moveto
+10 f2
+(2) show
+58.1 198.2 moveto
+12 f2
+( and ) show
+82.1 198.2 moveto
+12 f2
+(E) show
+89.7 193.8 moveto
+10 f2
+(2) show
+94.7 198.2 moveto
+12 f2
+( is a normal form, then normal order reduction will always result in reduction to ) show
+485.3 198.2 moveto
+12 f2
+(E) show
+492.9 193.8 moveto
+10 f2
+(2) show
+497.9 198.2 moveto
+12 f2
+(. ) show
+0 168.1 moveto
+12 f2
+(This result is of great importance to the design of programming languages because it implies that the) show
+0 155 moveto
+12 f2
+(vast majority of programming languages \(including Scheme and ML\) are ) show
+355.3 155 moveto
+12 f2
+(wrong) show
+385.9 155 moveto
+12 f2
+(!, because they do not) show
+0 141.9 moveto
+12 f2
+(use a normal order reduction. A small set of languages, of which Haskell is the most important, do use) show
+0 128.8 moveto
+12 f2
+(normal order reduction, or reductions that are provably equivalent to it. ) show
+0 96.3 moveto
+18 f1
+(Equality of Expressions in the Lambda Calculus ) show
+375.5 96.3 moveto
+12 f2
+(When mathematicians are) show
+1.7 81.9 moveto
+12 f2
+(faced with a collection ) show
+113.9 81.9 moveto
+12 f2
+(X) show
+121.7 81.9 moveto
+12 f2
+( of things that "ought" to be the same but are different on the surface, they have) show
+pagelevel restore
+showpage
+%%Page: 12 12
+%%BeginPageSetup
+/pagelevel save def
+54 0 translate
+%%EndPageSetup
+newpath 0 72 moveto 504 0 rlineto 0 648 rlineto -504 0 rlineto  closepath clip newpath
+0 709.4 moveto
+12 f2
+(a standard approach to creating the system that they really want - essentially they partition ) show
+442.6 709.4 moveto
+12 f2
+(X) show
+450.4 709.4 moveto
+12 f2
+( into) show
+0 696.3 moveto
+12 f2
+(equivalence classes) show
+94.3 696.3 moveto
+12 f2
+(, putting all things that ought to be the same as each other in the same equivalence) show
+0 683.2 moveto
+12 f2
+(class. ) show
+0 657 moveto
+12 f2
+(For example the fraction-forms 3/4 and 6/8 ought to be the same but are constructed differently. So) show
+0 643.9 moveto
+12 f2
+(when we build the ) show
+90 643.9 moveto
+12 f2
+(rational numbers) show
+173 643.9 moveto
+12 f2
+( we require each rational number to be a class of fraction-forms) show
+0 630.8 moveto
+12 f2
+(equivalent under the relation ) show
+143.5 630.8 moveto
+12 f2
+(p/q == r/s) show
+193.7 630.8 moveto
+12 f2
+( iff ) show
+210.6 630.8 moveto
+12 f2
+(ps=qr) show
+240.3 630.8 moveto
+12 f2
+(. ) show
+0 604.6 moveto
+12 f2
+(For this to work correctly, the relation which formally encodes "ought to be the same" must be an) show
+0 591.5 moveto
+12 f2
+(equivalence relation) show
+98.3 591.5 moveto
+12 f2
+(, that is to say it must be reflexive, symetric and transitive. ) show
+0 565.3 moveto
+12 f2
+(There is an additional requirement that applies to any operations that we want to define on the) show
+0 552.2 moveto
+12 f2
+(rationals, such as addition or multiplication. If these are to be ) show
+303.3 552.2 moveto
+12 f2
+(functions) show
+347.3 552.2 moveto
+12 f2
+(, then we have to show that 6/8) show
+0 539.1 moveto
+12 f2
+(+ 2/14 == 3/4 + 1/7 ) show
+pagelevel restore
+showpage
+%%EOF

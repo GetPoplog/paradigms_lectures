@@ -1,0 +1,437 @@
+
+
+<html><head><title>
+
+ Processes and Proofs
+
+</title></head>
+<BODY bgcolor = "white">
+
+<hr>
+
+<h1> Course 287 Lecture 10: Processes and Proofs </h1>
+
+<hr>
+
+<!-- ============================================================= -->
+
+
+
+<a href = "lecture10.html#iterative_processes">
+Iterative Processes and Tail Recursion</a><br>
+
+<a href = "lecture10.html#proof_fact">
+A proof that fact_iter produces the same result as factorial</a><br>
+
+<!-- factorial --><a href = "lecture10.html#factorial">
+Recursive and iterative processes for factorial.</a><br>
+
+<a href = "lecture10.html#auto_proof">Automation of such proofs</a><br>
+
+<!-- fib --><a href = "lecture10.html#fib">
+The Fibonacci Numbers - A simple definition gives exponential complexity
+</a><br>
+
+<a href = "lecture10.html#currying"> Currying </a><br>
+
+<!-- apply --><a href = "lecture10.html#apply">
+Evaluating <tt>(apply f list)</tt>
+function explicitly applies a function <tt>f</tt> to a list of
+arguments</a><br>
+
+<a name="factorial"></a><br>
+<a name="iterative_processes"> </a><br>
+
+<hr>
+
+<h4>Abelson &amp; Sussman</h4>
+The material on linear processes is discussed in section 1.2, [p.31ff.].
+This includes the computation of the factorial function and of Fibonacci
+numbers.
+
+<hr>
+
+<h2>Iterative Processes and Tail Recursion</h2>
+
+
+<p>
+A computational process is "the pattern of actions a computing device takes".
+A program directs these actions.
+
+Let's compare the following definitions of the factorial function:
+
+<pre><code>
+(define (factorial n)
+   (if (= n 0) 1 (* n (factorial (- n 1)))))
+</code></pre>
+
+<pre><code>
+(define (fact_iter n product)
+    (if (= n 0) product
+        (fact_iter (- n 1) (* n product) )
+        )
+    )
+</code></pre>
+
+<pre><code>
+(define (fact_1 n) (fact_iter n 1))
+</code></pre>
+
+<p> Both  are  recursive functions.  factorial  is a  <em>linear  recursive
+process</em>, that is, there are  deferred computations that grow  linearly
+in <tt>n</tt>.
+
+<p> <tt>fact_1</tt> is an <em>iterative process</em>. there are no deferred
+computations. It is a linear iterative process.
+
+<p> A function,  written recursively, is  an <em>iterative process</em>  if
+each recursive call occurs at the <em>top level of a conditional</em>. This
+arises from  the  fact  there  is  no  need  to  defer  a  computation,  or
+alternatively, the working-space  to hold  the values of  variables can  be
+reused.
+
+Consider:
+
+<pre>
+    (factorial 4)
+    ==> (* 4 (factorial 3))
+    ==> (* 4 (* 3 (factorial 2)))
+    ==> (* 4 (* 3 (* 2  (factorial 1))))
+    ==> (* 4 (* 3 (* 2  1)))
+    ==> 24
+</pre>
+
+<p>
+because the recursive calls of factorial are nested inside a computation, we
+have to remember what that computation was in order to carry on with it.
+
+<p>
+On the other hand, with:
+
+<pre>
+    (fact_1 4))
+    ==> (fact_iter 4 1)
+    ==> (fact_iter 3 4)
+    ==> (fact_iter 2 12)
+    ==> (fact_iter 1 24)
+    ==> (fact_iter 0 24)
+    ==> 24
+</pre>
+
+<p>
+the apparently recursive calls are not nested, do there is no need to
+remember what we were doing, and we can re-use the same space.
+
+<h2><a name = "proof">A proof that fact_iter produces the same result as
+factorial</a></h2>
+
+
+<p> This proof assumes that the  Scheme objects which represent numbers  do
+in fact behave like numbers, so that for example <tt>(* x 1) = x</tt>.
+For Scheme integers this  is a reasonable assumption,  since as we  recall,
+they are of arbitrary precision.
+
+<h4>Theorem</h4>
+For all integers <tt>n>=0, (factorial n) = (fact_iter n 1)</tt>
+
+<p> Discussion. This theorem  relates the functions <tt>factorial</tt>  and
+<tt>fact_1</tt>. However the  work of  computing the factorial  is done  by
+<tt>fact_iter</tt>. So, in  order to prove  this theorem, we  are going  to
+have to  prove  something  about <tt>fact_iter</tt>,  and,  since  it  is a
+recursive function, we are going to have to prove it by induction. The most
+obvious thing we might try to prove is that
+
+
+<pre>
+       (fact_iter n 1)  = (factorial n)
+</pre>
+
+<p> However this clearly is not going to work, since in the computation  of
+<tt>(fact_iter n  1)</tt> for  a  given <tt>n</tt>  we  are going  to  call
+<tt>(fact_iter  i  j)</tt>  where  <tt>i</tt>  ranges  from  <tt>1</tt>  to
+<tt>n</tt> and <tt>j</tt> ranges from <tt>1</tt> to <tt>(factorial n)</tt>.
+So we need to prove something more complicated. Well, it we think about it,
+<tt>(fact_iter n m)</tt> is going to multiply <tt>m</tt> by <tt>n, (- n  1)
+(- n  2) .....  1,</tt>  that is  it is  going  to multiply  <tt>m</tt>  by
+<tt>(factorial n)</tt>. So we can formulate the following lemma (a lemma is
+a theorem whose main purpose  is to support the  proof of a more  important
+theorem  -   just  as   <tt>fact_iter</tt>  is   a  helper   function   for
+<tt>fact_1</tt> so our lemma is a "helper-theorem".
+
+<p>
+<h4>Lemma:</h4>
+For all integers <tt>n>=0, m>=0</tt>
+
+<pre>
+(fact_iter n m) = (* (factorial n) m)
+</pre>
+
+<p>
+    Proof: by induction on n
+
+<p>
+    Base case: n=0
+
+<pre>
+         (fact_iter 0 m) = m = (* (factorial 0) m)
+</pre>
+
+<p>
+    Inductive Step:
+      Suppose for some k, all m
+
+<pre>
+        (fact_iter k m) = (* (factorial k) m)
+</pre>
+
+<pre>
+      Consider: (fact_iter (+ k 1) m)
+    = (fact_iter k (* (+ k 1) m))       by definition of fact_iter
+    = (* (factorial k) (* (+ k 1) m))   by inductive hypothesis
+    = (* (* (factorial k) (+ k 1)) m)   by associativity
+    = (* (factorial (+ k 1)) m)         by definition of factorial
+                                            and commutativity of *
+</pre>
+
+      So the result holds for <tt>(+ k 1)</tt>
+
+<p>
+    Hence by induction, the result holds for all m.
+    Hence the Lemma holds.
+
+<p>
+Proof of Theorem:
+
+<pre>
+    (fact_1 n) = (fact_iter n 1)    by definition of fact_1
+    = (* (factorial n) 1)           by Lemma
+    = (factorial n)                 by rules of algebra.
+</pre>
+
+
+<p>
+[Note, here is a proof of the inductive step in a notation closer to the
+traditional mathematical notation]
+
+<p>
+Suppose for some k, all m   fact_iter(k,m) = k!*m
+
+<p>
+Consider:
+
+<p>
+
+<pre>
+fact_iter(k+1,m)
+    = fact_iter(k, (k+1)*m)      by definition of fact_iter
+    = k! * ((k+1) * m)           by inductive hypothesis
+    = (k! * (k+1)) * m           by associativity of multiplication
+    = (k+1)! * m                 by definition of factorial, commutativity
+                                 of multiplication.
+</pre>
+
+
+<h2><a name = "auto_proof">Automation of such proofs</a></h2>
+
+
+<p>
+The proof above is quite capable of being automated. The hard part is guessing
+the right lemma, and that may require human intervention.
+
+
+
+<h2><a name = "fib">
+The Fibonacci Numbers - A simple definition gives exponential complexity
+</a></h2>
+
+<p>
+The Fibonacci numbers are a well known sequence of numbers:
+
+<pre>
+0,1,1,2,3,5,8,13,...
+</pre>
+
+<p> The first two Fibonacci numbers are 0 and 1.
+
+<p>
+Each Fibonacci number (after the second) is the sum of the two preceding
+Fibonacci numbers. We can quite easily write a function to compute the n'th
+Fibonnaci number using this property:
+
+
+<pre><code>
+(define (fib n)
+    (if (&lt n 2)
+        n
+        (+ (fib (- n 1)) (fib (- n 2)))
+        )
+    )
+</code></pre>
+
+<p>Note that we are counting from zero, so
+<pre>
+    (fib 0) = 0
+    (fib 1) = 1
+    (fib 2) = 2
+...
+</p>
+
+
+<p>
+However, consider the calculation:
+
+<pre>
+    (fib 5)
+    ==> (+ (fib 4) (fib 3))
+    ==> (+ (+ (fib 3) (fib 2))  (+ (fib 2) (fib 1)))
+    ==> (+ (+ (+ (fib 2) (fib 1)) (+ (fib 1) (fib 0)))
+                           (+ (+ (fib 1) (fib 0)) 1))
+
+    ==> (+ (+ (+ (+ (fib 1) (fib 0)) 1) (+ 1 0))
+                           (+ (+ 1 0) 1))
+
+    ==> (+ (+ (+ (+ 1 0) 1) (+ 1 0))
+                           (+ (+ 1 0) 1))
+
+    ==> 5
+</pre>
+
+
+<p> Observe: At each stage we are <em>doubling</em> the number of  deferred
+computations, so  that  to  calculate <tt>(fib  n)</tt>  we  would  perform
+<em>2<sup>n</sup></em> deferred computations.
+
+<p>
+Also: We are recalculating <tt>(fib n)</tt> for each <tt>n</tt> many times.
+
+<p> We can recast this computation in iterative form by building up the
+sequence of Fibonacci numbers successively from the beginning until we have
+reached the one we need. This clearly takes <tt>n</tt> operations. We will
+need only to remember two successive Fibonacci numbers at each stage. We
+use two accumulators which are <tt>(fib (- n 1))</tt> and <tt>(fib (- n
+2))</tt>.
+
+<pre>
+(define (fib_it n acc1 acc2)
+    (if (= n 1) acc2
+        (fib_it (- n 1) acc2 (+ acc1 acc2))
+        )
+    )
+</pre>
+
+<p>
+And now we can define <tt>fib_2</tt>
+which uses <tt>fib_it</tt> as a helper function to compute
+the <tt>n</tt>'th Fibonacci number:
+
+<pre>
+(define (fib_2 n)
+    (if (= n 0) 0
+        (fib_it n 0 1)
+        )
+    )
+</pre>
+
+<p>
+Consider the evaluation of:
+
+
+<pre>
+  (fib_2 5)
+==> (fib_it 5 0 1)
+==> (fib_it 4 1 1)
+==> (fib_it 3 1 2)
+==> (fib_it 2 2 3)
+==> (fib_it 1 3 5)
+==> 5
+</pre>
+
+<p>  We   could   also  improve   the   performance  of   <tt>fib</tt>   by
+<em>memoisation</em>, which will be discussed later in the course. This  is
+quite painless for the progammer:
+
+<pre>
+    (define fib (memoise fib))
+</pre>
+
+<p>
+and can achieve <em>O(n log(n))</em>
+complexity, not quite as good as the O(n)
+complexity of the iterative reformulation above, but it involves no recasting
+of the original algorithm.
+
+
+
+
+<h2><a name="currying">Currying allows arguments to be specified one at a
+time.</a></h2>
+
+
+<p>
+In Scheme, a function with <tt>n</tt>
+arguments must be given all its arguments if it
+is to work correctly.
+
+
+<pre><code>
+(define curried_+
+    (lambda (m)
+        (lambda (n) (+ m n))))
+</code></pre>
+
+
+<pre><code>
+(define add_2 (curried_+ 2))
+(define add_3 (curried_+ 3))
+</code></pre>
+
+<pre><code>
+(add_2 56)  ==> 58
+(add_3 4)   ==> 7
+</code></pre>
+
+
+<p>
+Note - we are forced into this definition of <tt>curried_+</tt>
+by the peculiarities of
+Scheme. The Haskell language, named after Haskell Curry, makes no distinction
+between the curried and un-curried forms. Neither does the lambda calculus.
+POP-11 provides an intermediate capability - for example
+<tt>maplist(%sqrt%)</tt>
+is the POP-11 version of the <tt>map</tt>
+function with the <tt>sqrt</tt> function curried in,
+that is <tt> maplist(%sqrt%)</tt>
+will map a list of numbers into their square-roots.
+
+
+
+<h2>
+<a name = "apply"> The <tt>apply</tt> function</a></h2>
+
+<p>
+Scheme has a built-in function <tt>apply</tt>.  This is defined so that:
+
+<pre>
+      (apply f x1 x2....xn l)
+</pre>
+
+<p>
+is equivalent to
+
+<pre>
+       (f x1 x2.....xn l1 l2 .. lm))
+</pre>
+
+<p>
+where <tt>l1 .. lm</tt> are the elements of the list <tt>l</tt>.
+
+<pre>
+(example '(apply + 3 4 5 '()) 12)
+</pre>
+
+<pre>
+(example '(apply + '(3 4 5)) 12)
+</pre>
+
+</body>
+</html>

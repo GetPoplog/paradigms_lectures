@@ -1,0 +1,542 @@
+
+Time allowed = 2 Hours
+
+
+                 CMPSCI 287 FINAL EXAMINATION MAKEUP F97
+
+                           ANSWER ALL QUESTIONS
+
+---------------------------------------------------------------------------
+|                                                                         |
+| NAME:                                                                   |
+|                                                                         |
+|                                                                         |
+| STUDENT ID:                                                             |
+|                                                                         |
+|                                                                         |
+---------------------------------------------------------------------------
+Note on the grading of this examination:
+
+The purpose  of this  examination is  to ascertain  your knowledge  of  and
+familiarity with  the course  material.  In answering  the  multiple-choice
+questions you should bear in mind that the purpose of these questions is to
+provide evidence that you possess such knowledge and familiarity.
+
+
+-----------------------------------------------------------------------
+1  Question 1
+-----------------------------------------------------------------------
+
+Evaluate the Scheme expressions given below, showing the sequence of
+partial results.
+
+---------------------------------------------------------------------------
+|   Here is an example                                                    |
+|                                                                         |
+|                                                                         |
+|   ( (lambda (x y) (+ x (* 3 y)))  (+ 4 3) (* 5 2))                      |
+|                                                                         |
+|   ==>                                                                   |
+|       ( (lambda (x y) (+ x (* 3 y)))  7 10)                             |
+|                                                                         |
+|   [lambda expression evaluates to itself]                               |
+|                                                                         |
+|   ==>                                                                   |
+|       (+ 7 (* 3 10))                                                    |
+|                                                                         |
+|       [strip off lambda and formals, substitute actual parameters for   |
+|       formal parameters in body of lambda, evaluate body]               |
+|                                                                         |
+|   ==>                                                                   |
+|       (+ 7 30)                                                          |
+|                                                                         |
+|   [use built-in addition operation]                                     |
+|                                                                         |
+|   ==>                                                                   |
+|       37                                                                |
+---------------------------------------------------------------------------
+
+
+
+(a)
+    (let ((x (+ 5 7)) (y (* 2 3))) (+ x y))
+
+(b)
+    (car  (cdr '(cod skate shark)))
+
+(c)
+
+    (cons (+ 3 5)  (cons (* 4 20) '()))
+
+(d) Having executed the following definition (you don't have to show the
+partial-result-sequence for that),
+
+    (define a 4)
+
+show the sequence of partial results involved in evaluating
+
+    (let
+        ((a 6) (b (+ a 1)))
+        (+ a (* 2 b)))
+
+--------------------------------------------------------------------------
+|                   YOU MAY WRITE YOUR ANSWER BELOW                      |
+|                          or use the blue-book                          |
+--------------------------------------------------------------------------
+
+
+
+
+
+
+-----------------------------------------------------------------------
+2  Question 2:
+-----------------------------------------------------------------------
+
+Choose ONE of the options [a] to [e] which best characterises what the
+following Scheme function does. Mark your choice with a check on the exam
+paper.
+
+(define mystery                                      ;
+    (lambda (x y)                                    ;
+        (if (null? x)                                ; (1)
+            '()                                      ; (2)
+            (if (member  (car x) y)                  ; (3)
+                (cons (car x) (mystery (cdr x) y))   ; (4)
+                (mystery (cdr x) y)                  ; (5)
+                )
+            )
+        )
+    )
+
+[a] It computes the union of the sets of members of two lists
+[b] It adds up the numbers in a list.
+[c] It computes the intersection of the sets of members of two lists.
+[d] It concatenates two lists
+[e] It uses the first argument to specify a substitution to be made in the
+    second argument.
+
+
+
+-----------------------------------------------------------------------
+3  Question 3:
+-----------------------------------------------------------------------
+
+3.1 Which of the equations [a-e]  below characterises the behaviour of  the
+Y-combinator? Mark your choice with a check on your exam paper:
+
+[a]     (Y- (Y- e))  =  (Y- e)
+
+[b]     (e (Y- e))  =  (e Y-)
+
+[c]     (e (Y- e))  =  (Y- e)
+
+[d]     (Y- (e Y-))  =  (e Y-)
+
+[e]     (e (e Y-)   =  (e Y-)
+
+
+3.2 Which of the pieces of program text below would be an appropriate  use
+of the Y-combinator in a variant of Scheme that supported that combinator?
+Mark your choice with a check.
+
+[a]
+
+    (define (change list1)
+        (Y-
+            (lambda (x) (sqrt x))        ;;; the mapping function
+            (lambda (x r) (+ x (* r 2))) ;;; the clustering function
+            0                            ;;; the inductive base
+            list1))
+
+
+[b]
+
+   ((Y- (lambda (x l)
+                 (lambda (mem)
+                     (if
+                         (null? l) #f
+                         (or (equal? x (car l)) (mem? x (cdr l)))
+                     )    ; end if
+                 )        ; end lambda
+             )            ; end (Y- E)
+              5 '(6 5 7)))
+
+
+
+[c]
+
+    (define (change list1)
+        (Y-
+            (lambda (x r) (+ x (* r 2))) ;;; the mapping function
+            (lambda (x) (sqrt x))        ;;; the clustering function
+            0                            ;;; the inductive base
+            list1))
+
+
+[d]
+
+   ((Y- (lambda (mem?)
+                 (lambda (x l)
+                     (if
+                         (null? l) #f
+                         (or (equal? x (car l)) (mem? x (cdr l)))
+                     )    ; end if
+                 )        ; end lambda
+             )            ; end (Y- E)
+              2 '(1 2 3)))
+
+
+[e]
+    (define (max-of-list l)
+        (Y-
+            ((null? l) #f)
+            ((null? (cdr l) (car l)))
+            (max (car l) (max-of-list (cdr l))))
+        )
+
+
+
+
+
+-----------------------------------------------------------------------
+4  Question 4:
+-----------------------------------------------------------------------
+
+You are familiar with the merge_general function, whose definition is
+given below.
+
+; merge_general.scm                              Robin Popplestone.
+
+; merge_general provides the merge algorithm in a general form. It takes
+; two ordered lists, l1 and l2 and proceeds to examine them in such a way
+; that the smaller of the first elements of l1 and l2 is processed first.
+; merge_general resembles reduce in that the result is built up by
+; "accumulator" functions,
+;
+; The call (merge_general key compare combine acc base_1 base_2 l1 l2)
+; has the following meanings.
+;
+; key is a function which extracts from the first member of l1 and l2 an
+; element by which these members will be compared.
+;
+; compare is a function for comparing elements. (compare k1 k2) evaluates
+; to '<  '= or '> depending on whether k1 is less than, equal to or greater
+; than k2 according to some ordering relation (not necessarily arithmetic).
+;
+; The two accumulator functions combine and acc are used to build the
+; result.  If two entries x1 and x2 have  equal keys, according to compare
+; then (combine x1 x2 mg) is used to combine them into the result mg
+; returned by the recursive call of merge_general. [Note that, because two
+; entries have equal keys, this doesn't necessarily mean that they are
+equal]
+;
+; If two entries x1 and x2 have unequal keys, then (acc x mg) is used to
+; combine x, the lesser of x1 and x2, with the result mg returned by
+; the recursive call.
+;
+; the base_1 and base_2 functions are used to handle the case in which
+; l2 and l1 respectively are empty. That is to say, if l1 is empty, then
+; (base_2 l2) is the result returned by merge_general, and conversely.
+
+
+(define (merge_general key compare combine acc base_1 base_2 l1 l2)
+    (cond
+        ((null? l1) (base_2 l2))
+        ((null? l2) (base_1 l1))
+        (else
+            (let*
+                (
+                 (x1 (car l1)) (x2 (car l2))
+                 (k1 (key x1)) (k2 (key x2))
+                 (c  (compare k1 k2))
+                 ); end let binding
+                (cond
+                    ((eq? c '<)
+                     (acc
+                         x1
+                         (merge_general
+                             key compare combine acc base_1 base_2
+                             (cdr l1) l2)
+                         )
+                     ) ; end <
+
+                    ((eq? c '=)
+
+                     (combine x1 x2
+                         (merge_general
+                             key compare combine acc base_1 base_2
+                             (cdr l1)
+                             (cdr l2))
+                         )
+                     )
+
+
+                    ((eq? c '>)
+                     (acc
+                         x2
+                         (merge_general
+                             key compare combine acc base_1 base_2
+                             l1
+                             (cdr l2))
+                         )
+                     )
+                    ((pair? c) (car c))
+                    (else (error "illegal result from comparison" c))
+                    );end cond
+                ) ;end let
+
+            )
+        )
+    )
+
+The Problem:
+
+Which of the following definitions of the  union function for two
+sets represented as ordered lists is correct. Check your selection.
+
+
+[a]
+
+(define (union l1 l2)
+    (merge_general
+
+        (lambda (x) x)
+
+        (lambda (x y)
+            (cond
+                ((< x y) '<)
+                ((= x y) '=)
+                (else  '>)
+                ))
+
+        (lambda (x y mg) (cons x mg))
+
+        (lambda (x mg)  (cons x mg))
+
+        (lambda (l1) l1)
+
+        (lambda (l2) l2)
+
+        l1 l2
+
+        )
+    )
+
+[b]
+
+(define (union l1 l2)
+    (merge_general
+
+        (lambda (x) x)
+
+        (lambda (x y)
+            (cond
+                ((< x y) '<)
+                ((= x y) '=)
+                (else  '>)
+                ))
+
+        (lambda (x y mg) (cons x mg))
+
+        (lambda (x mg)  (cons x mg))
+
+        '()
+
+        '()
+
+        (cdr l1) (cdr l2)
+
+        )
+    )
+
+
+[c]
+
+(define (union l1 l2)
+    (merge_general
+
+        (lambda x x)
+
+        (lambda (x y)
+            (cond
+                ((< x y) '<)
+                ((= x y) '=)
+                (else  '>)
+                ))
+
+        (lambda (x y mg) (cons x mg))
+
+        (lambda (x mg)  (cons x mg))
+
+        (lambda (l1) l1)
+
+        (lambda (l2) l2)
+
+        l1 l2
+
+        )
+    )
+
+[d]
+
+(define (union l1 l2)
+    (merge_general x < cons cons l1 l2))
+
+
+[e]
+
+(define (union l1 l2)
+    (merge_general
+
+        (lambda (x y) (cons x y))
+
+        (lambda (x y) (< x y))
+
+        (lambda (x y) (cons x '()))
+
+        (lambda (x)  (cons x '()))
+
+        '()
+
+        '()
+
+        (cdr l1) (cdr l2)
+
+        )
+    )
+
+
+
+
+
+
+-----------------------------------------------------------------------
+5  Question 5:
+-----------------------------------------------------------------------
+
+In the Java language, every data-object  belongs to a class. These  classes
+are  defined  by  class  definitions on principles similar to those of the
+lib objectclass definitions given in  the lecture notes. So, for example if
+we were to define a class of Point objects using the objectclass
+conventions as:
+
+define :objectclass Point;
+    x:int;
+    y:int;
+enddefine;
+
+and a  class of  ColouredPoint  objects which  forms  a subclass  of  Point
+objects:
+
+define :objectclass ColouredPoint isa Point;
+    colour:int;
+enddefine;
+
+then the corresponding Java definitions are:
+
+class Point{int x,y;}
+
+class ColouredPoint extends Point {int colour;};
+
+The use of  the extends  construct in Java  (which corresponds  to the  isa
+construction  in  lib  objectclass)  is   defined  in  the  Java   Language
+Specification [by Gosling Joy and Steele] as:
+
+---------------------------------------------------------------------------
+|   The optional extends clause in a class declaration specifies  the     |
+|   ______direct __________superclass   of the current class. A class is said to be a     |
+|   ______direct ________subclass of the class it extends. The direct superclass is     |
+|   the class  from whose  implementation the  implementation of  the     |
+|   current class is derived. The  extends  clause must not appear in     |
+|   the definition of the class  java.lang.Object,  because it is the     |
+|   primordial class  and  has no  direct  superclass. If  the  class     |
+|   declaration for any other class  has no extends clause, then  the     |
+|   class has  the  class  java.lang.Object as  its  implicit  direct     |
+|   superclass.                                                           |
+---------------------------------------------------------------------------
+
+Further, the Java Language Specification says:
+---------------------------------------------------------------------------
+|   The subclass  relationship is  the transitive  closure of  the  direct|
+|   subclass relationship. A class A is the subclass of class C if  either|
+|   of the following is true                                              |
+|                                                                         |
+|       A is the direct subclass of C                                     |
+|                                                                         |
+|       There exists a class B such that A is a subclass of B, and B is a |
+|       subclass of C, applying the definition recursively.               |
+---------------------------------------------------------------------------
+
+The Problem:
+
+You  are  engaged  in  implementing  the  Java  language  in  Scheme.  Each
+object-class in Java is represented in Scheme by a data-structure for which
+there is defined  a selector function  direct-superclass with the  property
+that:
+
+    (direct-superclass c)
+
+gives the data-structure corresponding to the direct superclass of a  class
+whose definition is given in c.
+
+
+Define a Scheme function subclass? for  which (subclass? c1 c2) returns  #t
+when c1 is a record which characterises a Java class which is a subclass of
+the record characterised by c2.  You may assume that the  direct-superclass
+function returns  #f when  applied to  the record  which characterises  the
+Object class.
+
+[Hint: This is a VERY simple function to write - the work in this  question
+reading and understanding the specification.]
+
+
+-----------------------------------------------------------------------------
+|                     YOU MAY WRITE YOUR ANSWER BELOW                       |
+|                          or use the blue-book                             |
+-----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+END OF EXAMINATION PAPER.

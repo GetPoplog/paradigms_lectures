@@ -1,0 +1,1032 @@
+
+
+
+
+
+<html><head><title>
+
+        Substitution
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+
+         Substitution
+
+</center>
+
+</h1>
+
+<hr>
+
+<p>
+In this  seminar we  will  look at  the  theory of  functional  programming
+languages, and consider  the practical  aspects of  implementing them.  The
+primary motivation of  writing functionally  is to  develop programs  whose
+behaviour can easily be analysed mathematically,  and which in any case  is
+easy to predict and understand.
+
+<p> Generally the application of computers to the engineering design is
+somewhat ahead of their application to software design. In particular it is
+common for engineers to use a tool such as Mathematica or Maple to
+assist in
+performing an analysis of the behaviour of a system before it is
+implemented. In this seminar we'd like to explore how functional languages
+can be used to address this gap by supporting detailed mathematical
+analysis of program behaviour.
+
+<p> In implementing programs it is common enough to employ what might be
+called "macroscopic" tools to analyse the behaviour of a program at a
+rather coarse level of detail. The most widely used such tool is the
+concept of <em>data type</em> which is built into most programming
+languages. Type-analysis will tell you that <tt> x+"fred" </tt> is an
+illegal expression (in most languages) because you can't add a number to a
+string. It won't tell you that you have made an error if you have
+written <tt>x+1</tt> when you  meant <tt>x-1</tt>.
+
+<p> On the other hand, Mathematica can tell you precisely that - for
+example if you want a solution of the equation <em>x<sup>2</sup>+2x+1</em>,
+Mathematica can determine that <em>x+1</em> is not a solution of that
+equation (or of course it can solve the equation for you).
+
+<p>But computer programs in general are opaque to the sort of analysis that
+Mathematica and Maple can perform.
+Before we can even begin to prove that a program is correct, we have to
+characterise the behaviour of the programming language in which the program
+is written. Functional programming languages are characterised in a
+particularly simple way: every component of a program is treated as a
+<em>mathematical function</em> whose meaning follows the simple
+rule that <em>within a given context</em> identical expressions have
+identical values.
+
+<p>To give an example of what we mean, in a pure functional language a
+mathematical identity like:
+
+<pre>
+         fred(x) + fred(x) = 2*fred(x)
+</pre>
+
+should hold.  This  is  not  necessarily  the  case  for  a  non-functional
+language, for example  in Pascal or  C <tt>fred</tt> might  be a  procedure
+which had a side-effect,  so that calling it  twice has a different  effect
+from  calling  it  once.  For  example  <tt>fred</tt>  might  contain   the
+assignment <tt>g:=g+1</tt>  where  <tt>g</tt>  is a  global  variable. Thus
+the value of <tt>fred(x)</tt> varies with the number of times it has been
+evaluated.
+
+<p> In the seminar we will:
+
+<ul>
+<li> Study the theory of functional languages.
+<li> Develop the design of a simple but powerful functional language.
+<li> Design an implementation of this language using as target-architecture
+     the Java Virtual Machine.
+<li> Study and implement proof-methods which will allow us to verify the
+    correctness of programs.
+</ul>
+
+<h2>The Lambda Calculus Provides our Basic Formalism</h2>
+
+<p>If  you  ask   a  mathematician   "what,  fundamentally,   <em>is</em> a
+function", he is likely  to talk about  a set of  <em>(argument,value)</em>
+pairs. He  may well  characterise the  relationship between  arguments  and
+values in some way that he regards as adequate, without any guarantee  that
+there is any way, given an argument, of computing the corresponding  value.
+For example, mathematicians  can (and  do) speak of  a function  <em>f</em>
+defined on the real  numbers for which  <em>f(x)=0</em> when <em>x</em>  is
+rational, and <em>f(x)=1</em> when <em>x</em> is irrational. But any
+attempt to implement such a function computationally would require us to
+solve undecidable problems. <small>[Note
+that, while some programming languages
+refer to floating-point numbers as "real" numbers, they are in fact only
+crude approximations, quite inadequate for representing this particular
+function <em>f</em>.]</small>
+
+<p>This kind of approach  is fine for mathematicians,  who are usually  not
+too concerned  about  whether  they  can  actually  <em>construct</em>  the
+entities  of  which  they  speak.  As  computer  scientists  we  need  some
+mathematical way of characterising functions which, as a formalism,  guides
+us exactly into something we can realise as a computation.
+
+
+<p>The generally agreed solution to this requirement of constructability of
+functions   is    to    use   as    our    basic   formalism    the    <img
+src=lambda.gif>-calculus, invented  by Church,  the American  logician,
+<em>circa</em>
+1941. It  was  developed as  a  branch  of mathematics,  rather  than  as a
+programming language (antedating all  programming languages), and was  thus
+defined essentially as marks on a piece of paper. However it is very easily
+represented in a computer. The <img src=lambda.gif>-calculus is capable  of
+expressing any computation,  like a  Turing machine, but,  unlike a  Turing
+machine, it  can  be  made  the basis  of  elegant  and  powerful  computer
+languages.
+
+
+<p>
+One of the conceptual problems that beginners in formal logic, and
+the <img src=lambda.gif>-calculus is a formal logic, face is the `bootstrapping conundrum', namely
+that we are trying to build a very formal system using our less formal
+ideas of ordinary mathematics, which were, in our teens, build using the
+even less formal ideas expressible in natural language. There is probably
+little that can be said except to point out that there is a computational
+analogy - if for example we want to build a super-secure computer system,
+it will depend on using less-secure tools, and ultimately on hand-crafted
+machine code which is not secure at all. Nevertheless, by careful checking
+and cross checking, and incorporating tests for consistency, we can build
+systems in which we trust.   <img src=lambda.gif>-calculus
+
+<h3>Expressions in the <img src=lambda.gif>-calculus </h3>
+
+<p> Most programming languages have a quite complex syntax that can take
+days or even weeks to learn. The <img src=lambda.gif>-calculus has an
+exceedingly simple syntax.  The syntactic definition given below is
+intended to emphasise the role of the  <img src=lambda.gif>-calculus as a
+basis for programming languages. We use a bold font for non-terminal
+symbols of the syntax (for example <b>E<sub>1</sub></b>).
+
+<p>
+The <img src=lambda.gif>-calculus consists of a set of
+<em>expressions</em>.
+<ul>
+
+<li>
+    <p>A countably infinite set of variables. We shall use as variables
+    any sequence of letters, digits or the "_" character which begins
+    with a letter, or any sequence of the "sign" characters,
+
+<ul> + - * / < > = ~ # $ % ^ & ~ ? |
+</ul>
+    However certain sequences which would be variables
+    are <em>reserved</em>. For our purposes these are:
+    <ul> true  false System
+    </ul> </p>
+
+<li> <p>A set of constants.  In our case these will be
+    <ul>
+    <li> The natural numbers, <b>natnum</b>, namely<br>
+        0 1 2 3 4 5 6 7 8 9 10 11...
+    <li> The boolean constants <em>true</em> and <em>false</em>
+    <li> If  <b>E</b> is an expression, then it can be quoted
+         to give a constant  '<b>E</b>'.
+    <li> The constant <em>System</em>.
+    </ul>
+    </p>
+
+<li><p> If <b>E<sub>1</sub></b> and <b>E<sub>2</sub></b> are expressions of
+the  <img  src=lambda.gif>-calculus,   then  the  <em>application</em>   of
+<b>E<sub>1</sub></b>      to      <b>E<sub>2</sub></b>      is      written
+(<b>E<sub>1</sub>E<sub>2</sub></b>), and is an expression.</p>
+
+<li>  <p><img src=lambda.gif>-abstraction:
+If <b>v</b> is a variable, and <b>E</b> is an expression
+of the <img src=lambda.gif>-calculus, then the </em>abstraction</em>
+<b><img src=lambda.gif> v. E</b> is an expression of the <img src=lambda.gif>-calculus.
+The expression <b>E</b> is referred to as the <em>body</em> of the
+abstraction <b><img src=lambda.gif> v.E</b>
+</p>
+</ul>
+
+<p>Basically, that's it! We can begin to give some <em>meaning</em> to this
+syntax, providing some explanation of what a given expression
+<em>denotes</em>. Doing this systematically will take quite a bit of work,
+but roughly we can say:
+
+<ul>
+
+<li><p>A variable <em>v</em> is a <em>symbol</em> which (eventually) has an
+associated <em>value</em>. Variables in the  <img src=lambda.gif>-calculus
+play much the same role as identifiers in a programming language. We'll see
+exactly how quite shortly, when we talk about <img src=beta.gif>-reduction.
+</p>
+
+<li> <p>Among the constants, the natural numbers are self-explanatory - the
+a given sequence of  characters such as <em>123</em>  denote a  natural
+number,   using    the   base-10    convention.   Note    however    that a
+maximally-faithful    computational    representation    of    the     <img
+src=lambda.gif>-calculus will require us to use <em>arbitrary precision
+arithmetic</em> so that the only limit on the size of a natural number will
+be the storage capacity of the machine.</p>
+
+<p>The boolean constants should also be self-explanatory.</p>
+
+<p>The <em>System</em> constant serves to provide an interface to the
+built-in capabilities of the computer and its software. For example,
+the expression <em>(System '+')</em> performs addition. Don't be alarmed
+about the cumbersome nature of this - normally we make sure that the value
+of the variable <em>+</em> is set to be <em>(System '+')</em>.
+</p>
+
+<p>The purpose of quoted expressions is to support the ability to mechanise
+reasoning about the  <img src=lambda.gif>-calculus within the  <img
+src=lambda.gif> calculus itself.</p>
+
+<li><p>An application (<em>E<sub>1</sub>E<sub>2</sub></em>) can be  thought
+of as meaning  "apply the function  <em>E<sub>1</sub></em> to the  argument
+<em>E<sub>2</sub></em>",  as,  for  example,  we  may  apply  the  function
+<b>sin</b>  to  the  argument  <em>0</em>  when  we  write  the  expression
+<b>sin</b><em> 0</em> in mathematics.  Likewise, in the  <img
+src=lambda.gif>-calculus, if the variable
+<em>abs</em> has as its value the absolute-value-function, then
+<em>(abs x)</em> denotes the absolute value of the value denoted by the
+variable <em>x</em>. </p>
+
+<p> But, you may say, most people want to have functions that take more
+than one argument - how is this accomplished? Let's consider addition, and
+in a context in which the variable <em>+</em> denotes addition.
+The sum of two natural numbers <em>10</em> and <em>3</em> can be expressed
+as <em>((+ 10) 3)</em> - we understand this as meaning that the expression
+<em>(+ 10)</em> evaluates to a <em>function</em> we can call "add 10". This
+function is then applied to <em>3</em>, obtaining <em>13</em>.
+</p>
+
+
+
+<li><p>An abstraction <em><img src=lambda.gif> v.E</em> can be thought of
+as meaning "that function which maps the variable <em>v</em> to the
+expression <em>E</em>. Remember that <em>E</em> is an expression, in which
+<em>v</em> may, and usually will, occur.
+For example, <em><img src=lambda.gif> v.v</em> means "that function which
+maps <em>v</em> to itself", that is to say, the identity function.
+Likewise, in a context in which <em>+</em> denotes addition, the expression
+<br><em>
+<img src=lambda.gif>x.((+ 10) x) </em> means "that function which maps
+<em>x</em> to <em>10+x</em>", that is the function "add 10".  Note that we
+have  already encountered this "add 10" function in a different form above.
+We shall address  the issue of what it means for these two expressions to
+denote the same function when we consider the <em>eta-equivalence</em>
+rule below.
+
+</ul>
+
+
+<p>As defined above, complex expressions in the  <img
+src=lambda.gif>-calculus would have a great many parentheses. To avoid
+the confusion to the human reader that all these parentheses create,
+it is  conventional to  write an expression of the form
+
+<ul>
+(...(((<b>E<sub>1</sub> E<sub>2</sub></b>)
+<b>E<sub>3</sub></b>)... <b>E<sub>n</sub></b>)
+</ul>
+as <em>(<b>E<sub>1</sub> E<sub>2</sub> E<sub>3</sub>...
+E<sub>n</sub></b>)</em>
+
+and to write <em>(<img src=lambda.gif>
+v.(<b>E<sub>1</sub>E<sub>2</sub>...E<sub>n</sub></b>))</em>
+as <em>(<img src=lambda.gif> v.<b>E<sub>1</sub>
+E<sub>2</sub>...E<sub>n</sub></b></em>),
+or even to
+omit the outer parentheses if that can be done without ambiguity.
+The
+convention about the syntactic scope of a <img src=lambda.gif>-abstraction
+is that it extends as far to the right as possible. Thus
+
+ <ul><img src=lambda.gif> v.E<sub>1</sub>
+E<sub>2</sub>...E<sub>n</sub></ul>
+
+means
+
+ <ul>(<img src=lambda.gif> v.E<sub>1</sub>
+E<sub>2</sub>...E<sub>n</sub>)</ul>
+
+and not
+
+ <ul>(<img src=lambda.gif> v.E<sub>1</sub>)
+E<sub>2</sub>...E<sub>n</sub></ul>
+
+<p>Note that  application  is <em>  not</em>  an associative  operation,
+so  that <b>E<sub>1</sub></b> (<b>E<sub>2</sub>  E<sub>3</sub></b>)  is not
+the
+same  as<br> (<b>E<sub>1</sub> E<sub>2</sub></b>)<b> E<sub>3</sub></b>.
+
+Note that in the  <img src=lambda.gif>-calculus every function takes
+exactly one argument, which is why the form of the abstraction is
+<em><img src=lambda.gif> v.E</em>, with just one variable <em>v</em>.
+However, provided we remember this fact, it is syntactically convenient to
+write
+ <ul><img src=lambda.gif> v<sub>1</sub> v<sub>2</sub>.E</ul>
+to mean
+ <ul><img src=lambda.gif> v<sub>1</sub> . <img src=lambda.gif>
+v<sub>2</sub>.E</ul>
+and similarly for more variables.
+
+
+<h3>LISP and the <img src=lambda.gif>-calculus</h3>
+
+<p> A word of warning is needed  here to readers who are familiar with  the
+LISP language, or any derivative such as Scheme: It would appear that  LISP
+was inspired by the <img src=lambda.gif>-calculus, but is certainly not  an
+exact implementation of  it, despite the  signifcant syntactic  similarity.
+Thus  the  LISP  S-expression  <em>(u  v  w)</em>  does  not  mean  ``apply
+<em>u</em> to <em>v</em>  and then apply  the result to  <em>w</em>, as  it
+would in the <img src=lambda.gif>-calculus.
+
+
+<p>However more modern functional languages which on the surface appear
+more remote from the  <img src=lambda.gif>-calculus, are in fact much
+closer. For example the SML expression:
+
+<pre>
+    fn x=> x*x;
+</pre>
+
+is quite a faithful representation of the  <img src=lambda.gif>-calculus
+expression  <em><img src=lambda.gif> x. (* x x)</em>.
+
+<h3><img src=beta.gif>-reduction</h3>
+
+<p>Above we stated that the abstraction
+<em><img src=lambda.gif> x.<b>E</b></em>
+could be understood as meaning "that function which maps the variable
+<em>v</em> to the expression <em>E</em>".
+We can give a practical meaning to this statement by defining exactly what
+it means to apply a <img src=lambda.gif>-expression to an argument.
+Consider the application
+<em>((<img    src=lambda.gif> x. (+ 10 x)) 12)</em>. We've said that
+<em><img src=lambda.gif> x. (+ 10 x) </em> means "that function which maps
+x to (+ 10 x). So, if we give it an argument <em>12</em> we should expect
+to get <em>(+ 10 13)</em> as the result. That is to say, we have
+substituted <em>12</em> for <em>x</em> in the body of the <img
+src=lambda.gif> expression. </p>
+
+<p> To make this precise we have to define what we mean by
+<em>substitution</em>. We need a little notation first. We'll say that
+
+<ul>
+<b>E<sub>1</sub></b>[<b>x</b>:=E<sub>2</sub></b>]
+</ul>
+
+means "the expression <b>E<sub>1</sub></b> with <b>E<sub>2</sub></b>
+substituted for <b>x</b>". Roughly what this means is "go through the
+expression <b>E<sub>1</sub></b> and replace every occurrence of <b>x</b>
+by <b>E<sub>2</sub></b>".  However substitution is not quite as simple as
+that. For example the variable <b>x</b> might be used (or as
+we say <em>rebound</em> in a <img    src=lambda.gif>-abstraction occurring
+inside <b>E<sub>1</sub></b>; this isn't the only complication. We'll defer
+the full definition of substitution until later.
+
+<p> The process of converting the application of a <img src=lambda.gif>
+-abstraction to an argument by substituting the argument for the variable
+of the abstraction in the body of the abstraction is called "<img
+src=beta.gif>-reduction".  We write
+<ul>
+    (<img src=lambda.gif> <b>x.E<sub>1</sub></b>)<b>E<sub>2</sub></b>
+    <img src=longrightarrow.gif><sub><img src=beta.gif></sub>&#160
+    <b>E<sub>1</sub></b>[<b>x</b>:=E<sub>2</sub></b>]
+</ul>
+
+
+
+<p>
+For example, <em>(<img src=lambda.gif> x. (+ 10 x)) (+ 2 3)
+    <img src=longrightarrow.gif><sub><img src=beta.gif></sub>&#160
+(+ 10 (+ 2 3))</em>
+
+<p>
+There is no requirement that the <em>argument</em> of the application
+should be "worked out" before a <img src=beta.gif>-reduction is done. So,
+in the above example, we don't work-out that <em>(+ 2 3)</em> is <em>5</em>
+before doing the <img src=beta.gif>-reduction - indeed such "working out"
+is treated by another mechanism, <img src=delta.gif>-reduction, discussed
+below.
+
+
+
+<h3> The Pure Lambda Calculus </h3>
+
+
+<p> If we take the  <img src=lambda.gif>-calculus as specified above and
+throw out the constants, we obtain the <em>pure</em>
+<img src=lambda.gif>-calculus</em>. It turns out that the pure calculus is
+theoretically adequate to specify any computation in much the same sense
+that a Turing machine is adequate. This is achieved <img
+src=beta.gif>-reduction successively to transform a computation expressed
+as an expression of the <img src=lambda.gif>-calculus into another
+expression which is the result of the computation.
+
+<p>
+Mathematicians, who as a class have swallowed Occam's razor hook  line
+and sinker, may be  satisfied with  the pure  calculus. [<small>The  author
+trusts   that   his   mixed   metaphors   will   not   give   his   readers
+indigestion</small>] However, as a model  for practical computation, it  is
+inadequate. In the pure calculus, for example, one can represent the number
+3 as a <img src=lambda.gif>-abstraction
+<em><img src=lambda.gif> f x. f(f(f(x)))</em>.
+
+
+This is  similar  to the  use  of the  Peano  postulates in  your  Discrete
+Mathematics course  to do  arithmetic.  You'll remember  that  2+1 =  3  is
+rendered as:
+<ul>
+    succ(succ(0)) + succ(0) = succ(succ(succ(0)))
+</ul>
+
+Neither is much help if we want to calculate our income tax! However, since
+the pure calculus is nice and simple, we'll make some use of it in our
+theoretical discussions.
+
+
+
+
+
+
+<h2>Functional languages and the <img src=lambda.gif>-calculus</h2>
+
+<p>The
+<img src=lambda.gif>-calculus serves as a mathematical specification
+for the design of functional programming languages. However, design of an
+actual language gives rise to complications, syntactic and semantic. The
+syntactic complications serve one main purpose, namely to assist human
+comprehension of a program written in a language. We have already seen two
+such concessions to human frailty in the suppression of unnecessary
+parentheses and <img src=lambda.gif>'s.
+
+<p> Another feature of programming languages that is something of a
+historical accident is that a program is usually composed using only ASCII
+characters.
+
+<p>Within the constraint of using ASCII, most functional languages make
+further concessions to perceived human need by adopting syntactic
+conventions that approximate to normal mathematical usage. For example
+most functional languages will allow the user to render:
+
+<pre>
+    (+ u (* v w))
+</pre>
+as
+<pre>
+    u + v*w
+</pre>
+
+<p>Provided that it is a translation of such syntax back to the <img
+src=lambda.gif> is rigorously defined, there is no objection to its use.
+
+<p>There are a number of conventions for rendering <img
+src=lambda.gif>-abstractions in ASCII. The one we will prefer is that used
+in Haskell. The abstraction <em><img src=lambda.gif><b>v.E</b></em>
+is rendered
+in ASCII as <tt> \v.<b>E</b> </tt> where <b>E</b> is the rendering of
+<em><b>E</b></em>.
+For example our old friend <em><img src=lambda.gif> x. (+ 10
+x)</em> is rendered as
+
+<pre>      \x. 10+x</pre>
+
+
+
+
+
+
+
+<h2>Bound and Free variables</h2>
+
+<p>
+The concepts treated in this section are immediately necessary for the
+purpose of defining precisely the substitution operation required for
+<em><img src=beta.gif></em> reduction. However they will recur continually in our study of
+programming languages.  Thus in the Modula-2 fragment:
+
+<pre>
+PROCEDURE f(i:INTEGER):INTEGER;
+BEGIN RETURN(i+n)
+END f
+</pre>
+
+
+<p>
+The variable <em>n</em> occurs <em> free</em> in <em>f</em>, and the question of how such
+free variables are handled is an important implementation issue.
+
+<h3>Binding an occurence of a variable</h3>
+
+<p>
+Let <em>E</em> be an expression of the <img src=lambda.gif>-calculus, and let <em>v</em> be a variable. We say that
+an occurrence of <em>v</em> in <em>E</em> is <em> bound</em> if it is inside a sub-expression
+of <em>E</em> of the form <em><img src=lambda.gif> v.E<sub>2</sub></em>.  An occurrence is said to be <em> free</em>
+otherwise. Thus  <em>v</em> occurs bound in  <em><img src=lambda.gif> v. x v</em> and <em>y <img src=lambda.gif> v. v</em>
+but it occurs free in <em><img src=lambda.gif> x. v x</em>.
+
+
+
+<p>
+Note that we are speaking of an <em> occurrence</em> of a variable as being
+bound - a variable can occur both bound and free in a given
+expression. For example, in   <em>v <img src=lambda.gif> v. v</em>, the first occurrence of <em>v</em>
+is free, and the last is bound.
+
+<p>
+We can define a function <em>FV</em> on an expression by:
+
+<em>FV(v) = \{v\}</em>  for a variable <em>v</em>\\
+<em>FV(c) = \{\}</em>    for a constant <em>c</em>\\
+<em>FV(E<sub>1</sub>E<sub>2</sub>) = FV(E<sub>1</sub>)\cup FV(E<sub>2</sub>)</em> \\
+<em>FV(<img src=lambda.gif> v .E) = FV(E) - \{v\}</em>\\
+
+An expression <em>E</em> is said to be <em> closed</em> if it has no free variables,
+i.e. <em>FV(E) = \{\}</em>.
+
+
+<h2>When are two expressions in <img src=lambda.gif>-calculus `equal'?</h2>
+
+<p>In secondary school we learned that expressions can be ``worked out'' or
+evaluated, by substitution and arithmetic. Thus <em>x+2</em>, with <em>x=4</em>,
+evaluates to <em>6</em>. <img src=beta.gif>-
+and </em>\delta</em>- reduction play the `working out'
+role for <img src=lambda.gif>-calculus. However we also learned ways of determining that two
+expressions were <em> identically equal</em>. Thus  <em>x+2</em> and <em>2+x</em> are
+identically equal in school algebra. In this section we want to examine the
+question `can we say whether two expressions in the <img src=lambda.gif>-calculus are equal?'.
+
+<h3><img src=lambda.gif></em> calculus expressions denote functions</h3>
+
+<p>
+In school algebra the symbols stand for numbers. In the  <img src=lambda.gif>-calculus
+they stand for, or as we say <em> denote</em>, functions (and other entities as
+well if we have added constants to make our <img src=lambda.gif>-calculus impure). It turns out to be
+non-trivial to develop a theory of denotation for the <img src=lambda.gif>-calculus - it took
+mathematicians nearly 30 years to come up with a satisfactory one, which we
+will not discuss here. However we will use some informal ideas of
+denotation in our discussion.
+
+<p>
+For example we may say that <em><img src=lambda.gif> x. +\; x\; 3</em> denotes the
+function `add 3', which is commonly regarded formally as the infinite set
+<em>\{... (-4,-1), (-3,0), (-2,1),(-1,2),(0,3),(1,4)...\}</em> of pairs of
+integers - you might think of it as a graph drawn on an infinite piece of
+graph paper.
+
+<p>
+Thus we will discuss, informally, some rules that allow us to say that two
+expressions in the <img src=lambda.gif>-calculus always denote the same thing.
+
+<h3>We can't always decide equality</h3>
+
+<p>
+The <img src=lambda.gif>-calculus is a powerful formalism, capable of expressing any computation. We
+know we can't <em> decide</em> whether two programs perform the same
+computation, so we should not expect to be able to <em> decide</em> whether two
+<img src=lambda.gif>-calculus expressions are equal - we may be able to say `yes for sure', `no for
+sure', or `I can't tell'.
+
+
+<em><img src=beta.gif></em>-conversion and equality</h3>
+
+<p>
+The <em><img src=beta.gif></em>-reduction rule that we have already met can also be used as a
+equality inference rule - in both directions.
+
+<h3>\alpha-conversion</h3>
+
+<p>
+The variable used in a <em><img src=lambda.gif></em>-abstraction is, to a considerable extent,
+arbitrary. Thus <em><img src=lambda.gif> x. +\;x\;2</em> and <em><img src=lambda.gif> y. +\;y\;2</em> are,
+intuitively, the same function: certainly they <em> denote} the same set of
+pairs, given above.
+
+<p>
+There is indeed a rule of the <em><img src=lambda.gif></em>
+calculus, called <em>\alpha</em>-conversion, which allows the above to expressions
+to be treated as equivalent. It is a little tricky however, since one does
+<em> not</em> want to convert <em><img src=lambda.gif> x. y x</em> to <em><img src=lambda.gif> y. y y</em>
+- the rule is that we may only replace the variable bound in a
+<em><img src=lambda.gif></em>-abstraction by one that does not occur free in the body.
+
+The <em>\alpha</em> conversion rule is thus:
+
+$$<img src=lambda.gif> x.E \longrightarrow <img src=lambda.gif> y.E$$ provided $$y\not\in FV(E)$$
+
+
+<h3>\delta</em>-reduction and laws</h3>
+Having introduced constants to make an impure <img src=lambda.gif>-calculus, we have to admit
+<em>\delta</em> reduction, and its inverse, into our rules for equality,
+together with the <em> laws} of the algebra(s) to which the constants
+belong. Thus
+
+<ul>
+<img src=lambda.gif> x. (+ (+ x 3) 9) \equiv <img src=lambda.gif> x.
+(+ x 12)$$
+</ul>
+
+<h3>\eta</em>-reduction</h3>
+
+<p>
+Finally there is <em>\eta</em> reduction. To motivate this, let us consider the
+expression <em>(+\; 1)</em>. What does it denote?  Well, if we apply it to an
+argument <em>3</em> we obtain <em>((+\; 1)\; 3)</em> which <em>\delta</em> reduces to <em>4</em>,
+and likewise with the argument <em>4</em> it will reduce to <em>5</em>.
+Thus it seems that the expression <em>(+\; 1)</em> is the `add one' function,
+commonly called the successor function. But we also can write this as a
+<em><img src=lambda.gif></em>-abstraction, <em><img src=lambda.gif> x. +\; 1\; x</em>.
+
+<p>
+For the pure <img src=lambda.gif>-calculus, the <em>\eta</em> rule can be stated:
+
+<em>(<img src=lambda.gif> v.E)v \longrightarrow E</em> provided <em>v\not\in FV(E)</em>
+
+In an impure <img src=lambda.gif>-calculus, it is customary to restrict the <em>\eta</em>-rule to the case
+in which <em>E</em> denotes a function.
+
+
+\section{Defining substitution formally}
+
+Substitution, forming <em>E<sub>1</sub>[E<sub>2</sub>/v]</em>, `<em>E<sub>1</sub></em> with <em>E<sub>2</sub></em> substituted for <em>v</em>'
+is a straightforward matter of rewriting sub-terms except when we come to a
+<em><img src=lambda.gif></em>-abstraction which binds the variable <em>v</em> or a variable free in
+<em>E<sub>2</sub></em>.
+
+
+We can define it by cases:\\
+S1 - <em>v[E/v] = E</em>  \\
+S2 - <em>u[E/v] = u</em>, when <em>u\neq v</em>\\
+S3 - <em>c[E/v] = c</em>, for any <em>c\in C</em>\\
+S4 - <em>(E<sub>1</sub>E<sub>2</sub>)[E/v] =(E<sub>1</sub>[E/v]E<sub>2</sub>[E/v])</em>\\
+S5 - <em><img src=lambda.gif> v. E [E<sub>1</sub>/v] = <img src=lambda.gif> v. E</em>\\
+S6 - <em>(<img src=lambda.gif> u. E<sub>1</sub>) [E/v] = <img src=lambda.gif> u. (E<sub>1</sub> [E/v])</em>,
+when <em>u\neq v</em> and <em>u\not\in FV(E)</em>\\
+S7 - <em>(<img src=lambda.gif> u. E<sub>1</sub>) [E/v] = <img src=lambda.gif> w. ((E<sub>1</sub>[w/u]) [E/v])</em>,
+when <em>u\neq v</em> and <em>u\in FV(E)</em> and <em>w\not\in FV(E)</em>\\
+
+\subsection{Comments on S1-S7}
+
+Cases S1-S4  need no comment. In case S5 the variable we are substituting
+for is rebound in a <em><img src=lambda.gif></em>-abstraction. Thus, inside the <em><img src=lambda.gif></em>
+expression it no longer `means' the same thing - in some sense it is
+actually a different variable, so we should not substitute for it.  In case
+S6, the <em><img src=lambda.gif></em>-abstraction introduces a new variable <em>u</em>, but, since it
+does not occur in <em>E</em> there is no problem of confusing it with any variable
+occurring in <em>E</em>.
+
+However in case S7 there is a real problem - the new variable <em>u</em>
+introduced in the <em><img src=lambda.gif></em>-abstraction is the same as a variable occurring
+free in <em>E</em>. The solution is to replace it throughout the
+<em><img src=lambda.gif></em>-abstraction by a variable <em>w</em> that does not occur.
+We can always choose a <em>w</em> for S7 because we have an infinite supply of
+variables to choose from (and any <img src=lambda.gif>-calculus expression only contains finitely
+many).
+
+
+\section {<img src=lambda.gif>-calculus + syntactic sugar = a programming language?}
+In an influential paper, `The  Next 700 Programming Languages', written  in
+1964, Peter Landin argued that  all programming languages could and  should
+be regarded  as a  way of  making the  <img src=lambda.gif>-calculus palatable  to human  users  by a
+coating of `syntactic  sugar'. If  we speak of  functional languages,  this
+view has won universal  acceptance; while formally  valid, it is  often
+seen as  less helpful  and  appropriate for  procedural languages,  and  is
+rejected by most of the `logic  language' community who see the rival  <em>
+predicate calculus} as a more appropriate basis.
+
+In Landin's view, the <img src=lambda.gif>-calculus acts as a kind of mathematical analogue of
+machine code - it is a form that it is simple to reason about, in the
+same way that machine code is a form that it is simple for a machine to
+execute.
+
+\subsection{The ML formalism for a <em><img src=lambda.gif></em> abstraction.}
+Let us take a preview of some `syntactic sugar' in ML and Modula-2. The
+<img src=lambda.gif> calculus expression <em><img src=lambda.gif> x. +\; x\; 2</em> is rendered in ML as
+
+\begin{verbatim}
+fn x => x+2
+\end{verbatim}
+
+Here the <em><img src=lambda.gif></em> is replaced  by <em>fn</em>. This is  hardly sugar at all,  but
+reflects the poverty of the ASCII alphabet. Likewise the `.' is replaced by
+`$=>$', which avoids confusion  with other uses of  `.', e.g. as a  decimal
+point, although  we shall  see that  the syntactic  constructions in  which
+`$=>$' occurs in ML provide much  more than simple <img src=lambda.gif> abstraction.  The
+last  piece  of  syntactic   sugar  is  to  write   `<em>x+2</em>'  in  place   of
+`$+\;x\;2<em>', in accordance with usual mathematical notation.
+
+Another piece of syntactic sugar is the <em>let</em> construct in ML.
+\begin{verbatim}
+let val x = 3 in x+7 end
+\end{verbatim}
+can be translated into <img src=lambda.gif>-calculus as <em>(<img src=lambda.gif> x. +\; x\; 7)3</em>. Note that
+<em>E<sub>1</sub></em> and <em>E<sub>2</sub></em> in <em>(<img src=lambda.gif> x. E<sub>1</sub>) E<sub>2</sub></em> change their order in the <em>let<em>
+construct. This often accords with programming language practice.
+
+\subsection{A conventional language - MODULA-2}
+
+The MODULA-2 fragment:
+
+\begin{verbatim}
+PROCEDURE f(i:INTEGER):INTEGER;
+BEGIN
+  RETURN(i+1)
+END f
+BEGIN
+  RETURN(f(27))
+END
+\end{verbatim}
+
+corresponds to the ML
+
+\begin{verbatim}
+  let val f = fn(i) => i+1 in f(27)
+\end{verbatim}
+
+
+and to the <img src=lambda.gif>-calculus <em>(<img src=lambda.gif> f. f\;  27) (<img src=lambda.gif> i. +\; i\; 1)<em>. Note  that
+the simple translation of MODULA-2 into the <img src=lambda.gif>-calculus is only possible because of
+the restricted use of MODULA-2 in  this example - essentially it is  used
+functionally, without  side-effects, and  so it  is easily  translated.  An
+example that used assignment, especially assignment to record-fields  would
+be much harder to translate.
+
+\section {Landin's fixed-point combinator lets us recurse}
+
+A programming language has to allow us, in some sense, to perform an action
+repeatedly. In imperative languages you will have met constructs like {\bf
+while} and {\bf for} loops. It is not immediately apparent that the <img src=lambda.gif>-calculus has
+equivalent power, but it does!
+
+Let us suppose we have an operator <em>Y<em> which acts upon expressions of the
+<img src=lambda.gif>-calculus according to the rule
+
+$$YE = E(YE)$$
+
+\subsection{Doing the factorial function with <em>Y<em>}
+
+Consider the expression
+
+$$F =  <img src=lambda.gif> u. <img src=lambda.gif> x. (if\;(=\;x\;0)\;1\;(*\;x\;(u(-\;x\;1))))$$
+
+For some variable <em>n<em>
+
+$$(YF) n = (F(YF)) n$$
+
+using <em><img src=beta.gif></em>-reduction we obtain:
+
+$$ = (<img src=lambda.gif> x. if\;(=\;x\;0)\;1\;(*\;x\;(YF\;(-\;x\;1))))\;n$$
+
+
+again using <em><img src=beta.gif></em>-reduction we obtain:
+
+$$ = if\;(=\;n\;0)\;1\;(*\;n\;(YF\;(-\;n\;1)))$$
+
+that is to say, <em>YF<em> satisfies the equation usually given for the factorial
+function
+
+$$fact(n) = if\; n=0\; then\; 1\; else\; n*fact(n-1)$$
+
+\subsection<em>YE<em> is a fixed point of E}
+
+We say that <em>YE<em>  is a <em>  fixed point} of  <em>E<em>, and we  call <em>Y<em> a  <em>
+fixpoint combinator}.\footnote{There is  an interesting  analogy in  linear
+algebra - let <em>\cal  E<em> be a function  which returns the eigenvectors  of a
+matrix. Then <em>A(\cal E A) \equiv \cal E A<em>, where vectors are equivalent  if
+they have the  same direction. Thus  eigenvectors are a  fixed point of
+the matrix. Indeed, if we take <em>A<em> to  be a linear function over
+projective space, then \cal E is a fixpoint combinator in the same sense as
+<em>Y<em>}
+
+
+\subsection{Working out the factorial function}
+For an exercise, let us evaluate <em>YF<em> for a few natural numbers:
+
+$$YF(0) =  if\;(=\;0\;0)\;1\;(*\;0\;(YF\;(-\;0\;1)))$$
+$$  =    if\;true\;1\;(*\;0\;(YF\;(-\;0\;1)))$$
+$$ = 1 $$
+
+
+$$YF(1) =  if (=\;1\;0)\;1\;(*\;1\;(YF\;(-\;1\;1)))$$
+$$  =    if\;false\;1\;(*\;1\;(YF\;(-\;1\;1)))$$
+$$ =      (*\;1\;(YF\;(-\;1\;1)) $$
+$$ =      (*\;1\;(YF\;0)) $$
+$$ =      (*\;1\;1) $$
+$$ =        1 $$
+
+
+$$YF(2) =  if\;(=\;2\;0)\;2\;(*\;2\;(YF\;(-\;2\;1)))$$
+$$  =    if\;false\;1\;(*\;2\;(YF\;(-\;2\;1)))$$
+$$ =      (*\;2\;(YF\;(-\;2\;1)) $$
+$$ =      (*\;2\;(YF\;1)) $$
+$$ =      (*\;2\;1) $$
+$$ =        2 $$
+
+\subsection{But we have freedom in where to reduce}
+Note that <em> where chose to apply our reduction rules} is significant
+in working out <em>YF<em>. For example, we could have chosen to expand using
+<em>YF = F(YF)<em>, and gone on forever. In the next section we will consider
+reduction strategies.
+
+\subsection{We can define <em>Y<em> in <img src=lambda.gif>-calculus!}
+Up to now we have supposed that <em>Y<em> is an operator that we have made
+available as an addition to the <img src=lambda.gif>-calculus. But it is not! We can define it as an
+expression in the <img src=lambda.gif>-calculus:
+
+$$ Y = (<img src=lambda.gif> h. (<img src=lambda.gif> x.h (x x)) (<img src=lambda.gif> x.h (x x)))$$
+
+It is left as an exercise to the reader to verify that, for any expression
+<em>E<em> of the <img src=lambda.gif>-calculus, YE = E(YE), where Y is defined as above.
+
+
+\section{Doing reduction systematically}
+
+The <em><img src=beta.gif>, \eta<em> and <em>\delta<em> reductions which we have considered can,
+in general, be applied in various places in an expression. Consider, for
+example: <em>(<img src=lambda.gif> x.(+\;1 x))((<img src=lambda.gif> x.x)2)<em>. This can be reduced using
+<em><img src=beta.gif>-$ reduction to <em>(<img src=lambda.gif> x.(+\;1 x))2<em> or to $+\;1 ((<img src=lambda.gif>
+x.x)2)<em>. Another stage of  <em><img src=beta.gif>-$ reduction arrives at $+\;1\; 2<em> in
+both cases.  In this section we ask `does it matter where we chose to do
+the reduction'.
+
+If <em>E<em> is an expression of <img src=lambda.gif>-calculus then a <em> redex} is a
+sub-expression of <em>E<em> which can be reduced by one of our rules.
+
+\subsection{Choice of Redex is vital for Y}
+A close look at our definition of the Y-combinator indicates that its very
+mode of letting the recursion genie out of the bottle makes the choice of
+redex important.  A simplified version of <em>Y<em> illustrates our difficulty:
+
+$$(<img src=lambda.gif> x. x x)(<img src=lambda.gif> x.x x)
+\reducesto_<img src=beta.gif> (<img src=lambda.gif> x. x x)(<img src=lambda.gif> x.x x)
+$$
+Thus, this <em><img src=lambda.gif><em> expression can be rewritten forever to itself using
+<em><img src=beta.gif>-$ reduction.  Worse, consider:
+
+\label{blowup}$$(<img src=lambda.gif> x. x x x)(<img src=lambda.gif> x.x x x)
+\reducesto_<img src=beta.gif> (<img src=lambda.gif> x. x x x)(<img src=lambda.gif> x.x x x)(<img src=lambda.gif> x.x x x)
+$$
+here we have a <em><img src=lambda.gif><em> expression that gets bigger and bigger every time
+it is rewritten. It should not surprise us that we might have difficulty in
+telling whether a sequence of  reductions in the <img src=lambda.gif>-calculus will terminate. If the
+<img src=lambda.gif>-calculus is powerful enough to be a general purpose programming language, then
+it is powerful enough
+
+If <em>\reducesto<em> is a relation, then we say that <em>\reducesto^*$ is the
+transitive and reflexive closure of <em>\reducesto<em>. The $*$ is often called
+the Kleene Star operation, after the mathematician Kleene.
+
+Formally, <em>x\reducesto^*x<em>, and if <em>x\reducesto y<em> and <em>y\reducesto^*z<em>
+then <em>x\reducesto^* z<em>.
+
+Our reduction rules can be turned into <em> conversion rules} by taking the
+symmetric closure.
+
+  $$E<sub>1</sub> \longleftrightarrow E<sub>2</sub> \; iff \; E<sub>1</sub>\longrightarrow E<sub>2</sub> \;or\;
+      E<sub>2</sub>\longrightarrow E<sub>1</sub>$$
+
+
+Now we have shown that <em>\reducesto^*$ is an <em> infinite relation}, since
+we have exhibited a series of  `reductions' a each step of which we obtain
+a bigger expression \ref{blowup}. In navigating this infinite maze of
+reduction, is there any guiding light, and can we recover if we take a
+wrong turn? The answers are ``Yes! and Yes!'', as is shown by the
+following:
+
+\subsection{Normal Forms}
+
+An expression <em>E<em> of the <img src=lambda.gif>-calculus is said to be in <em> normal form} if there
+is no expression <em>E'<em> for which <em>E\rightarrow E'<em>.
+
+\subsection{Church Rosser Theorem I}
+
+If <em>E<sub>1</sub>\longleftrightarrow^*
+E<sub>2</sub></em> then there exists an expression <em>E<em> such that
+  <em>E<sub>1</sub>\longrightarrow^* E<em>  and <em>E<sub>2</sub>\longrightarrow^* E<em>
+
+{\bf Corollary:} A normal form for an expression is unique.
+
+
+The strategy of always choosing to reduce the leftmost outermost redex
+first always produces a normal form if one exists. This is called normal
+order reduction.
+
+\subsection{Church Rosser Theorem II}
+If <em>E<sub>1</sub>\longrightarrow^* E<sub>2</sub></em> and <em>E<sub>2</sub></em> is a normal form, then normal order
+reduction will always result in reduction to <em>E<sub>2</sub></em>.
+
+
+This result is of great importance to the design of programming languages
+because <em> it implies that the vast majority of programming languages
+(including Scheme and ML) are <em> wrong}!}, because they do not use a
+normal order reduction. A small set of languages, of which Haskell is the
+most important, do use normal order reduction, or reductions that are
+provably equivalent to it.
+
+\subsection{Weak normal forms, call-by-name and call-by-value.}
+
+
+Normal order reduction will perform reductions both inside and outside
+<img src=lambda.gif> abstractions. If we wish to regard reduction as a model of
+computation then only reductions outside of <img src=lambda.gif> abstractions can be
+regarded as corresponding to <em> running a program}. Reductions inside a
+<em><img src=lambda.gif><em> abstraction are in effect manipulating program, something that is
+usually done by a compiler. Thus we introduce the ideas of <em> weak normal
+order reduction} and <em> weak normal form} in which the only reductions
+performed are performed outside of any <em><img src=lambda.gif></em>-abstraction. This is also
+called <em> call by name}, and is <em> safe} in the sense that if a
+weak normal form exists, weak normal order reduction will find it.
+
+Recall that normal order reduction takes the leftmost outermost redex. An
+alternative strategy is to take the <em> leftmost innermost redex}. This is
+<em> call by value} and is <em> unsafe} in the sense that an infinite
+sequence of reductions may arise despite the fact that a (weak) normal form
+exists.
+
+Nevertheless most languages use some kind of call by value for almost all
+reductions because it is easier to implement efficiently than call by name
+(call by reference does not really make sense from the functional point of
+view).
+
+\subsection{Strictness and Laziness}
+A function is said to be <em> strict} if it is certain to need the value of
+its argument. The <em>sin<em> function for example is strict. The conditional
+function <em>if<em> is non-strict, since evaluating the expression
+<em>if\;E<sub>1</sub>\;E<sub>2</sub>\;E<sub>3</sub></em> can be performed without evaluating both <em>E<sub>2</sub></em> and
+<em>E<sub>3</sub></em>.  Indeed it would be impossible to write recursive functions without
+some laziness around.
+
+
+
+\section{Semantics}
+
+Our <img src=lambda.gif>-calculus is a fine edifice, but is it sound?  A mathematician looking at it
+for the first time would be reminded of a sad little story of the beginning
+of the 20th century: the mathematician Frege had built an elegant
+theory of sets; Unfortunately it was inconsistent - that is to say it had
+no meaning, and was torpedoed and sunk by Bertrand Russell.
+
+The problem with this set theory was that it allowed expressions of the
+form <em>x\in x<em>, and in particular allowed the formalism <em>\{x|x\not\in x\}<em>
+- `the set of all sets which are not members of themselves'. Consider
+<em>\{x|x\not\in x\}\in\{x|x\not\in x\}<em>. To give a meaning to this, we must
+assign the value <em>TRUE<em> or the value <em>FALSE<em> to it. But in either case we
+have a contradiction.
+
+There is a  horrid formal resemblance  to <em><img src=lambda.gif> x.xx<em>,  and to  <em><img src=lambda.gif>
+x.xx<img src=lambda.gif> x.xx<em> which is allowed in  the <img src=lambda.gif>-calculus, and a nasty suspicion  must
+arise in the  mathematical mind  that it might  not be  possible to  give a
+`sensible' meaning to the <img src=lambda.gif>-calculus in which the common-sense view of  <em><img src=lambda.gif>-$
+expressions as <em> functions} can be substantiated.
+
+\subsection{Mending logic: Types and ZF-Set Theory}
+
+Fortunately for mathematics, set-theory was mended, and in two ways:
+\begin{itemize}
+\item Russell and Whitehead developed a <em> theory of types} which ruled
+out forms such as <em>x\in x<em> by treating it as <em> not well typed}. From
+this theory has developed, with more or less precision, the whole idea of
+<em> type} in programming languages.
+\item Zermelo and Frankel developed a set theory in which restricted the
+problematic <em>\{x|P(x)\}<em> by requiring that the property <em>P<em> only be used to
+choose members of a set constructed by other means <em> constructed here is
+a relative term}. Thus the only allowed form is <em>\{x|x\in S and P(x)\}<em>,
+where <em>S<em> is constructed by operations such as cartesian product or
+power set.
+\end{itemize}
+
+Russell and Whitehead's approach would require us to have a <em> typed}
+<img src=lambda.gif>-calculus. Such a edifice can be built, and is indeed a very desirable mansion
+that actual programming languages may inhabit. However that elegant
+creature the <em>Y<em> combinator cannot dwell therein.
+
+But it is not mathematically necessary to have a typed <img src=lambda.gif>-calculus: it was shown in
+1969 by Scott and Strachey that it is possible to devise an interpretation
+of the untyped <img src=lambda.gif>-calculus in ZF set theory.
+
+%\subsection{ TO BE CONTINUED ???}
+
+\end{document}
+
+Answer:
+$$YE = (<img src=lambda.gif> h. (<img src=lambda.gif> x.h (x x)) (<img src=lambda.gif> x.h (x x))) E$$
+$$ =  (<img src=lambda.gif> x.E (x x)) (<img src=lambda.gif> x.E (x x))
+$$ =  (E (<img src=lambda.gif> x.E (x x) <img src=lambda.gif> x.E (x x)))
+$$ =  E (YE) $$
+
+<li>a countably infinite alphabet of variables,
+<em>u... z, u<sub>1</sub> ... z<sub>1</sub>, ... u<sub>n</sub> ... z<sub>n</sub>, ... </em>
+(It is of course only for human convenience that we allow distinct letters
+of the alphabet, formally and computationally we could use one sequence
+<em>v<sub>1</sub>...</em>)
+
+
+
+<h2> The <img src=lambda.gif>-calculus with Constants, Primitives </h2>
+<p>To make the <img src=lambda.gif>-calculus suitable as a basis for
+practical computation we need to introduce entities which correspond to the
+capabilities of a real computer on which  a program will run.
+
+<p>
+A minimal capability would be provided by
+
+
+<ul>
+<li> The natural numbers: 0,1,2,3,4...
+<li> Two boolean constants <em>true</em>    and <em>false</em>
+<li> Arithmetic operations <em>+, -, * </em>
+<li> A conditional function  <em>if</em> for which the meaning of
+     <em>(if E E<sub>1</sub>E<sub>2</sub>)</em> is the same as the
+
+</ul>
+
+<p>
+with the property that
+     <em>(if true E<sub>1</sub>E<sub>2</sub>)</em>
+     evaluates to E<sub>1</sub>, and
+     <em>(if false E<sub>1</sub>E<sub>2</sub>)</em>
+     evaluates to E<sub>2</sub>, and

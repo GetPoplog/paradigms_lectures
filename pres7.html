@@ -1,0 +1,885 @@
+
+
+
+
+<html><head><title>
+
+ Lecture 7  Parsing Sentences in a Language
+</title></head>
+<body>
+
+
+<HR><FONT SIZE=+4><A HREF="#start">How to start up UMASS Scheme.<BR>
+
+<h1>
+Course 287: Lecture 7  Parsing Sentences in a Language
+</h1>
+
+<hr>
+
+<a href="lecture7.html#languages"> Languages and BNF </a><br>
+
+<a href="lecture7.html#parsing">Parsing a Sentence </a><br>
+
+<a href="lecture7.html#trace"> The <tt>trace</tt> function can be used for
+checking out parsers.</a></br>
+
+<hr>
+
+<h2><a name = "languages">Languages and BNF</a></h2>
+
+<p>
+Computers need to recognise whether a  sequence
+of objects forms a valid statement in a <em>language</em>.
+
+<p> Consider
+
+<pre>
+     x := x + 1
+</pre>
+
+
+<pre>
+     the cat eats the canary.
+</pre>
+
+
+
+<p>  A   <em>parser</em>   is   a  Scheme   function   which   recognises a
+<em>phrase</em> in a language,
+
+<p>For English,  some
+well-formed part of a sentence.
+
+<p>
+<tt>"the  cat"</tt>
+is a phrase of the  English language.
+
+<p>
+Why do  we focus on recognising  <em>
+phrases</em>?
+
+<p>
+A sentence is complicated - built up out of phrases
+
+<HR>
+
+
+We can  systematically build up a  parser
+for a  given language  by  building up  parsers  to recognise  ever  larger
+phrases of  the language.
+
+<p>For English:  create  parsers  to   recognise
+
+<p> <em>nouns</em>,
+<p> <em>determiners</em> (the words "a" and "the")
+
+<p>use these to build parser
+for recognising <em>noun-phrases</em>
+
+<p>we build a parser for sentences out of noun- and verb- phrase parsers.
+
+<HR>
+
+<p> Languages are defined by <em>grammars</em>.
+
+<p>Grammars are written  using <em>productions</em>,
+
+<pre>
+    <b>sentence</b>  -> <b>noun_phrase</b> <b>verb_phrase</b>
+</pre>
+
+<p> says that a sentence is a noun-phrase followed by a verb-phrase.
+
+<HR>
+
+
+<p>In Scheme terms, the sentence:
+
+
+<pre>
+    '(the cat eats the canary)
+</pre>
+
+<p>is made appending the noun-phrase  <tt>the cat</tt>
+
+<p>to the verb-phrase <tt>eats the canary</tt>.
+
+<pre>
+    (append '(the cat) '(eats the canary))
+</pre>
+
+<hr>
+
+<p> <em>terminal  symbols</em>
+are those entities in the grammar which cannot be rewritten.
+
+<p>They are words (or "tokens", or "lexemes") of the language.
+
+<p>Those entities
+in the grammar which  can
+be rewritten are  called "non-terminal  symbols".
+
+
+<p>We shall use  the notation that  we have already  been using informally
+ to descibe Scheme,  in  which  non-terminals  are  written  using
+<b>bold</b>
+typewriter characters, while  terminals are written  using plain  tyewriter
+characters.
+
+<hr>
+
+A grammar for a small subset of English
+
+<pre>
+    <b>sentence</b>  -> <b>noun_phrase</b> <b>verb_phrase</b>
+
+    <b>noun_phrase</b>  -> <b>determiner</b> <b>noun</b>
+
+    <b>determiner</b>   -> the
+    <b>determiner</b>   -> a
+
+    <b>noun</b>  -> cat
+    <b>noun</b>  -> dog
+    <b>noun</b>  -> canary
+
+    <b>verb_phrase</b> -> <b>verb</b> <b>noun_phrase</b>
+    <b>verb</b>   -> eats
+    <b>verb</b>   -> likes
+</pre>
+
+<hr>
+
+<p>
+For convenience, the vertical bar can be used to indicate alternative
+Right Hand Sides
+
+
+<pre>
+    <b>verb</b>   -> eats | likes
+</pre>
+
+<hr>
+
+<TABLE BORDER=2>
+<TR>
+<TD>
+The earliest convention  for writing productions used by computer
+scientists is  Backus-Naur  Form (BNF),  in  which  non-terminal
+symbols are enclosed in angle brackets. For example
+
+<pre>
+    &LTsentence> -> &LTnoun_phrase> &LTverb_phrase>
+    &LTdeterminer> -> the
+
+</pre>
+
+</TD>
+</TR>
+<TR> <TD>
+Another convention that is used is to quote terminal symbols, thus:
+<pre>
+    sentence -> noun_phrase verb_phrase
+    determiner -> "the"
+</pre>
+</TD></TR>
+</TABLE>
+
+<hr>
+
+<h2><A name = "parsing">Parsing a Sentence in a Language</a></h2>
+
+
+<p>
+A <em>parser</em>
+is a function which recognises that  a particular  sequence  of
+terminal symbols is a legal statement in a language.
+
+<p>
+Practical applications  of parsers  usually require  that
+some kind of <em>parse-tree</em> is produced  to represent the logical
+structure  of
+the statement.
+
+<p>A compiler  needs a  parse-tree in  order  to
+generate code.
+
+<p>A  natural language query  system requires a  parse tree  in
+order to "understand" a question put to it and to generate an answer.
+
+<hr>
+
+<p>
+In computer science  we  call the  terminal symbols
+fed  to a  parser "tokens"
+
+<hr>
+
+<p>
+Use
+Scheme expressions to represent parse-trees. So, a Pascal parser might
+parse:
+
+<pre>
+    '(x + 2 * y)
+</pre>
+
+<p>
+as the Scheme structure
+
+<pre>
+    '(+ x (* 2 y))
+</pre>
+
+<hr>
+
+<p>
+
+Suppose we define a parser as  a function that takes a list of  tokens
+and returns a parse-tree.
+
+<p>Raises two problems
+
+<p> we have to find some way of signalling that a list  of
+tokens is not in fact  a sentence of the language
+<tt>#f</tt>
+
+<p>sure that <tt>#f</tt> cant be mistaken  for an actual parse-tree?
+
+<p>
+Compositionality.
+<p>
+Hopeless  to try to  write one huge  function
+which will perform a parse of a complex language.
+
+<p>Have to build a parser out of smaller functions that we write.
+
+<p>What sort
+of functions?
+
+<p>Build big parsers out of smaller ones.
+
+<hr>
+
+We can use the  <em>language definition</em> as a guide to doing this.
+
+<pre>
+    <b>sentence</b>  -> <b>noun_phrase</b> <b>verb_phrase</b>
+</pre>
+
+<p>
+We want a parser for a <b>sentence</b> - so build it out of a parser
+for  the grammatical class
+
+<p>
+<b>noun_phrase</b>
+
+<p>
+and a  parser  for the  class  verb_phrase.
+
+<hr>
+
+<p>
+Suppose  we  want  our <b>sentence</b>-parser to parse this sentence:
+
+<pre>
+    (the cat eats the canary)
+</pre>
+
+<p>
+What text are the <b>noun_phrase</b>  parser and the   verb_phrase parser going to
+have to work on?
+
+<p>The <b>noun_phrase</b>-parser is going to work on the
+whole list:
+
+<pre>
+    (the cat eats the canary)
+</pre>
+
+<p>
+recognising <tt>(the cat)</tt> as being a <b>noun_phrase</b>.
+
+<p> The <b>verb_phrase</b>-parser is
+going to have to work on <tt>(eats
+the  canary)</tt>.
+
+<p>We have to provide some  way
+of giving it its  correct argument.
+
+<hr>
+A false trail
+
+<p>
+How about the
+<tt>cddr</tt> of  the
+original list
+
+<p>
+Wewould be making  the assumption that  each noun  phrase
+consists of exactly  two tokens,
+
+<p> <tt>(the
+furry cat  eats the canary)</tt>.
+
+<p>A bad mistake when creating parsers to assume that any given grammatical
+class had a fixed length.
+
+<hr>
+
+<p>
+Better: require a parser  to return  result a record  which
+contains
+
+<p><em>part of the original list of tokens which remains
+unparsed</em>.
+
+<p>That
+way we  can slot the  two parsers  for noun phrases  and verb  phrases
+together (or any other two).
+
+<p>We can  think of the first parser as  "eating"
+tokens until it  is satisfied,  when what remains  is given  to the  second
+parser.
+
+<hr>
+
+
+<p>
+If we are using  UMASS Scheme we  can define a record  class for parses  as
+follows:
+
+<pre>
+(define class_parse (record-class 'parse '(full full)))
+
+(define cons_parse   (car class_parse))
+(define sel_parse    (caddr class_parse))
+(define tree_parse   (car sel_parse))
+(define rest_parse   (cadr sel_parse))
+</pre>
+
+<hr>
+
+<p>
+Now, a parser can signal failure by returning <tt>#f</tt>
+without risk of confusion,
+since if it succeeds it will always return one of these parse-records.
+
+<hr>
+
+<p>
+Thus we can regard a parser as a function which takes as argument a list of
+tokens and returns as result
+
+<UL>
+<LI>
+    EITHER a parse whose <tt>tree_parse</tt> is a <em>parse-tree</em>
+    of a recognised phrase and whose <tt>rest_parse</tt> is the remainder
+    of the list when the phrase is "bitten off".
+<LI>
+    OR <tt>#f</tt>,
+to indicate that the argument-list does not begin with the
+            required phrase.
+</UL>
+
+<hr>
+<p>
+For example, we might  write a parser which  recognised expressions in  the
+Pascal language.
+internal form)
+
+<p>The Pascal expression
+<tt> x+2*y </tt> would be represented by the Scheme
+
+<pre>
+    (+ x (* 2 y))
+</pre>
+
+<hr>
+
+<p>
+Thus suppose we have a parser for Pascal
+
+
+
+<pre>
+    (define p
+        (parse_pascal '(x + 2 * y ; z := 4;))
+        )
+</pre>
+
+<p>
+then the Scheme variable <tt>p</tt>  will have the value which prints as:
+
+<pre>
+        &LTparse (begin (+ x (* 2 y)) (:= z 4)) '()>
+</pre>
+
+<p>
+if we choose an obvious way to represent Pascal as Scheme.
+
+<hr>
+
+<p>
+To make a parser for the  whole English language is <em>hard</em>
+<p> Even to make
+a parser  for a programming  language is quite  hard.
+
+<p> However, let  us
+make a start
+
+<pre>
+    <b>noun_phrase</b> ->  <b>determiner</b> <b>noun</b>
+    <b>determiner</b>   -> the
+    <b>determiner</b>   -> a
+</pre>
+
+That is to  say, a <b>determiner</b>  is the  word "a" or  "the".
+
+<hr>
+<p>
+
+Lets write a parser for <b>determiner</b>
+
+<p>The  function takes a list of
+tokens  as argument.
+
+<p>If (1) the list of  tokens begins with the symbol
+<tt>'a</tt>  or
+with the symbol <tt>'the</tt>,we  have a determiner,
+<p>so  (2) create a parse-record
+
+<hr>
+
+<pre>
+(define parse_determiner
+    (lambda (list_of_tokens)
+        (if (member? (car list_of_tokens) '(a the))    ; (1) determiner there?
+            (cons_parse                                ; (2) yes! make parse
+                (car list_of_tokens)                   ; (3) tree
+                (cdr list_of_tokens))                  ; (4) unparsed list
+            #f ) ))                                    ; (5) fail
+</pre>
+
+<hr>
+
+<p>
+We will need the definition of <tt>member?</tt> from Lecture 5:
+
+<pre>
+(define (member? x list)
+     (if (null? list) #f
+         (if (equal? x (car list)) #t
+              (member? x (cdr list)))))
+</pre>
+
+<hr>
+
+<p>
+We can now try this out.
+
+<pre>
+    (parse_determiner '(the cat eats the canary))
+</pre>
+
+<p>
+returns the parse-record:
+
+<pre>
+    &LTparse the (cat eats the canary)>
+</pre>
+
+<p>
+The <tt>tree_parse</tt> component of the <tt>parse</tt> record is
+the symbol <tt> 'the </tt>
+<p>the <tt>rest_parse</tt>
+component is <tt>'(eats the canary)</tt>, that is the original list with
+the determiner removed.
+<hr>
+
+
+<p>
+While if there is no determiner:
+
+<pre>
+    (parse_determiner '(eats the canary))
+</pre>
+
+<p>
+we get
+
+<pre>
+    #f
+</pre>
+
+<hr>
+
+
+<p>
+Note that there  is a bug  in this function,  we have not  allowed for  the
+possibility that the list of tokens might be empty. We'll mend this later.
+
+<p>
+Likewise we could define a <b>noun</b> as a member of a list of words known
+to be nouns. Now there  are tens if not hundreds  of thousands of nouns  in
+the English language, so this would be  a long list (and expensive to  look
+through), but we can restrict our vocabulary.
+
+<hr>
+<pre>
+(define noun '(cat dog child woman man bone cabbage canary))
+
+(define parse_noun
+    (lambda (list_of_tokens)
+        (if (member? (car list_of_tokens) noun)
+            (cons_parse (car list_of_tokens)
+                (cdr list_of_tokens))
+            #f ) ))
+</pre>
+
+<hr>
+
+<p> Now, can we write a parser  for a <b>noun_phrase</b>?
+
+
+Make  use of  our two existing  parsers, rather  than
+trying to write a function  that sees if the <tt>list_of_tokens</tt>  has a
+determiner as a first word and a noun as second. This is NOT what we should
+do:
+
+
+<pre>
+(define parse_noun_phrase
+    (lambda (list_of_tokens)         ; DONT DO THIS
+        (if (and
+                (member? (car list_of_tokens) '(a the))
+                (member? (cadr list_of_tokens) noun)
+                )
+            (cons_parse
+                (list 'noun_phrase   (car list_of_tokens)
+                    (cadr list_of_tokens))
+                (cddr list_of_tokens)
+                )
+            #f)
+        ))
+</pre>
+
+<hr>
+
+<p>
+Consider our grammar
+
+
+<pre>
+<b>noun_phrase</b> -> <b>determiner</b> <b>noun_phrase</b>
+</pre>
+
+<p> There's no  way we  could extend  the kind of  parser we  see above  to
+handle a language  with a complex  grammar. Instead we  should rely on  our
+little parsers being designed to work together to make a big parser.
+
+<hr>
+
+
+<pre>
+(define parse_noun_phrase
+  (lambda (list_of_tokens)
+      (let ((p_det (parse_determiner list_of_tokens)))     ; (1)
+          (if p_det                                        ; (2)
+              (let ( (p_n (parse_noun (rest_parse p_det)))); (3)
+                  (if p_n                                  ; (4)
+                      (cons_parse                          ; (5)
+                          (list 'noun_phrase               ; (6)
+                              (tree_parse p_det)           ; (7)
+                              (tree_parse p_n))            ; (8)
+                          (rest_parse p_n)                 ; (9)
+                          )                                ;
+                      #f)                                  ;(10)
+                  );end let                                ;
+              #f)                                          ;(11)
+          );end let                                        ;
+      )); end def. parse_noun_phrase                       ;
+</pre>
+
+<hr>
+
+<p>
+Now we can try this out
+
+<pre>
+    (parse_noun_phrase '(the cat eats the canary))
+</pre>
+
+<p>
+obtaining
+
+<pre>
+    &LTparse  (noun_phrase the cat) (eats the canary)>
+</pre>
+
+<hr>
+
+<p>
+The <tt>tree_parse</tt> component of the <tt>parse</tt> record is
+<p> <tt> '(noun_phrase the cat) </tt>,
+
+<p> the <tt>rest_parse</tt>
+component is <tt>'(eats the canary)</tt>
+
+<p>the original list with the noun-phrase removed.
+
+<hr>
+
+<p>
+and, if the parse  fails:
+
+<pre>
+    (parse_noun_phrase '(eats the canary))
+</pre>
+
+<p>
+we get
+
+<pre>
+    #f
+</pre>
+
+<hr>
+
+<p>
+Also if we have a determiner first, but no noun second:
+
+<pre>
+    (parse_noun_phrase '(the the canary))
+</pre>
+
+<p>
+we get
+
+<pre>
+    #f
+</pre>
+
+<hr>
+
+<pre>
+(define verb '(likes eats hugs))
+
+(define (parse_verb list_of_tokens)
+    (if (member? (car list_of_tokens) verb)
+        (cons_parse (car list_of_tokens) (cdr list_of_tokens))
+        #f ) )
+</pre>
+
+<p>
+We are going to get fed up with changing the names of the <tt>p_...</tt>
+variables,
+so let us call them <tt>p1</tt> and <tt>p2</tt>.
+
+<hr>
+
+<pre>
+(define parse_verb_phrase
+    (lambda (list_of_tokens)
+        (let ((p1 (parse_verb list_of_tokens)))
+            (if p1
+                (let ((p2 (parse_noun_phrase (rest_parse p1))))
+                    (if p2
+                        (cons_parse
+                            (list 'verb_phrase
+                                (tree_parse p1)
+                                (tree_parse p2))
+                            (rest_parse p2)
+                            )
+                        #f)
+                    ) ;end let
+                #f)
+            );end let
+        )); end def. parse_verb_phrase
+</pre>
+
+<hr>
+
+<pre>
+(example '(parse_verb_phrase '(eats the canary))
+    (cons_parse '(verb_phrase eats (noun_phrase the canary))
+        '())
+    )
+</pre>
+
+<hr>
+
+<p>
+Now we can define a <b>sentence</b> of the English Language
+
+<pre>
+    <b>sentence</b> -> <b>noun_phrase</b> <b>verb_phrase</b>
+</pre>
+
+<hr>
+
+<pre>
+(define parse_sentence
+    (lambda (list_of_tokens)
+        (let ((p1 (parse_noun_phrase list_of_tokens)))
+            (if p1
+                (let ((p2 (parse_verb_phrase (rest_parse p1))))
+                    (if p2
+                        (cons_parse
+                            (list 'sentence
+                                (tree_parse p1)
+                                (tree_parse p2))
+                            (rest_parse p2)
+                            )
+                        #f)
+                    ) ;end let
+                #f)
+            );end let
+        )); end def. parse_sentence
+</pre>
+
+<hr>
+
+<p>
+Now we can try out our complete sentence-parser. If we try it on the
+sentence <tt>'(the
+cat eats the canary)</tt> we see that we obtain a parse:
+
+
+<pre>
+(example
+    '(parse_sentence '(the cat eats the canary))
+    (cons_parse
+        '(sentence (noun_phrase the cat)     ; parse-tree
+            (verb_phrase eats
+                (noun_phrase the canary)))    ; end of parse-tree
+        '()                                   ; unparsed
+        )                                     ; end of parse
+    )
+</pre>
+
+<hr>
+
+<p>
+If we give it a non-sentence like <tt>'(canary the cat eats)</tt> we get:
+
+<pre>
+(example
+    '(parse_sentence '(canary the cat eats))
+    #f)
+</pre>
+
+<p>
+that is, the parse fails.
+
+<p>
+Give it a <b>sentence</b> with
+nonsense at the end.
+
+<p>We can use the <tt>example</tt> capability to
+compare the result of the parse (1) with what we expect (2).
+
+<p>Run the
+example - it works!
+
+<hr>
+
+<pre>
+(example
+    '(parse_sentence '(the dog eats the bone 4 5 6))   ;(1)
+    (cons_parse                                        ;(2)
+        '(sentence (noun_phrase the dog)
+            (verb_phrase eats
+                (noun_phrase the bone)))
+        '(4 5 6)
+        )
+    )
+</pre>
+
+
+<hr>
+
+<pre>
+(example
+    '(parse_sentence
+        '(the cat eats the canary with the yellow feathers))
+    (cons_parse '(sentence (noun_phrase the cat)
+            (verb_phrase eats
+                (noun_phrase the canary)))
+                    '(with the yellow feathers)
+        )
+    )
+</pre>
+
+<hr>
+
+<p>
+that is the  prepositional phrase <tt>'(with  the yellow feathers)</tt>  is
+left unrecognised. Note that this form of sentence also poses a problem  of
+<em>ambiguity</em> - does the canary  have yellow feathers? or perhaps  the
+cat uses yellow feathers as an instrument with which to eat the unfortunate
+bird. <em>We</em> know  that canaries are  yellow-feathered birds and  that
+cats are not given to using tools as instruments - but that is <em>semantic
+knowledge</em> that  cannot  readily be  built  into syntax.  The  parallel
+sentence "the man eat the turkey with the knife and fork", has the opposite
+structure.
+
+<hr>
+
+Ambiguity can occur in computer languages, but language designers try to
+avoid it.
+
+<hr>
+
+We can parse nonsense sentences such as:
+
+
+<pre>
+(example
+    '(parse_sentence '(the cabbage eats the man))
+    ( cons_parse
+     '(sentence (noun_phrase the cabbage)
+         (verb_phrase eats
+             (noun_phrase the man)))
+     '()
+     )
+    )
+</pre>
+
+
+
+<p>
+Distinguishing grammatically correct sense from grammatically correct nonsense
+is an issue of <em>semantics</em>.
+
+<h2> <a name="trace">The <tt>trace</tt> function can be used for checking
+out parsers.</a></h2>
+
+<hr>
+
+<p>
+We can make good use of the <tt>trace</tt> function to help us debug our
+parsers.
+
+<pre>
+    (trace parse_verb_phrase)
+    (trace parse_verb)
+    (trace parse_noun_phrase)
+
+    (parse_verb_phrase '(eats the canary))
+
+    > parse_verb_phrase  [eats  the  canary ] 1
+    !> parse_verb  [eats  the  canary ] 1
+    !< parse_verb  [eats  the  canary ]
+    !> parse_noun_phrase  [the  canary ] 1
+    !< parse_noun_phrase  [[noun_phrase  the  canary ]]
+    < parse_verb_phrase  [[verb_phrase  eats
+                            [noun_phrase  the  canary ]]]
+
+    ((verb_phrase eats (noun_phrase the canary)))
+
+</pre>
+
+
+
+<hr>

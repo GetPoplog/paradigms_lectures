@@ -1,0 +1,653 @@
+
+
+
+<html><head><title>
+     Lecture 6  Procedural and Data Abstraction
+</title></head>
+<BODY bgcolor = "white">
+
+
+<h1>
+    Course 287: Lecture 6  Procedural and Data Abstraction;
+</h1>
+
+<hr>
+
+
+<!-- L:abstract --><a href="lecture6.html#abstract">   The need for
+abstraction </a><br>
+
+<!-- record-class --><a href="lecture6.html#record-class">
+Using <tt>record-class</tt> to create opaque records.</a><br>
+
+<a href="lecture6.html#object_orientation">
+Starting to write an object-oriented capability for Scheme.</a><br>
+
+<hr>
+<h4> Abelson and Sussman </h4>
+
+Chapter 1 of Abelson and Sussman is entitled "<em>Building Abstractions
+with Procedures</em>".
+
+Chapter 2 of Abelson and Sussman is entitled "<em>Building Abstractions
+with Data</em>".
+
+We shall discuss many of the ideas covered in these chapters during the
+course, but not in exactly the same order.
+
+You will find a discussion of <em>Data Abstraction</em> in section 2.1 of
+Ableson and Sussmann (p83 ff.) See also section 1.1.8 <em> Procedures as
+Black Box Abstractions</em> (p26 ff.).
+
+<hr>
+<h2><a name = "abstract">The need for abstraction</a></h2>
+
+
+<p>  In  abstraction  we  <em>draw  out</em>  (from  the  Latin  verb  <em>
+traho</em> I pull (c.f. <em>tractor</em>), and the preposition  <em>ab</em>
+meaning "from" or "away from") an essential aspect of an idea, allowing  it
+to be applied to more than the particular set of circumstances in which  we
+first encountered it. We have already seen this at work when we  considered
+the <tt>sum</tt> function and abstracted  it to obtain the  <tt>reduce</tt>
+function.
+
+
+<p> An important  principle in the  design of computational  systems is  to
+provide a measure of <em> isolation  of the implementation of a  capability
+from its  users</em>.  Thus a  user  is required  to  employ some  kind  of
+standard <em>interface</em> in accessing a capability. In doing this we are
+<em>abstracting</em> the <em>essence</em> of the capability from the  point
+of view of its users.
+
+<p> For example, in computer hardware, a standard <em>bus</em> such as  the
+VME bus can  be used to  connect modules. In  operating systems, access  to
+backing store is mediated via system-calls.
+
+<p>
+This isolation offers  two primary advantages:
+<UL>
+
+<p> <em> The implementation  can be improved  or changed without  affecting
+how it is used</em>. Provided the  user adheres to the standard  interface,
+(s)he need not alter how (s)he uses the capability.
+
+<p>
+    Thus for example, in hardware, a larger memory module can be plugged into
+    the standard bus and can be immediately usable. In operating systems, a
+    file system local to a particular machine can be replaced by a distributed
+    file system with minimal disruption to users.
+
+
+<p> <em>Safety features can be built into the implementation</em>.
+    Generally it is true
+    that not all states of a resource are legal. For example, in an operating
+    system, each block on the disc should either belong to one named file, or
+    should be known to be free. Ensuring that this remains true can remain the
+    responsibility of the operating system (OS) provided that the user only
+    accesses the disc via the <em>abstraction</em> that the OS provides,
+    namely the file.
+</UL>
+
+<p>
+Sometimes a mechanism is provided  to <em>police</em> the safety  features.
+For example  in the  Unix operating  system, it  is impossible  for a  user
+program to issue an input-output  instruction to access the disc  directly.
+Any such instruction will be  <em>trapped</em> by the machine hardware  and
+referred to the <em>kernel</em> of  the OS. On the  other hand, in the  DOS
+operating system, there is no such protection, so that correct usage of the
+disc is dependent on programmer discipline.
+
+<p>
+Likewise, in the  Scheme language,  any access  to the  machine's store  is
+mediated by the <tt>car</tt>,<tt>cdr</tt> and <tt>cons</tt> functions. This
+prevents certain  kinds of  illegality from  occurring. For  example it  is
+impossible in  a Scheme  system for  a piece  of store  to be  regarded  as
+<em>free</em> when in fact it forms part of a user's data-structure.
+
+<p>
+By contrast, in the C language, the user has free access to her entire virtual
+machine, so that it is possible for a piece of store to be used in two
+contradictory ways by a single program.
+
+<p>
+However there is often a <em>performance penalty</em> associated with using
+a standard  interface.  During the  evolution  of computer  hardware,  many
+bus-standards have become obsolete as technology has advanced. For example,
+memory is  now supplied  as SIMM's  which plug  directly into  a  processor
+board.
+
+Likewise the writers of computer  games are notorious for employing  direct
+access to graphics hardware, rather than employing the standard  interface,
+in order to achieve the necessary speed.
+
+<p>
+Likewise,  the  use  of  the  <tt>car</tt>,<tt>cdr</tt>  and  <tt>cons</tt>
+functions in Scheme may carry a performance penalty compared with the  more
+direct access offered  by C.  Not all  storage configurations  that can  be
+created by  C can  be created  by Scheme.  Moreover the  storage  integrity
+demanded by Scheme  can require  that these  primitive functions  perform a
+check that the <tt>car</tt> and <tt>cdr</tt> functions are being applied to
+lists. The issue of efficiency is a complex one, and does not always  imply
+that languages  like Scheme  are more  inefficient than  C, especially  for
+large programs.
+
+<h2> Levels of Abstraction </h2>
+
+<p>Any engineered system of any complexity exhibits  abstraction layered
+into levels. In computer hardware, levels of abstraction are imposed by
+technology - there is at least a chip-level, a board-level and a
+system-level. Within the chip-level, there are further levels of
+abstraction - at least a device level and a register-level. With a
+processor chip there will be larger functional units, e.g. an ALU or a
+cache.
+
+<p> For each level of abstraction there are two separate problems to be
+addressed
+<UL>
+<LI> Implementing that level of abstraction.
+<LI> Using that level of abstraction.
+</UL>
+
+These are very different activities. Using ought to be very much easier
+than implementing if the abstraction is worthwhile.
+
+<h3>Building Levels of Abstraction within Scheme.</h3>
+
+
+
+
+<p>
+While  <tt>car</tt>,<tt>cdr</tt> and <tt>cons</tt>
+provide a  base abstract view  of the machine  store,
+they operate at a low conceptual level, not related to what most programs  are
+<em>about</em>.
+We can use them, and other facilities of Scheme, as building blocks  to
+provide abstractions appropriate to the requirements of a given program by
+
+
+<UL>
+    <LI> <em> Defining functions which implement the concepts which are
+    needed
+    for the program</em>. For example, if we are interested in geometric
+    computations, we
+    will need functions to implement points, lines, planes, circles,
+    spheres...
+
+    <LI>
+    Writing the rest of the program using only this basic set of functions.
+</UL>
+
+<p> Within  a purely  functional approach,  implementation requires  us  to
+define <em>constructor  functions</em>  to  build  representations  of  the
+objects and <em>selector functions</em> to access such representations.  At
+the base-level, <tt>cons</tt> is  a constructor function <tt>car,  cdr</tt>
+are the selectors.
+
+<h3>  Example 1 A point </h3>
+
+
+<h4>Implementation of points</h4>
+
+<pre><code>
+(define (mk_point x y)   ; the basic constructor function
+    (list x y))
+
+(define x_point car)     ; two selector functions.
+(define y_point cadr)
+</code></pre>
+
+<h4>Use of points</h4>
+
+
+<p>
+From now on we use only <tt>mk_point, x_point and y_point</tt>
+to construct and access points.
+For example:
+
+
+<pre><code>
+(define (mid_point p1 p2)
+    (mk_point
+        (/(+ (x_point p1) (x_point p2)) 2)
+        (/(+ (y_point p1) (y_point p2)) 2)
+        )
+    )
+
+(example '(mid_point (mk_point 1 2) (mk_point 5 8)) (mk_point 3 5))
+
+
+(define (diff_point p1 p2)
+    (mk_point
+        (- (x_point p1) (x_point p2))
+        (- (y_point p1) (y_point p2))
+        )
+    )
+</code></pre>
+
+
+So any code we write to manipulate points is quite independent of the
+implementation of points.
+
+
+<h4>New implementation of points</h4>
+If we make the representation of points more mnemonic:
+
+<pre><code>
+(define (mk_point x y)
+    (list 'point x y))
+
+(define x_point cadr)
+(define y_point caddr)
+</code></pre>
+
+our <tt>mid_point</tt> function will still work!
+
+<pre><code>
+(example '(mid_point (mk_point 1 2) (mk_point 5 8)) (mk_point 3 5))
+
+example: (mid_point (mk_point 1 2) (mk_point 5 8)) = (point 3 5),  ok!
+                                                      |
+Note however that the print out is different here -----
+</code></pre>
+
+<h2><a name = "layer_abstract">Layers of Abstraction</a></h2>
+
+<p>We
+can build one abstraction on top of another. For example, we can use points
+to define lines:
+
+
+
+<h3>  Example 2 A line </h3>
+
+<h4> Implemention of lines </h4>
+
+<pre><code>
+(define (mk_line x0 y0 x1 y1)
+    (let (
+         (p_0 (mk_point x0 y0))
+         (p_1 (mk_point x1 y1))
+         )
+        (list p_0 p_1))
+    )
+</code></pre>
+
+
+<pre><code>
+(define point_0_line car)
+(define point_1_line cadr)
+</code></pre>
+
+<h4>   Use of lines </h4>
+
+<pre><code>
+(define (length_line l)
+    (let* (
+         (p0 (point_0_line l))
+         (p1 (point_1_line l))
+         (p  (diff_point p0 p1))
+         (x  (x_point p))
+         (y  (y_point p)))
+        (sqrt (+ (* x x) (* y y)))
+        )
+    )
+
+(define l1 (mk_line 0 1 6 7))
+
+(define l2 (mk_line 0 4 7 8))
+
+(length_line l1)
+</code></pre>
+
+
+<h2><a name="record-class">Using <tt>record-class</tt> to create opaque
+records.</a></h2>
+
+<p>
+UMASS Scheme provides opaque records as an option. The function-call
+<pre>
+    (record-class <b>class_info spec</b>)
+</pre>
+<p>
+will return  a  list-structure  containing record  access  functions.  Here
+<b>class_info</b> is  a symbol or other structure that is common to all
+members of the class.
+The parameter <b>spec</b>
+is a list of <em>field</em> specifiers. A field specifier  says
+what kind of data  can be held in  a field. The only  kind of specifier  we
+will use is the symbol <tt>'object</tt>,
+which creates a field able to  hold
+any Scheme object.
+
+<hline>
+Historical Note: The record-class capability is non-standard for Scheme.
+It is derived from the <tt>recordfns</tt> capability of POP-2
+[Burstall and Popplestone   1968], as modified for POP-11 [Barrett, Ramsay
+& Sloman 1985].
+<hline>
+
+)
+
+<p>
+The <tt>record-class</tt>
+function returns a list of four items:
+
+
+<OL>
+<LI>
+    The first is a constructor function for the record-class. This takes as
+    many arguments as there are field-specifier in the <b>spec</b>
+    and builds a record containing them.
+<LI>
+    The second is a destructor function for the record-class. This takes
+    a record created by the constructor and makes a list of the objects
+    out of which the record was constructed.
+<LI>
+    The third is a list of selector functions for the record-class, one
+    for each field-specifier in the <b>spec</b>.
+    Each selector function extracts
+    the contents of the appropriate field.
+<LI>
+    The fourth is a function for recognising members of the record-class.
+</OL>
+
+<p>
+For example we might do:
+
+<pre><code>
+(define class_point (record-class 'point '(object object)))
+
+(define mk_point  (car class_point))
+(define sel_point (caddr class_point))
+(define x_point   (car sel_point))
+(define y_point   (cadr sel_point))
+</code></pre>
+You may also use
+
+<pre><code>
+(define dest_point  (cadr class_point))
+(define point?      (cadddr class_point))
+</code></pre>
+
+<hr>
+
+
+<h2> <a name = object_orientation>
+Starting to write  an object-oriented capability  for Scheme.</a></h2>  The
+<tt>record-class</tt> capability  allows to  create opaque  data-structures
+which can only be accessed  by the appropriate selector functions.  However
+the selector  functions  as we  have  used them  just  live in  the  global
+name-space. This  is a  problem if  we try  to build  a big  system out  of
+software components written  by disparate  authors since we  can't be  sure
+that some people won't use the same names for different functions. This, of
+course, is  a problem  for the  C language,  which also  has a  big  global
+name-space.
+
+<p>Another problem is that we may want  to have a class of objects that  in
+some way <em>extends</em> another class. For example, if we were  modelling
+a university, then we would want to have a basic <tt>person</tt> class that
+was <em>extended</em> to a  <tt>student</tt> class. That  is a student  has
+all the  attributes of  a person  (name,  age, sex  let's say),  plus  some
+others, for example a list of courses that he or she is taking.
+
+<p>And  finally   we   may   want   to  say   that   a   particular   class
+<em>implements</em>  some  kind   of  abstractly-defined  capability.   For
+example, we might have a notion  of what software to manipulate sets  ought
+to provide - membership, union and intersection operations, say.
+
+<p>The <tt>record-class</tt> facility of UMASS Scheme provides a basic
+tool-kit for addressing the above issues; however "spilling out" the
+package of capabilities provided by <tt>record-class</tt> into global
+name-space is not a good basis for maintaining encapsulation. One paradigm
+that supports encapsulation is the usual <em>object-oriented</em> paradigm,
+in which the capabilities associated with a class of objects remain
+encapsulated in a class-structure which is accessible primarily via objects
+of the class. One Scheme view of this might be to implement
+object-orientation in terms of a call to a function "send" which passes a
+message to an object. So, instead of writing  <tt>(x_point p)</tt>, we
+would instead write:
+
+<pre>
+    (send p 'x)
+</pre>
+
+Implementing this kind of capability is something of a doddle using
+<tt>record-class</tt>, since we can use the first argument of the call to
+provide class-common information. However actually doing this will have to
+wait on us knowing about the imperative paradigm in Scheme.
+
+<hr>
+
+<h2>References</h2>
+
+ Burstall, R.M. and Popplestone, R.J., [1968] The POP-2 Reference Manual,
+Machine Intelligence 2, pp. 205-46, eds Dale,E. and Michie,D. Oliver and
+Boyd,
+Edinburgh, Scotland.
+
+<p>Barrett,R.,
+Ramsay,A. and Sloman A., [1985] POP-11 A Practical Language for
+Artificial Intelligence, Ellis Horwood, Chichester, England
+and John Wiley N.Y.,USA.
+</p>
+
+
+<hr>
+
+<h1>     EXTRACT FROM POPLOG ON-LINE MANUAL - ref keys </h1>
+
+    The material below is not required reading. It explains more fully
+    how to use field specifiers.
+
+<hr>
+
+
+<h2> 6  Field Specifiers for Poplog Data </h2>
+
+This section  lists the  permissible field  type specifiers  for  Poplog
+data, i.e. that can appear in the SPEC or SPEC_LIST argument to  conskey
+(SPEC_LIST is a list of type specifiers for a record class, and SPEC  is
+a single one for a vector class).
+
+<DL>
+<DT><b>Full Poplog Item</b>
+<DD>
+This is  the quickest  field  type to  access  or update,  since  it
+    requires no conversion  to and  from Poplog  representation, and  no
+    check on values assigned into  it, etc (see 'Representation of  Data
+    in Poplog' in <tt>REFù*ùDATA</tt>).
+<TABLE BORDER=1>
+<TR>    <TH> Type </TH>  <TH>  Meaning </TH>     </TR>
+
+<TR>    <TD>   "full" </TD> <TD>
+              Holds a single Poplog  item, and occupies one
+                  'natural' machine word (32 bits in all current
+                  implementations - except the DEC ALPHA). </TD> </TR>
+</TABLE>
+</DD>
+<HR>
+<DT><b> 'Packed' Integers</b>
+<DD>
+    These fields can contain integers  only, either signed or  unsigned,
+    represented in a fixed number of binary bits.
+        When accessed, such a field produces a Poplog simple integer  or
+    biginteger (the  latter only  for a  field having  more bits  than a
+    simple integer -  29 bits  unsigned or  30 bits  signed in  current
+    implementations - and the value overflows this range).  Similarily,
+    a simple  integer or  biginteger  within the  range allowed  can  be
+    assigned into the field.
+        The named types correspond to standard sizes on the host machine
+    (and are always aligned on appropriate boundaries to be  efficiently
+    accessible), whereas fields specified as  a specific number of  bits
+    (i.e.  N  or  -N)  are  'bitfields'  and  are  generally  slower  to
+    access/update (and in a structure, simply occupy the next N bits).
+
+<TABLE BORDER=1>
+<TR>    <TH> Type </TH>  <TH>  Meaning </TH>     </TR>
+
+<TR>
+<TD>
+        "int"
+</TD><TD>
+                  Signed integer  of the  'natural' machine  wordsize
+                  (32 bits in all current implementations, range -2**31
+                  <= I < 2**31 ).
+</TD>
+</TR>
+<TR>
+<TD>
+        "uint"
+</TD><TD>
+                  Unsigned integer of the  'natural' machine wordsize
+                  (32 bits in  all current  implementations,  range 0
+                  <= I < 2**32 ).
+</TD>
+</TR>
+<TR>
+<TD>
+        "long"
+</TD><TD>
+                  Signed 'long'  integer (same  as  "int" in  all
+                  current implementations).
+
+</TD>
+</TR>
+<TR>
+<TD>
+        "ulong"
+</TD><TD>
+                  Unsigned 'long' integer (same  as "uint" in all
+                  current implementations).
+
+</TD>
+</TR>
+<TR>
+<TD>
+        "short"
+</TD><TD>
+                  Signed 'short'  integer   (16  bits   in  all
+                  current implementations, range -2**15 <= I < 2**15 ).
+
+</TD>
+</TR>
+<TR>
+<TD>
+        "ushort"
+</TD><TD>
+                  Unsigned 'short'  integer  (16  bits  in  all
+                  current implementations, range 0 <= I < 2**16 ).
+
+</TD>
+</TR>
+<TR>
+<TD>
+        "sbyte"
+</TD><TD>
+                    Signed byte  (8  bits in  all  current
+                  implementations, range -2**7 <= I < 2**7 ).
+</TD>
+</TR>
+<TR>
+<TD>
+        "byte"
+</TD><TD>
+                  Unsigned byte (8  bits in  all current
+                  implementations, range 0 <= I < 2**8 ).
+</TD>
+
+</TR>
+<TR>
+<TD>
+        -N
+</TD><TD>
+                  Signed bitfield of N  bits, where 1 <= N <= 32.
+                  (Range of-2**(N-1) < = I < 2**(N-1)) ).
+
+</TD>
+</TR>
+<TR>
+<TD>
+        N
+</TD><TD>
+                  Unsigned bitfield of N bits, where 1 <= N <= 32.
+                  (Range 0 <= I < 2**N ).
+
+</TD>
+</TR>
+<TR>
+<TD>    "pint"
+</TD><TD>
+                  Same as "int",  but declares the  field as holding
+                  only values within  the  range  of a  Poplog  simple
+                  integer (pop_min_int <= I  <= pop_max_int). When  this
+                  is  known for an "int"  field, using "pint"  instead
+                  gives  faster access/update.
+</TD>
+</TR>
+</TABLE>
+
+    (N.B. All vector classes constructed on the types "byte" and "sbyte"
+    are special insofar  as they are  guaranteed to be  null-terminated,
+    i.e. to have a 0 byte following the last actual byte of the  vector.
+    This costs on average an extra byte per vector, but allows data such
+    as standard strings  to be  passed to external  C functions  without
+    modification.)
+
+<DT>Floating Point
+<DD>
+    Any non-complex  number,  including  integers  and  ratios,  can  be
+    assigned into these  fields, conversion and/or  rounding being  done
+    where necessary  (but a  mishap will  occur if  the input  value  is
+    outside the range of the field).
+        Accessing an "sfloat" or "float" field always produces a  Poplog
+    decimal;  accessing  a   "dfloat"  field  produces   a  decimal   if
+    <tt> popdprecision </tt>
+is false  and a  decimal can contain  the value,  or a
+    ddecimal otherwise (see <tt>REFù*ùpopdprecision</tt>).
+
+
+<TABLE BORDER=1>
+<TR>    <TH> Type </TH>  <TH>  Meaning </TH>     </TR>
+
+<TR>
+<TD>
+        "dfloat"
+</TD>
+<TD>
+                  A double-length floating-point number in machine
+                  format, occupying two 'natural'  machine words (64
+                  bits in  all current implementations).
+</TD>
+</TR>
+
+<TR>
+<TD>
+        "sfloat"
+</TD>
+
+<TD>
+                  A single-length floating-point number in machine
+                  format, occupying one  'natural' machine  word (32
+                  bits in  all current implementations).
+</TD>
+</TR>
+
+<TR>
+<TD>
+        "float"
+</TD>
+<TD>
+                  Identical to  "sfloat",  EXCEPT  when  specified  as
+                  an external  function  result  -  see  'Additional
+                  Field Specifiers for External Data' below.
+</TD>
+</TR>
+
+</TABLE>
+</DL>
+
+    (N.B. For upward compatibility with earlier versions of Poplog,  the
+    words "ddecimal" and "decimal" are also allowed, and are  synonymous
+    with "dfloat" and "float"  respectively. Note that "decimal"  equals
+    "float", NOT "sfloat".)
+</html>

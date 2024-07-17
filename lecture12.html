@@ -1,0 +1,604 @@
+
+<!-- Problems with the text ??? we have moved this lecture ahead of the
+discussion of ordered trees, but have a reference to them...
+Also we have no anchors in this text.
+Also, some of the figures have a captured text cursor.
+-->
+
+<html><head><title>
+
+
+ Storage Control &amp; Garbage Collection
+
+</title></head>
+<BODY bgcolor = "white">
+
+
+<h1>
+
+Lecture 12: Scheme &amp;  The Real Machine - Storage Control &amp;  Garbage
+Collection
+</h1>
+
+
+<pre>
+
+1 Mutating Data-Structures in Scheme
+
+  2   A note on persistence
+      2.1   Persistence across updates
+      2.2   Persistence across processes
+
+  3   "Dotted Pairs" and improper lists
+
+  4   The machine-level representation of data in Scheme
+
+  5   Garbage Collection in Computer Languages
+
+  6   The "Boxes and Arrows" Representation.
+</pre>
+
+<hr>
+<h4>Abelson &amp Sussman</h4>
+Garbage Collection is discussed beginning at page 540 in the textbook.<br>
+Persistence is not mentioned in the index<br>
+The "box and pointer" notation is discussed starting at page 97.<br>
+
+<hr>
+
+<h2>Mutating Data-Structures in Scheme </h2>
+
+<p>
+As well as <tt>set!</tt>
+which,  as we have seen, is  a <em>special form</em> which provides  an
+assignment statment, there are two  built-in procedures in Scheme which  allow
+data-structures already built to be changed.
+
+<ul>
+<li>
+    <tt>(set-car!
+list expr)</tt>  evaluates <tt>expr</tt>
+and assigns the resulting value to be
+    the <tt>car</tt>  of the <tt>list</tt>.
+<li>
+    <tt>(set-cdr!
+list expr)</tt> evaluates <tt>expr</tt>
+and assigns the resulting value to be
+    the <tt>cdr</tt> of <tt>list</tt>
+</ul>
+
+<p>
+These operations are equivalent to the  operations of assigning to the  fields
+of a record in Pascal or the fields of a structure in C. The original value of
+the <tt>list</tt>
+ceases to  exist. We  speak  of such  operations as  being  <em>mutation
+operations</em>.
+
+<p>
+Consider now the following:
+
+<pre><code>
+(define list '(5 6 7))
+(define list1 list)
+
+
+
+(example '(eq? list list1) #t)
+
+(set-car! list 'fred
+
+(example 'list '(fred 6 7))
+(example 'list1 '(fred 6 7))
+(example '(eq? list list1) #t)
+</code></pre>
+
+
+<p>
+What happens if we do:
+
+<pre><code>
+ (set-cdr! list list)
+</code></pre>
+
+
+<h2>  A note on persistence </h2>
+
+
+<p>
+The term <em>persistent</em>
+is used in Computer Science in two different ways.
+
+<h3>  Persistence across updates </h3>
+
+
+<p>
+(1) In the theoretical discussion data-structures <em>persistent</em>
+is a property  of
+the preservation of the original structure after some state-changing operation
+has been done on it. For example, the <tt>adjoin</tt>
+operation on sets represented  as
+trees is commonly  defined in  the imperative  paradigm as  an operation  that
+destroys the  original tree.  In this  context <em>persistence</em>
+is defined  to  be
+concerned with the preservation or restoration of the original structure after
+the update has been made.
+
+In general, the ability to reverse changes that may have been made erroneously
+to data-structures is a very important one.
+
+Note that the <em>functional
+paradigm</em> provides persistence automatically. Consider
+the Scheme expression:
+
+<pre>
+   (list set (adjoin 23 set))
+</pre>
+
+This contains both the original set, and  the set with the number 23  adjoined
+to it. The tree representation of sets requires us to use O(log n) space  each
+time we adjoin  an element, which  means that it  is quite cheap  to keep  old
+copies around.
+
+<h3> Persistence across processes</h3>
+
+<p>
+In almost all applications of computing it is vital that some data continue to
+past the lifetime of the process that created it. The term
+<em>persistent</em>
+is  also
+used to describe such data. Most computer languages provide direct support for
+only one kind of persistent data, the <em>file</em>.
+
+
+<p>
+<em>Persistent
+programming languages</em>,  for example PS-Algol or Napier,
+take a more  radical
+view  -  any  data-structure  can  potentially  persist.  We  say  that,  in a
+persistent programming  language,  persistence  is <em> orthogonal</em>
+to  all
+ other
+properties of data-structures.
+
+<p>
+Scheme, defined by the IEEE standard, provides an intermediate approach  to
+persistence - almost all Scheme data-structures can be written to a file by
+the <tt>print</tt>  function in  a form  in  which they  can be  read  back
+<tt>read</tt> function.
+
+<p>
+To be practical,  a persistent  language requires  data-structures to  have
+attributes that  are  usually  associated with  files,  for  example  every
+data-structure will need to be <em>owned</em> by some real or notional <em>
+user</em>. It must  be possible to  <em>lock</em> a data-structure  while a
+complex update operation is performed upon it.
+
+
+
+<h2>  "Dotted Pairs" and improper lists </h2>
+
+
+
+<p>
+Up to now, we have always used <tt>cons</tt>
+in such a way that the second argument is
+a list. Scheme does not actually require us to do so. We can easily check out
+what happens:
+
+<pre><code>
+(define l (cons 2 3))
+</code></pre>
+
+This prints as:
+
+<pre>
+    (2 . 3)
+</pre>
+
+<p>
+Such an entity  is called  a "dotted  pair". We also  speak of  it forming  an
+<em>improper
+list</em>. A list-structure is proper  if all rightmost elements of  every
+sub-structure are <tt>'()</tt>. The following list is improper
+
+<pre><code>
+     '(2 3 4 . 5)
+</code></pre>
+
+<p>
+As is this:
+
+<pre><code>
+    '(2 3 (5 . 7) 9)
+</code></pre>
+
+<p>
+It is always true that (cdr (cons a b)) = b, whether b is a list or not.
+
+
+
+<h2> The machine-level representation of data in Scheme </h2>
+
+<p>
+In an implementation  of Scheme, the  entities that you  can define in  the
+language must be represented  in the actual computer.  Scheme data is  <em>
+self describing</em>, that  is the  computer must be  able to  tell of  any
+particular datum whether  it is  a number, symbol,  pair, string,  boolean,
+empty-list etc...  This  is  usually  achieved  by  an  approach  in  which
+data-entities are <em>tagged</em> in various ways to indicate their type.
+
+<p>
+A possible approach to tagging is described below. It is a simplified version
+of the one used in the Poplog system.
+
+
+<ul>
+<li>
+(a) Small integers are represented by machine integers combined with a
+  1-bit tag.
+
+<li>
+(b) All other entities are represented by an address of a block of store
+  in which the entity is stored. This block begins with a tag which indicates
+  the type of the stored entity.
+
+</ul>
+
+<p>
+Each entity in Scheme is thus referred to by a fixed-length bit-pattern, which
+apart from the case of short integers (and possibly short floats) is a pointer
+to a  structure. This  is normally  large enough  to address  anywhere in  the
+virtual memory of a process, and so is commonly 32-bits, but is 64 bits on the
+DEC Alpha architecture, and on some others.
+
+<p>
+The convention used in  Poplog is:<br>
+
+<IMG SRC = "heap0.jpg">
+
+
+<p>
+This assumes byte-addressing,  so that addresses  of word-aligned blocks  have
+the form 4*n. Hence small integers and addresses can be distinguished. Integer
+addition takes one extra operation, to remove the tag-bit.
+
+<p>
+In this system, a  <tt>pair</tt>
+is represented  by the address of  a 3-field block  of
+store. The first  field is a  tag which  indicates that the  stored item  is a
+pair, the second holds the <tt>car</tt>
+value  and the third holds the <tt>cdr</tt> value.  (The
+use of a tag should be compared with the similar concept in variant records in
+Pascal).
+
+<p>
+Data-structures in Scheme are allocated from  the <em>heap</em>,
+a large area of  store
+devoted to storing most or all data that  is created by the user. Some of  the
+heap is in  use, the  rest is  <em>free</em>.
+The  boundary between  the two  is at  an
+address pointed to by the <em>free-pointer</em>.
+To perform the operation <tt>(cons a  b)</tt>,
+the store locations following the free  pointer are written into with (1)  the
+tag indicating a pair, (2) the value  <tt>a</tt>,
+(3) the value <tt>b</tt>. The free-pointer  is
+then incremented past the end of the new structure which represents a pair.
+
+<p>
+For example, given a pre-existing state of the heap:</p>
+
+
+
+<IMG SRC = "heap1.jpg">
+
+<p>
+<tt>(cons 3 4)</tt> will be inserted into the heap as:</p>
+
+
+<IMG SRC = "heap2.jpg">
+
+<p>
+[Sorry about the little black rectangle in the figure - it was the text
+cursor when I captured the image - I'll redo this at some point - RJP]</p>
+
+<p>
+Here, the 3 and 4  stand for the Scheme representation  of 3 and 4, which,  in
+UMASS Scheme will in fact be the machine integers 3*4+1 = 13 and 4*4+1 = 17.
+
+<p>
+When  the  free-pointer  reaches  the  end  of  the  heap,  a   <em>garbage
+collection</em> occurs.  This  is  a system  procedure  which  starts  from
+certain locations that it knows the  user program must be able to  access -
+the procedure activation records (PAR's) of any currently invoked functions
+and the  dictionary of  symbols.  This is  illustrated in  simplified  form
+below. Here I have  indicated the boundaries of  individual records in  the
+heap by small  vertical lines sticking  up above the  top, while the  areas
+marked with dots  above them may  contain many records.  The dictionary  of
+symbols is the record  tagged with "D". The  garbage collector starts  from
+it, follows  pointers  to  symbol  records  and  from  there  to  <em>value
+records</em> which hold the values of global variables. If we have executed
+<tt>(define fred (cons 3 4))</tt> then the value record associated with the
+symbol 'fred will point to the record for <tt>(cons 3 4)</tt>.</p>
+
+
+
+<IMG SRC = "heap3.jpg">
+
+
+<p>
+As the garbage  collector encounters  records in  store it  marks them  with a
+one-bit marker, indicated here by a prime(') marker.</p>
+
+
+<IMG SRC = "heap5.jpg">
+
+
+<p>
+Any unmarked  records  must  be inaccessible  to  the  user. So  they  can  be
+reclaimed.</p>
+
+
+<IMG SRC = "heap6.jpg">
+
+
+<h2>  Garbage Collection in Computer Languages</h2>
+
+<p>
+Garbage collection was invented for the implementation of the LISP language
+in the 1950's.  (Let us recall  that Scheme  is a rather  clean dialect  of
+LISP) Garbage collection was necessary because of the nature of store usage
+in LISP which was intended  to support <em> symbolic computation</em>,  for
+example to allow people do algebraic simplification on a computer. When you
+are doing symbolic computation  it is difficult to  predict how much  space
+the result of evaluating a function is  going to take. For example, if  you
+perform a symbolic integration, two integrands that look quite similar</p>
+
+
+<IMG SRC = "heap7.jpg">
+
+<p>
+have  very  different  integrals,  and  consequently  have  different  storage
+requirements for representing the result.
+
+<p>
+By contrast,  most applications  of  computing in  the 1950's  were  concerned
+either with commercial data processing or with numerical computation. For much
+numerical computation, sophisticated patterns of store usage do not occur.  It
+is trivial to specify how much store you need for the result of the product of
+two matrices.  Consequently it  is acceptable  to separate  the allocation  of
+space to hold the result of a computation from actually doing the computation.
+So you have a style of computation
+
+
+<pre>
+       array C [1,n,1,m];          (* Allocate memory for the result *)
+       multiply_matrices(A,B,C);   (* Do the matrix multiplication *)
+</pre>
+
+<p>
+Commercial computation did work on variable size data-sets. However the major
+data sets were held on magnetic tape, and only a small number of  fixed-format
+records would  be  in  main memory  at  each  point in  time.  Typically,  the
+operations done on these large data-sets were quite simple.
+
+<p>
+Consequently it  was left  to the  devisers  of LISP  and its  descendents  to
+develop garbage collection technology. But <em>garbage
+collection is an  extremely
+valuable technology</em>
+and  most languages  designed  recently are  intended  to
+support garbage collection. Garbage collection is valuable because it prevents
+two  kinds   of  errors   being   made  which   can   be  made   if   explicit
+allocation/deallocation are in use:
+<ul>
+
+<li>
+   (1) If a record in memory is not de-allocated when it is in fact not needed
+   by the user program, the performance of the user program is degraded below
+   the potential of the machine it is running on.
+
+<li>
+   (2) If memory is de-allocated when it is in fact in use, then a bug has
+   been introduced into the program. Such bugs can be very hard to locate and
+   cure.
+</ul>
+
+
+<p>
+Garbage collection requires that all pointers existing in the user's program
+be identified and used to mark objects.
+
+<p>
+Many modern languages  (e.g. ADA,  Modula-3) are designed  to support  garbage
+collection, though individual implementations may not do so. Much recent work,
+some of  it performed  in UMASS  under Professor  Moss's direction,  has  been
+concerned with being able to do garbage collection efficiently.
+
+<p>
+It should be noted that the C and  C++ languages do not support most kinds  of
+garbage collection,  although experiments  have been  done with  "conservative
+collectors". These  work on  the  principle that  "if something  looks  like a
+pointer assume  it is  a  pointer". There  is  however a  serious  performance
+problem with such collectors.
+
+<p>
+The Java language is a C++ derivative which IS garbage collectable.
+
+<p>
+A standard garbage collector may relocate cells in memory, making it difficult
+to interface  with languages  like C  and Pascal  which do  not  automatically
+relocate data once  allocated. Note that  this freedom of  the Scheme  storage
+control  mechanism  offers  potential   performance  advantages  for   complex
+programs. <em>A
+computer can perform tens  of thousands of operations in the  time
+it takes to service a  page fault.</em>
+Mark Reinholt  has discussed this issue  in
+his 1993 MIT PhD Thesis.
+
+
+<h2>  The "Boxes and Arrows" Representation.</h2>
+
+<p>
+Now let us consider how we can the manipulation of list-structures within this
+model. We will be  somewhat more abstract  in that we will  no longer draw  an
+explicit picture of the heap, but will simply represent the pairs out of which
+list structures are made by <em>boxes</em>.
+
+
+<p>
+For the list <tt>'(5
+6 7)</tt> this structure is shown below. Recall that the empty  list
+is data-type by itself in Scheme. We have shown the <em>value cell</em>
+for the Scheme variable <tt>list1</tt> in the diagram as well.</p>
+
+
+<IMG SRC = "heap8.jpg">
+
+<p>
+Note that in many implementations of Scheme,
+value cells for local variables are not located in the heap
+<em>heap</em> but on the control stack. [Some implementations of Scheme
+put Procedure Activation Records in the Heap, and dispense with the need
+for a stack - this is actually a more general approach]. </p>
+
+
+
+<p>
+So, if we have done <tt>(define list2 list1)</tt>, we have a diagram like
+this, in which the value cell for the variable <tt>list2</tt> contains a
+pointer to the same structure as  that to be found in the value-cell for
+<tt> list1</tt>. In this circumstance <tt>(eq? list1 list2) ==> #t </tt>
+
+<IMG SRC = "heap9.jpg">
+
+<p>The effect of using <tt>set-car</tt> to update a component of a
+list-structure can be seen below, in which the "S" tag field means
+"symbol".
+
+
+<p>After we do  <tt>(set-car list1 'fred)</tt>.</p>
+
+<IMG SRC = "heap11.jpg">
+
+
+<p>
+
+
+<p>
+Note that symbols which are <em>equal?</em> are also <em>eq?</em>, but this
+is <em> not </em> true for other "compound" data-types like strings and
+lists. Scheme standardises symbols by looking each symbol up in a
+dictionary as it is read in. So, if we do
+
+<pre>
+    (set-car! (cdr list1) 'fred)
+</pre>
+
+we get a pointer to the <em>same</em> symbol inserted in the list
+<tt>list1</tt></p>.
+
+<IMG SRC = "heap12.jpg">
+
+
+<p>
+This is not true of lists - every time you call <tt>cons</tt>
+you make a new cell that is not shared with any pre-existing list.
+Consider for example what happens if we do:
+
+<pre><code>
+(define list1 (cons 5 '()))
+(define list2 (cons 5 '()))
+</code></pre>
+
+Each of the two calls of <tt>cons</tt> creates a new pair, the <tt>cdr</tt>
+of which points to the unique object which represents the null list.</p>
+
+<IMG SRC = "heap14.jpg">
+
+
+
+<p>These
+two lists  are <em>not</em> identical, as tested with <tt>eq?</tt>.
+But they are structurally equivalent as tested with <tt>equal?</tt>
+
+<pre><code>
+(eq? list1 list2)         ==> #f
+(equal? list1 list2)      ==> #t
+</code></pre>
+
+Now, if we use a mutation operator on <tt>list1</tt> this does not affect
+<tt>list2</tt> since the two lists share no component except for the
+immutable null object. So if we do:</p>
+
+<pre><code>
+(set-car! list1 34)
+</code></pre>
+
+<p> we get a structure that looks like this </p>
+
+<IMG SRC = "heap15.jpg">
+
+<pre>
+    list1 ==> '(34)
+    list2 ==> '(5)
+</pre>
+
+<h3> Dotted Pairs and Improper Lists</h3>
+
+<p>
+The dotted pair made by <tt>(cons 5 3)</tt> is:</p>
+
+
+
+
+<IMG SRC = "heap16.jpg">
+
+<pre>
+        -------------
+        |P| 5  | 3  |
+        -------------
+</pre>
+<p>
+
+The improper list  '(5 6 7 . 33) is represented as:</p>
+
+
+<IMG SRC = "heap17.jpg">
+
+
+
+<p>
+Partial sharing of structure is also possible. Suppose we do
+
+<pre><code>
+    (define list1 '(5 6 7))
+    (define list2 (cons 45 (cdr list1)))
+</code></pre>
+
+<p>
+We will obtain the structure:</p>
+
+
+<IMG SRC = "heap18.jpg">
+
+
+
+
+
+<p>
+With this structure, if  we do <tt>(set-car! list2  96)</tt>, the value  of
+<tt>list1</tt> will not be changed:</p>
+
+
+
+
+
+<p>but  if we do <tt>(set-car! (cdr  list2
+96))</tt>, the value of <tt>list1</tt> <em>will</em> be changed.</p>
+
+
+<IMG SRC = "heap20.jpg">
+
+
+</body>
+</html>

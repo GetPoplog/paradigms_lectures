@@ -1,0 +1,189 @@
+
+
+
+<html><head><title>
+
+        Normal Forms
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+We Can Systematically Reduce Expressions to Normal Form
+
+
+</center>
+
+</h1>
+
+<h2>Doing reduction systematically</h2>
+
+The <em><img src=beta.gif>, <img src=eta.gif></em>
+and <img src=delta.gif>-reductions
+which
+we have considered  can, in  general, be applied  in various  places in  an
+expression.  Consider,  for   example:  <em>(<img  src=lambda.gif>   x.(+ 1
+x))((<img src=lambda.gif>  x.x)2)</em>.  This  can be  reduced  using  <img
+src=beta.gif>- reduction to <em>(<img src=lambda.gif> x.(+ 1 x))2</em>  or
+to <em>+ 1  ((<img src=lambda.gif> x.x)2)</em>.  Another stage of <img
+src=beta.gif>- reduction arrives at <em>+ 1 2</em> in both cases. In  this
+section we ask `does it matter where we chose to do the reduction'.
+
+If <em>E</em> is an expression of <img src=lambda.gif>-calculus then a  <em>
+redex</em> is a
+sub-expression of <em>E</em> which can be reduced by one of our rules.
+
+
+
+
+
+
+<h3>Choice of Redex is vital for Y</h3>
+A close look at our definition of the Y-combinator indicates that its very
+mode of letting the recursion genie out of the bottle makes the choice of
+redex important.  A simplified version of <em>Y</em> illustrates our difficulty:
+
+<ul>(<img src=lambda.gif> x. x x)(<img src=lambda.gif> x.x x)
+ <img src=longrightarrow.gif><sub><img
+src=beta.gif></sub>
+(<img src=lambda.gif> x. x x)(<img src=lambda.gif> x.x x)
+</ul>
+Thus, this <em><img src=lambda.gif></em> expression can be rewritten forever to itself using
+<img src=beta.gif>-reduction.  Worse, consider:
+
+<ul>(<img src=lambda.gif> x. x x x)(<img src=lambda.gif> x.x x x)
+ <img src=longrightarrow.gif><sub><img
+src=beta.gif></sub>
+(<img src=lambda.gif> x. x x x)(<img src=lambda.gif> x.x x x)(<img src=lambda.gif> x.x x x)
+</ul>
+
+here we have a <em><img src=lambda.gif></em> expression that gets bigger and bigger every time
+it is rewritten. It should not surprise us that we might have difficulty in
+telling whether a sequence of  reductions in the <img src=lambda.gif>-calculus will terminate. If the
+<img src=lambda.gif>-calculus is powerful enough to be a general purpose programming language, then
+it is powerful enough
+
+<p>
+If <em> <img src=longrightarrow.gif></em> is a relation, then we say that
+<em> <img src=longrightarrow.gif><sup>*</sup></em>
+is the
+transitive and reflexive closure of <em> <img src=longrightarrow.gif></em>.
+The * is often called
+the Kleene Star operation, after the mathematician Kleene.
+
+<p>
+Formally, <em> <img src=longrightarrow.gif><sup>*</sup>x</em>,
+and if <em>x <img src=longrightarrow.gif>
+y</em> and <em>y <img src=longrightarrow.gif><sup>*</sup>z</em>
+then <em>x <img src=longrightarrow.gif><sup>*</sup> z</em>.
+
+<p>
+Our reduction rules can be turned into <em> conversion rules</em> by taking the
+symmetric closure.
+
+  <ul>E<sub>1</sub> <img src=converts.gif> E<sub>2</sub>
+iff   E<sub>1</sub> <img src=longrightarrow.gif>  E<sub>2</sub>  or
+      E<sub>2</sub> <img src=longrightarrow.gif>  E<sub>1</sub></ul>
+
+
+<p>
+Now we have shown that <em> <img src=longrightarrow.gif><sup>*</sup></em>
+is an <em> infinite relation</em>, since
+we have exhibited a series of  `reductions' a each step of which we obtain
+a bigger expression \ref{blowup}. In navigating this infinite maze of
+reduction, is there any guiding light, and can we recover if we take a
+wrong turn? The answers are ``Yes! and Yes!'', as is shown by the
+following:
+
+<a name = "normal"> </a>
+<h3>Normal Forms</h3>
+
+An expression <em>E</em> of the <img  src=lambda.gif>-calculus is said to be  in
+<em> normal form</em> if there is no expression <em>E'</em> for which  <em>E<img
+src=longrightarrow.gif> E'</em>.
+
+
+<a name="opportunities"> </a>
+<h4> Choices for where to apply reduction rules</h4>
+<p>For example</p>
+<ul>
+    (+ (+ 4 5) (* 8 3))
+</ul>
+<p>might be reduced to</p>
+<ul>
+    (+ 9 (* 8 3))
+</ul>
+<p>or to</p>
+<ul>
+(+ (+ 4 5) 24)
+</ul>
+
+<h4>Church Rosser Theorem I</h4>
+
+<!--     OOPs take this out
+<p>Moreover in this case <em>u <img src=in.gif> FV(F) </em>, so that
+the <em>u</em> taken away in the set subtraction is put back by the
+union. Thus we have</p>
+
+<ul>FV(G[u:=w][x:=F]) =
+  (FV(G)-{x}) <img src=cup.gif> FV(F)  <img src=cup.gif> {w}
+</ul>
+-->
+
+If <em>E<sub>1</sub> <img src=converts_star.gif>
+E<sub>2</sub></em> then there exists an expression <em>E</em> such that
+  <em>E<sub>1</sub> <img src=reduces_star.gif>
+E</em>  and <em>E<sub>2</sub><img src=reduces_star.gif> E</em>
+
+<b> Corollary:</b> A normal form for an expression is unique.
+
+
+The strategy of always choosing to reduce the leftmost outermost redex
+first always produces a normal form if one exists. This is called normal
+order reduction.
+
+<h4>Church Rosser Theorem II</h4>
+If <em>E<sub>1</sub><img src=reduces_star.gif>
+E<sub>2</sub></em> and <em>E<sub>2</sub></em> is a normal form, then normal order
+reduction will always result in reduction to <em>E<sub>2</sub></em>.
+
+
+<p>
+This result is of great importance to the design of programming languages
+because  it implies that the vast majority of programming languages
+(including Scheme and ML) are <em> wrong</em>!, because they do not use a
+normal order reduction. A small set of languages, of which Haskell is the
+most important, do use normal order reduction, or reductions that are
+provably equivalent to it.
+
+
+<h2> Equality of Expressions in the Lambda Calculus </em>
+
+When mathematicians are faced with a collection <em>X</em> of things that
+"ought" to be the same but are different on the surface, they have a standard
+approach to creating the system that they really want - essentially they
+partition <em>X</em> into <em> equivalence classes</em>, putting all things that
+ought to be the same as each other in the same equivalence class.
+
+<p> For example the fraction-forms   3/4 and 6/8  ought to be the same but are
+constructed differently. So when we build the <em>rational numbers</em> we
+require each rational number to be a class of fraction-forms equivalent under
+the relation  <em>p/q  == r/s</em>  iff  <em>ps=qr</em>.
+
+<p> For this to work correctly, the  relation which formally encodes "ought to
+be the same" must be an <em>equivalence relation</em>, that is to say it must be
+reflexive, symetric and transitive.
+
+<p>There is an additional requirement that applies to any operations that we
+want to define on the rationals, such as addition or multiplication. If these
+are to  be <em>functions</em>, then we have to show that
+
+        6/8 + 2/14  == 3/4 + 1/7
+
+
+</body>
+</html>

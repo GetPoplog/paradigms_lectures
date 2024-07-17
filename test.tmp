@@ -1,0 +1,132 @@
+
+To: pop@cs.umass.edu
+
+
+
+
+CMPSCI 287 Class Test
+
+NAME
+
+STUDENT ID
+
+Test ID: 1,  ranseed = -55675821928179790
+
+
+Question 1
+
+Evaluate the following Scheme Expression
+
+(define n 7)
+ (let ((n 9) (q (* n 6)))
+   (+ (* n 3) q))
+
+Question 2
+
+If these Scheme expressions are evaluated, what is the
+result of the second? Express your answer using a call to cons_parse
+
+(define adjs
+  (mk_parser_kleene
+    (mk_parser_singleton
+       '(existential blue atavistic amorphous big indigent erudite abstruse)))
+    )
+
+(adjs '(indigent big existential banana))
+
+Question 3
+Evaluate the following Scheme Expression
+
+(assoc 5 '((1 5) (2 1) (3 4) (4 6) (5 2) (6 3)))
+
+
+
+CMPSCI 287 Class Test   15APR99
+NAME
+
+STUDENT ID
+
+Test ID: 1,  ranseed = -784620095254277503
+
+
+Question 1
+
+Evaluate the following Scheme Expressions
+
+(+ (car '(7 dog)) 10)
+
+(cond
+        ( (= 1 9) 5)
+        ( (< 2 9) 1)
+        ( (> 6 2) 4)
+        (else 9)
+)
+
+Question 2
+
+Evaluate the following Scheme Expressions
+
+
+(define (cmp x y)
+    (cond
+        ((symbol<? x y) '<)
+        ((= x y) '=)
+        (else '>)
+        )
+    )
+
+(define (cmb x y mg)
+    (cons (list (+ (car x) (car y)) (cadr x)) mg) )
+
+
+
+(merge_general cadr cmp cmb cons (lambda (l) l) (lambda (l) l)
+    '((1 apples) (8 bananas) (8 grapefruit) (4 oranges)  (7 strawberries))
+    '((9 apples) (8 bananas) (7 grapefruit) (5 lemons) (10 oranges)  (10
+     tangerines))
+    )
+
+
+
+
+
+
+CMPSCI 2810 Class Test   8APR99
+
+NAME
+
+STUDENT ID
+
+Test ID: 1,  ranseed = -1110391450264522809
+
+
+Question 1: Write down the final values of list2 and list3 in
+
+
+(define list1 '(elephant 1 (likes fish)))
+(define list2 list1)
+(set! (cdr list1) '(elephant))
+list2
+
+(define list3 (append (cons 1 '(9 10)) '(7 8)))
+list3
+
+
+Question 2: Evaluate the last of the following Scheme Expressions
+
+(define (reduce f acc base l)
+   (if (null? l)
+       base
+       (acc (f (car l)) (reduce f acc base (cdr l)))))
+
+;with sets represented as unordered lists
+
+(define (mystery l)
+    (reduce
+        (lambda (x) x)
+        append
+        '()
+        l
+        ))
+
+(mystery '((2 5) (5 3) (4 1)) )

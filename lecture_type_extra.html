@@ -1,0 +1,51 @@
+
+
+<h3> Random notes on Implementing Parametric Polymorphism</h3>
+
+This is more difficult because we have to maintain knowledge of the
+bindings of type-variables in our environment, as well as the
+type-bindings of ordinary variables. So I haven't got detailed
+notes on how to do it.
+
+
+<h4>...  Defining the method for quoted constants</h3>
+We will treat quoted constants as cartesian products, rather than
+lists. So we want to ascribe to <tt>'(4 5 (7 8))</tt> the type
+
+<tt>
+    (>< integer? integer? (>< integer? integer?))
+</tt>
+
+<pre><code>
+(define (method_quote args env)
+    (type_list_structure (car args))
+    )
+)
+
+
+
+</code></pre>
+
+
+<pre><code>
+
+(define (type_list_structure obj)
+    (if (pair? obj) (cons '>< (map type_list_structure obj))
+        (type_constant obj) ) )
+
+</code></pre>
+
+
+
+<pre><code>
+(add_method! 'quote method_quote)
+
+(example
+
+    '(type_check ''(23 "pussycats" ("eating" "fish")) '() )
+
+    '(>< integer? string? (>< string? string?))
+ )
+</code></pre>
+
+--!>

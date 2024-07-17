@@ -1,0 +1,43 @@
+
+
+                              Homework 9
+                          CMPSCI 287 FALL 1997
+                      Due Thu 20 NOV at 11:59 PM.
+
+         Put  your answers in your cs287 directory as hwk9.lscm
+
+-----------------------------------------------------------------------------
+
+
+The file lecture_17.lscm contains the code for an interpreter for a
+Scheme-like language, in a literate-Scheme convention, which means that UMASS
+Scheme can compile it directly (if verbosely).
+
+You are to add the let construct to this. Here is an example to try:
+
+
+(example
+    '(eval_env!
+        '(let ((x (+ 3 4))  (y (+ 6 7)))  (+ x y))
+        the-global-environment
+        )
+    20)
+
+Your code ____must work with an arbitrary number of variables in the let-binding.
+
+____Hint  the above computation is exactly equivalent to:
+
+(eval_env!
+    '((lambda (x y) (+ x y)) (+ 3 4) (+ 6 7))
+    the-global-environment
+    )
+
+
+Note that the ".lscm"  file extension stands for  ________literate ______Scheme. That is  to
+say, the compiler  only interprets  as Scheme  expressions anything  beginning
+with a left  parenthesis at  the start  of a  line of  text. You  may find  it
+convenient to copy section 3 of the  Lecture 16 into your hwk9.lscm file,  and
+then develop your own code in a 'temp.scm' file (or whatever you want to  call
+it). Some aspects  of the  development environment are  different for  '.lscm'
+files, and this will avoid confusion. At the end you can paste your code  into
+the hwk9.lscm for submission.

@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (X11; U; SunOS 4.1.4 sun4c) [Netscape]">
+</HEAD>
+<BODY>
+
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD><B><FONT SIZE=+4>Expressions in Lecture files can be evaluated </FONT></B></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><FONT SIZE=+3></FONT>
+<P><FONT SIZE=+3>Read lecture notes on-line using UMASS Scheme as a browser</FONT></P>
+
+<P><FONT SIZE=+3>Every Scheme expression occurring on a line by itself
+can be run. </FONT></P>
+
+<P><FONT SIZE=+3>You can then try changing it and seeing what happens.
+</FONT></P>
+
+<P><FONT SIZE=+3>Do not be afraid of playing with the machine - you cannot
+break it! </FONT></P>
+
+<P><FONT SIZE=+3>2 Forms of each file:</FONT></P>
+
+<UL>
+<P><FONT SIZE=+3>HTML version </FONT></P>
+
+<P><FONT SIZE=+3>plain-vanilla ASCII from menus in Scheme. </FONT></P>
+</UL>
+
+<P><FONT SIZE=+3>You can execute the ASCII form </FONT></P>
+
+<P><FONT SIZE=+3>I will modify UMASS Scheme to read HTML files </FONT></P>
+</TD>
+</TR>
+</TABLE>
+
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD><B><FONT SIZE=+4>Special Forms are not evaluated in the usual way.</FONT></B></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><FONT SIZE=+1></FONT>
+<P><FONT SIZE=+1>The standard way to evaluate a Scheme expression is to
+evaluate the function and arguments and then to apply the function to the
+arguments. </FONT></P>
+
+<P><FONT SIZE=+1>This rule does not hold for certain special forms. Examples
+of special forms we have seen so far are:</FONT></P>
+
+<P><FONT SIZE=+1>(lambda (x) (* x x)) we can think of this as having a
+pattern described by: </FONT></P>
+
+<P><FONT SIZE=+1>(lambda formals body )</FONT></P>
+
+<P><FONT SIZE=+1>You can think of this as evaluating to itself, with a
+rule for applying it to arguments (strip off lambda and substitute...)
+</FONT></P>
+<FONT SIZE=+1></FONT></TD>
+</TR>
+</TABLE>
+
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD>
+<CENTER><P><B><FONT SIZE=+4>Definitions </FONT></B></P></CENTER>
+</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><FONT SIZE=+3></FONT>
+<P><FONT SIZE=+3>(define variable expression) </FONT></P>
+
+<P><FONT SIZE=+3>(define form body) </FONT></P>
+
+<P><FONT SIZE=+3>Here form is in effect an expression of the form: </FONT></P>
+
+<P><FONT SIZE=+3>(variable arg1 ....argn)</FONT></P>
+
+<P><FONT SIZE=+3>variable is the name of the function being defined </FONT></P>
+
+<P><FONT SIZE=+3>arg1 ... argn</FONT></P>
+
+<P><FONT SIZE=+3>are formal parameters. </FONT></P>
+
+<P><FONT SIZE=+3>(define (square x) (* x x))</FONT></P>
+
+<P><FONT SIZE=+3>is a convenient way of defining the square  function.
+</FONT></P>
+
+<P><FONT SIZE=+3>(define (variable arg1 ....argn) body)</FONT></P>
+
+<P><FONT SIZE=+3>exactly equivalent to </FONT></P>
+
+<P><FONT SIZE=+3>(define variable (lambda (arg1 ....argn) body)</FONT></P>
+</TD>
+</TR>
+</TABLE>
+
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><FONT SIZE=+3></FONT>
+<P><FONT SIZE=+3>Lambda Calculus, there is only ONE special form, namely
+lambda abstraction. </FONT></P>
+
+<P><FONT SIZE=+3>Having a small number of special forms is mathematically
+desirable,</FONT></P>
+
+<P><FONT SIZE=+3>The number of different cases to consider in mathematical
+analysis is reduced.] </FONT></P>
+</TD>
+</TR>
+</TABLE>
+<FONT SIZE=+4></FONT><FONT SIZE=+4></FONT>
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD><FONT SIZE=+4></FONT></TD>
+
+<TD><B><FONT SIZE=+4>Boolean valued functions usually end in ?</FONT></B></TD>
+</TR>
+
+<TR>
+<TD><FONT SIZE=+4></FONT></TD>
+
+<TD><FONT SIZE=+4></FONT>
+<P><FONT SIZE=+4>Functions which return a boolean value (#t or #f )
+are often called &quot;predicates&quot;. By convention, predicates have
+a name which ends in a question mark. Certain common predicates like '&lt;'
+are exceptions to this rule. </FONT></P>
+</TD>
+</TR>
+</TABLE>
+<FONT SIZE=+4></FONT><FONT SIZE=+4></FONT>
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD><B><FONT SIZE=+4></FONT></B>
+<P><B><FONT SIZE=+4>Scheme Types.</FONT></B></P>
+</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><FONT SIZE=+4></FONT>
+<P><FONT SIZE=+4>Objects which can exist in an implementation of Scheme
+belong to exactly one basic type. </FONT></P>
+
+<P><FONT SIZE=+4>IEEE standard for Scheme requires at least</FONT></P>
+
+<P><FONT SIZE=+4>boolean,char,null,number,pair, procedure,string,symbol,vector
+</FONT></P>
+
+<P><FONT SIZE=+4>boolean? char? null? number? pair? procedure? string?
+symbol? vector?</FONT></P>
+
+<P><FONT SIZE=+4>These predicates recognise object types which do not overlap</FONT></P>
+
+<P><FONT SIZE=+4>Others: files, widgets or windows </FONT></P>
+
+<P><FONT SIZE=+4>we shall not be concerned with the types vector, char.
+</FONT></P>
+</TD>
+</TR>
+</TABLE>
+<FONT SIZE=+4></FONT><FONT SIZE=+4></FONT>
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD><B><FONT SIZE=+4>(if condition expr1 expr2) </FONT></B></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><FONT SIZE=+4></FONT>
+<P><FONT SIZE=+4>The simplest form of conditional in Scheme is the special
+form: </FONT></P>
+
+<P><FONT SIZE=+4>(if condition expr1 expr2)</FONT></P>
+
+<P><FONT SIZE=+4>It evaluates condition. </FONT></P>
+
+<P><FONT SIZE=+4>Unless the condition evaluates to #f the valueof the
+ifexpression is obtained by evaluating expr1 otherwise the result is obtained
+by evaluating expr2. </FONT></P>
+
+<P><FONT SIZE=+4>[WHY does it have to be a special form? Could it NOT be
+a special form? ]. </FONT></P>
+</TD>
+</TR>
+</TABLE>
+<FONT SIZE=+4></FONT><FONT SIZE=+4></FONT>
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD></TD>
+
+<TD><B><FONT SIZE=+4>Recursion - the factorial function</FONT></B></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><FONT SIZE=+4></FONT>
+<P><FONT SIZE=+4>Defined using the recurrence relations: </FONT></P>
+
+<P><FONT SIZE=+4>0! = 1 n! = n(n-1)!</FONT></P>
+
+<P><FONT SIZE=+4>These translate into scheme as follows: </FONT></P>
+
+<P><FONT SIZE=+4>(define (factorial n) </FONT></P>
+
+<UL>
+<P><FONT SIZE=+4>(if (= n 0) 1 (* n (factorial (- n 1)))))</FONT></P>
+</UL>
+
+<P><FONT SIZE=+4>(factorial 5)</FONT></P>
+
+<P><FONT SIZE=+4>120</FONT></P>
+
+<P><FONT SIZE=+4>(factorial 1000) , </FONT></P>
+
+<P><FONT SIZE=+4>(/(factorial 1000) (factorial 999))). </FONT></P>
+</TD>
+</TR>
+</TABLE>
+<FONT SIZE=+4></FONT><FONT SIZE=+4></FONT>
+<TABLE ALIGN=ABSCENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 >
+<TR>
+<TD><FONT SIZE=+4></FONT></TD>
+
+<TD><B><FONT SIZE=+4>Eager Evaluation</FONT></B></TD>
+</TR>
+
+<TR>
+<TD><FONT SIZE=+4></FONT></TD>
+
+<TD><FONT SIZE=+4></FONT>
+<P><FONT SIZE=+4>The rule that Scheme evaluates the arguments of an expression
+before applying the function is called eager evaluation, or call-by-value.
+Some functional languages, such as Haskell, are lazy, and evaluate no expression
+unless it is actually needed. They have a better logical structure (e.g.
+if does not need to be a special form in these languages), but are hard
+to make efficient. </FONT></P>
+</TD>
+</TR>
+</TABLE>
+<FONT SIZE=+4></FONT>
+</BODY>
+</HTML>

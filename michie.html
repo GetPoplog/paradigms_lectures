@@ -1,0 +1,121 @@
+
+
+
+<html><head><title>
+
+Memo Functions and Machine Learning
+
+</title></head>
+<BODY bgcolor = "white">
+
+
+
+<center>
+<h1>
+'Memo' Functions and Machine Learning"
+</h1>
+<h4>From Nature, Vol 218, April 6 1968.</h4>
+
+<h2>A Summary by Robin Popplestone</h2>
+February 1998
+</center>
+<br>
+
+<hr>
+
+
+<p>Michie
+begins by setting the idea in the context of machine-learning, with
+particular reference to Samuel's checkers program. The most definitive
+text is
+
+<ul>
+  The present proposals involve a particular way of looking at functions.
+  This point  of view asserts that a function is not to be identified with
+  the operation by which it is evaluated (the rule for finding the
+  factorial, for instance) nor with its representation in the form of a
+  table or other look-up medium (such as a table of factorials). A function
+  is a function, and the means chosen to find its value in a given case is
+  independent of the function's intrinisic meaning. This is no more than a
+  retatement of a mathematical truism, but it is one which has been lost
+  sight of by the designers of our programming languages. By resurrecting
+  this truism we become free to assert: (1) that the apparatus of
+evaluation
+  associated with any given function shall consist of a "rule part"
+  (computational procedure) and a "rote part" (lookup table); (2) that
+  evaluation in the computer shall on each given occasion proceed whether
+  by rule, or by rote, or by a blend of the two, solely as dictated by the
+  expediency of the moment; (3) that the rule versus rote decisions shall
+be
+  handled by the machine behind the scenes; and (4) that various kinds of
+  interaction be permitted to occur between the rule part and the rote
+part.
+</ul>
+<p>
+Michie elaborates on (4),
+
+<ul>
+  Thus each evaluation by rule adds a fresh entry to the rote.
+</ul>
+
+Which is, I think close to the current understanding of memoisation, but
+adds
+<ul>
+  The rule itself may be self-modifying and seek to increase its
+  agreement with the contents of the rote. [which may have been
+  set up or modified independently from the operation of the rule].
+</ul>
+
+<p>So, from Michie's perspective, something like data-mining (at least as
+incorporated in Clementine) is also an instance of memoisation.
+
+<p>There
+follows  a discussion  of a  humanised scenario  in which  a  person,
+needing, on call,  to evaluate a  mathematical function (hcf)  from a  rule
+could improve his performance by constructing a card-index (the rote).
+
+<p>He
+then discusses the effect of integrating a rote into the evaluation of
+recursively defined functions.
+
+<ul>
+  I shall suppose that a "card index" regime for the evaluation of
+  functions is available, so that we have facilities for converting
+  functions into "memo-functions". Because this can only be done at all
+  easily using an open-ended programming language free of arbitrary
+  constraints, I shall conduct my illustration inf POP-2 which has the
+  further advantage that the needed facilitiy is actually available
+  in the form of a half a dozen POP-2 library routines.
+<p>
+  We define the rule part of factorial as follows:
+
+<pre>
+        function fact n;
+            if n<0 or if not (n.isinteger) then undef else
+            if n = 0 then 1 else n * fact(n-1) close
+            end
+</pre>
+</ul>
+[there are in fact two syntax-errors here - the "if" before the "not" is
+erroneous - the "else <newline> if" should be
+"elseif". In POP-2 "n.isinteger" was a syntactic variant of isinteger(n).
+"close" means "end if".]
+<p>
+Michie continues:
+
+<ul>
+    To endow fact with the "memo" facility, using Popplestone's routines,
+    we merely write
+
+<pre>
+        newmemo(fact,100,nonop=) -> fact;
+</pre>
+
+    This replaces the old definition of fact with a new one with a memo
+    apparatus attached, such that the rote has an upper fixed limit of 100
+    entries and uses the "=" relaation for look-up purposes.
+</ul>
+
+
+[nonop in POP-2 was the way of passing an infix as a parameter, and the
+"->" notation is an assignment  value -> variable].

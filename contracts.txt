@@ -1,0 +1,42 @@
+
+
+Corporation: Big Carrot
+
+You  are  the  group  responsible  for  procurement  in  large  corporation
+employing a hundred thousand people. The corporation has need of a  program
+that it can install in selected personal computers to provide rapid  access
+to  telephone  numbers  of  all   employees.  Write  a  draft   performance
+specification for the program.
+
+
+
+
+Corporation: Beautiful Branching
+
+You are a software supplier who has a search program based on AVL trees.
+You anticipate that Big Carrot will shortly put out a request-to-tender
+for its telephone directory system. Bearing in mind your knowledge of Big
+Carrot, write a draft document detailing the advantages of your system,
+including a discussion of the minimum hardware configuration.
+
+
+
+Corporation: Goulash
+
+
+You are a software supplier who has a search program based on hash-coding.
+You anticipate that Big Carrot will shortly put out a request-to-tender
+for its telephone directory system. Bearing in mind your knowledge of Big
+Carrot, write a draft document detailing the advantages of your system,
+including a discussion of the minimum hardware configuration.
+
+
+
+Corporation: Giant Redwood
+
+
+You are a software supplier who has a search program based on B-trees.
+You anticipate that Big Carrot will shortly put out a request-to-tender
+for its telephone directory system. Bearing in mind your knowledge of Big
+Carrot, write a draft document detailing the advantages of your system,
+including a discussion of the minimum hardware configuration.

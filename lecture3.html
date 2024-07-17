@@ -1,0 +1,583 @@
+
+
+
+
+
+<html><head><title>
+Lecture 3: Conditionals, Recursion and Lists
+</title></head>
+<BODY bgcolor = "white">
+
+<compiler = scheme>
+
+
+<h1> Lecture 3: Conditionals, Recursion and Lists </h1>
+
+<hr>
+
+<a href="#comments">  Comments follow a semicolon</a><br>
+
+ <a href="#interact">  Remember - all expressions in this file can be
+evaluated</a><br>
+
+
+ <a href="#special">  Special Forms are not evaluated in the usual
+way.</a><br>
+
+<!-- define --> <a href="lecture3.html#define">
+(define  <b>form expr</b>) is a shorthand way of defining a function
+</a><br>
+
+ <a href="#BVF">  Boolean valued functions usually end in ?</a><br>
+
+ <a href="#types">  Scheme Types.</a><br>
+
+<!-- if --> <a href="#if">  The (if <b>condition  expr1 expr2</b>)
+construction</a><br>
+
+ <a href="#arithmetic">  Arithmetic in Scheme</a><br>
+
+<!-- factorial -->
+<a href="#factorial">  The factorial function - an example of
+recursion</a><br>
+
+ <a href="#eager">  Scheme evaluates expressions in an Eager
+way.</a><br>
+
+<!-- quote -->
+<a href="lecture3#quote">  Quoted Expressions are Compound Data.</a><br>
+
+<!-- () -->  <a href="lecture3#nil">  The empty list</a><br>
+
+<!-- cons -->  <a href="lecture3#cons">  Making Lists.</a><br>
+
+ <a href="#identities">  Two Identities which hold for Scheme Lists</a><br>
+
+<hr>
+
+<h2><a name = "comments">Comments begin with a semicolon</a></h2>
+
+To insert a comment in a scheme program, just type the semicolon character.
+The whole line after the comment will be ignored.
+
+<pre>
+             ; This is  a comment
+    (+ 3 4)  ; add 3 to 4
+</pre>
+
+<h2><a name = "interact">
+Remember - all expressions in this file can be evaluated
+</a></h2>
+
+You will find it worthwhile to read these notes on-line using UMASS  Scheme
+as a browser because every Scheme expression occurring on a line by  itself
+can be run. You can then try changing it and seeing what happens. Do not be
+afraid of playing with the machine - you cannot break it!
+
+<p>[Note
+- this  file currently exists in two forms - the HTML version which
+is the one you are reading, and a (nearly) plain-vanilla ASCII form which
+is what you get when you use the menus in UMASS Scheme. The ASCII form is
+the one you should execute. The eventual plan is to modify UMASS Scheme to
+read HTML files as a (rather limited) Web Browser, so that only the one set
+of text for the course is needed]</p>
+
+<h2><a name="special">Special Forms are not evaluated in the usual
+way.</a></h2>
+
+As we  have seen  the  standard way  to evaluate  a  Scheme expression  is  to
+evaluate the function and  arguments and then to  <em>apply</em>
+the function to  the
+arguments.
+
+<p>
+This rule does not hold for certain <i>special forms</i>.
+Examples of special
+forms we have  seen so far are:</p>
+
+<code>
+   (lambda (x) (* x x))
+</code>
+
+we can think of this as having a pattern described by:
+
+<pre>
+   (lambda <b>formals body </b>)
+</pre>
+
+You  can  think  of  this  as  evaluating  to  itself,  with  a  rule   for
+<em>applying</em> it to arguments (strip off lambda and substitute...)
+
+
+<h3><a name="define">Defining a variable</a></h3>
+<pre>
+   (define <b>variable expression</b>)
+</pre>
+
+This special  form evaluates  the  <b>expression</b>
+and  <e>binds</e>  the
+variable to the resulting value.
+
+There is a shorthand way of defining a function
+
+<pre>
+   (define <b>form body</b>)
+</pre>
+
+is a variant of  the <tt>&#160;  define    </tt>&#160;&#160;&#160;&#160;
+special form.  Here <b>form&#160; </b> is  in
+effect an expression of the form:
+
+
+<pre>
+     (<b>variable</b> <b>arg<sub>1</sub></b> ....<b>arg<sub>n</sub></b>)
+</pre>
+
+where <b>variable</b> is the name of the function being defined and
+
+<pre>
+    <b>arg<sub>1</sub></b> ... <b>arg<sub>n</sub></b>
+</pre>
+
+are formal parameters. For example:
+
+
+<pre>
+    (define (square x) (* x x))
+</pre>
+
+is a convenient way of defining the <tt>&#160; square </tt>&#160; function.
+
+However this kind of definition is only a convenience. So:
+
+<pre>
+   (define  (<b>variable</b> <b>arg<sub>1</sub></b> ....<b>arg<sub>n</sub></b>) <b>body</b>)
+</pre>
+
+is exactly equivalent to
+
+
+<pre>
+   (define  <b>variable</b>
+        (lambda (<b>arg<sub>1</sub></b> ....<b>arg<sub>n</sub></b>) <b>body</b>)
+</pre>
+
+
+
+[Remark: in the Lambda Calculus, there is only ONE special form, namely lambda
+abstraction.  Having  a  small  number  of  special  forms  is  mathematically
+desirable, since the  number of  different cases to  consider in  mathematical
+analysis is reduced.]
+
+<h2><a name="BVF">Boolean valued functions usually end in ?</a></h2>
+
+Functions which return a boolean value (<tt>#t</tt>&#160;
+or <tt> #f</tt>&#160;) are often called
+"<em>predicates</em>".
+
+By convention,  predicates have  a  name which  ends  in a  question  mark.
+Certain common predicates like '&lt;' are exceptions to this rule.
+
+
+<h1><a name="types">Scheme Types.</a></h1>
+
+Objects which can exist in an  implementation of Scheme belong to exactly  one
+basic type. A Scheme  implementation that meets the  IEEE standard for  Scheme
+must provide the following basic types:
+
+<pre>
+    boolean,char,null,number,pair,
+    procedure,string,symbol,vector
+</pre>
+
+It may provide others.
+
+The type of  a given object  is recognised  by one of  the following
+built-in functions.
+
+<pre>
+    boolean?
+    char?
+    null?
+    number?
+    pair?
+    procedure?
+    string?
+    symbol?
+    vector?
+</pre>
+
+
+That is  these predicates  recognise object  types which  do <b>not</b>
+overlap -
+there  may  be  others,  e.g.   files,  and,  in  some  environments,   the
+<em>widgets</em>  or   <em>windows</em>   which  support   graphical   user
+interfaces.
+
+In this class we shall not be concerned with the types <em>vector,
+char</em>.
+
+<h3><a name = "atom">Atoms</a></h3>
+
+The <tt>pair</tt> datatype is commonly used in Scheme to build most complex
+data-structures - that is those that have sub-structures. Often, we speak
+of any data-object that is not a pair as being an <em>atom</em>.
+
+
+<h2><a name = "if">
+The (if <b>condition</b> <b>expr1</b> <b>expr2</b>) construction
+</a></h2>
+
+Scheme provides <em> conditional expressions</em> in
+which  a condition (an  expression
+which can have a boolean  value) or conditions are  used to choose which  of a
+number of other expressions is to be evaluated.
+
+The simplest form of conditional in Scheme is the special form:
+
+<pre>
+    (if <b>condition</b> <b>expr1</b> <b>expr2</b>)
+</pre>
+
+It evaluates <b>condition</b>. Unless the  <b>condition</b> evaluates to  #f then  the
+result of the if  expression is obtained  by evaluating <b>expr1</b>  otherwise
+the result is obtained by evaluating <b>expr2</b>.
+
+[WHY does it have to be a special form? Could it NOT be a special form? ].
+
+<h2><a name="arithmetic">Arithmetic in Scheme</a></h2>
+
+
+Arithmetic operations are denoted by the  conventional  symbols:
+
+<pre>
+    +
+    -
+    *
+    /
+</pre>
+
+There are also the usual  algebraic and trancendental functions. They  operate
+on  integers,  rationals,  floating-point  representation  of  reals,  complex
+numbers. Try:
+
+
+<pre>
+    (sqrt -1)
+</pre>
+
+the answer is the complex number:
+
+<pre>
+    0.0+1.0i
+</pre>
+
+Numbers can also be compared. There is a predicate
+
+
+<pre>
+    zero?
+</pre>
+
+which recognises whether a number is zero.
+
+Comparisons between real numbers are denoted by the conventional symbols.
+
+<pre> &lt; &gt; &lt;= &gt;=
+</pre>
+
+<h2><a name="factorial">The factorial function - an example of
+recursion</a></h2>
+
+The well known factorial function can be defined using the recurrence
+relations:
+
+<pre>
+    0! = 1
+    n! = n(n-1)!
+</pre>
+
+These translate into scheme as follows:
+
+<pre>
+(define (factorial n)
+    (if (= n 0)
+        1
+        (* n (factorial (- n 1)))))
+
+
+(factorial 5)
+
+120
+</pre>
+
+Try <tt>&#160; (factorial 1000)</tt>&#160;, and <tt>&#160; (/(factorial  1000)
+(factorial 999))</tt>).
+
+<h2><a name="eager">Scheme evaluates expressions in an Eager way.</a></h2>
+
+The rule that Scheme evaluates the arguments of an expression before  applying
+the function is called <em>eager</em> evaluation, or
+<em>call-by-value</em>.
+
+Some functional  languages,  such  as  Haskell,  are  <em>lazy</em>,
+and  evaluate  no
+expression unless it is actually needed.
+
+They have a better logical  structure (e.g. <tt>if&#160;</tt>&#160;
+does not  need to be a  special
+form in these languages), but are hard to make efficient.
+
+<h2><a name="quote">Quoted Expressions are Compound Data.</a></h2>
+
+So far we have seen that Scheme has numbers, booleans and functions as objects
+that a program can use.  These are simple data-types,  which we can regard  as
+having no internal structure to be explored.
+
+Scheme has a very simple and elegant approach to providing complex data-types:
+
+<em>any</em>
+expression can be <em>quoted</em>.
+That is to say, Scheme expressions can be
+regarded both as <em>program-like-objects</em> and as <em>data objects</em>
+
+The long-hand way to do this is to use the special form:
+
+
+<pre>
+     (quote <b>expression</b>)
+</pre>
+
+For example
+
+<pre>
+     (quote (+ 3 4))
+</pre>
+
+evaluates to the expression:
+
+
+<pre>
+     (+ 3 4)
+</pre>
+
+Quotation is very common, so we allow
+
+
+<pre>
+      '<b>expression</b>
+</pre>
+
+as a shorthand. For example:
+
+
+<pre>
+      '(+ 3 4)
+</pre>
+
+<p>[Note that this single quote is <em>not</em>
+a special form, but a syntactic shorthand
+for the corresponding expression using <tt>&#160; quote</tt>&#160;&#160;].
+</p>
+
+
+<h4><a name="car">Basic list-accessing functions</a></h4>
+
+Such  a   quoted   expression   can   be  regarded   as   a   <em>list   of
+sub-expressions</em> of  which  the  first is  the  function-name  and  the
+subsequent  ones  are  the   arguments.  The  Scheme  functions   <tt>&#160;
+car&#160;</tt>&#160;
+and <tt>&#160; cdr&#160;&#160;</tt>&#160; allow us to access the components
+of this list. <tt>&#160; (car <b>list</b>)&#160;</tt>&#160;
+evaluates to the  first
+member of the list,  while <tt>&#160; (cdr <b>list</b>)&#160;</tt>&#160;
+evaluates
+to the remaining members.
+
+
+<pre>
+       (car '(+ 3 4))
+</pre>
+
+evaluates to
+
+
+<pre>
+       +
+</pre>
+
+while
+
+
+<pre>
+       (cdr '(+ 3 4))
+</pre>
+
+evaluates to
+
+
+<pre>
+       (3 4)
+</pre>
+
+and
+
+<pre>
+      (car (cdr '(+ 2 3))
+</pre>
+
+evaluates to
+
+
+<pre>
+      2
+</pre>
+
+As well as quoting expressions that "make  sense" in Scheme, such as
+<tt>&#160; '(+ 2  3)</tt>&#160;
+we can also use the quote notation just to make lists. For example
+
+
+<pre>
+     '(1 2 3 4)
+</pre>
+
+is a list of four natural numbers.
+
+<p>You can quote numbers and other constant objects, but, since they evaluate to
+themselves, there is no point.
+
+
+<h4><a name="cadr">Convenient list-accessing functions</a></h4>
+
+<p>Scheme implementations provide convenience functions for accessing lists. For
+example
+
+<pre>
+ (cadr x)  =  (car (cdr x))
+ (caddr x) = (car (cdr (cdr x)))
+</pre>
+
+[Note -  <tt>&#160;  car</tt>&#160;  and <tt>&#160;  cdr</tt>&#160;  are  funny
+names, derived from the assembly code of an antique IBM computer.]
+
+<h2><a name="nil">The empty list</a></h2>
+
+The empty  list, denoted  by &#160;<tt>&#160; '() &#160;</tt>&#160;
+has  no  elements  in it.  It is  a  distinct
+data-type.
+
+The predicate:
+
+<pre>
+    null?
+</pre>
+
+recognises the empty list. It is an error to apply the functions
+<tt>&#160; car</tt>&#160;
+or  <tt>&#160;&#160; cdr</tt>&#160;&#160;
+to the empty list.
+
+
+<pre>
+    (car '())
+
+Error: PAIR NEEDED
+Culprits: (),
+In file: /users/users3/fac/pop/poplocal/local/Scheme/lecture3.scm
+
+Calling sequence:
+    car
+This error report was prepared for Robin Popplestone
+ by Jeremiah Jolt, your compile-time helper.
+
+</pre>
+
+<h2><a name="cons">Making Lists.</a></h2>
+
+Quotation allows us to  make constant lists. However  we also want to  allow a
+program to make lists that the programmer has not explicitly created. This  is
+done with the function <tt>&#160; cons</tt>&#160;
+
+<pre>
+     (cons x y)
+</pre>
+
+makes a list whose <tt>&#160; car</tt>&#160;
+is <tt>&#160; x</tt>&#160; and whose  <tt>&#160; cdr</tt>&#160; is <tt>&#160; y</tt>&#160;.
+So to make a list  containing
+just the number <tt>&#160; 23</tt>&#160; we do:
+
+
+<pre>
+   (cons 23 '())
+
+    (23)
+</pre>
+
+
+Now let's define a function to make a "sandwich" list:
+
+
+<pre>
+(define (sandwich x y)
+    (cons x (cons y (cons x '()))))
+</pre>
+
+So:
+
+<code>
+    (sandwich 1 2 )
+</code>
+
+evaluates to:
+
+<pre>
+    (1 2 1)
+</pre>
+
+
+<h2><a name="identities">Two Identities which hold for Scheme
+Lists</a></h2>
+
+
+Scheme is subject to the mathematical laws:
+
+<pre>
+    (car (cons x y)) = x
+    (cdr (cons x y)) = y
+</pre>
+
+
+<h2><a name="symbol">Symbols</a></h2>
+
+<p> An isolated Scheme identifier can be quoted, for example <tt>  'a</tt>.
+As such, it  is called a  <em>symbol</em>, and is  a member of  one of  the
+basic datatypes of Scheme. </p>
+
+A symbol is recognised by <tt>symbol?</tt>.
+
+<p>
+Scheme has the convention that all  letters occurring in a symbol are  coerced
+into being lower case.
+</p>
+
+<pre>
+  'CaT
+</pre>
+
+<p>
+evaluates to the symbol:
+</p>
+
+<pre>
+  cat
+</pre>
+
+<p>
+This reflects the fact that Scheme converts all identifiers to lower case  (as
+Pascal does, and C does not).
+</p>
+
+</body>
+</html>

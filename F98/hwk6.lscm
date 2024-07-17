@@ -1,0 +1,24 @@
+
+
+                         CMPSCI 287 F98 Homework 6
+                   Due 23.59 on  3 Nov 98  as hwk6.scm
+
+Please document your program carefully. For each function you write,
+you should generate some extra examples of your own to test it.
+
+It must be possible for the TA to load your program file into Scheme
+to check it.
+
+Note that while Netscape does a tolerable job of viewing this file,
+it's best looked at using Scheme - see the 287 menu. You can print
+this using the print option in the file menu.
+-------------------------------------------------------------------------------
+
+Write a function display_expr to output a scheme expression according to
+the grammar you wrote in Homework 5.
+
+    (display_expr  '(+ x (* 2 (+ 3 z))))
+
+will produce the output
+
+    x + 2 * [3 + z]

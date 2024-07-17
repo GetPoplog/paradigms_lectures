@@ -1,0 +1,1633 @@
+
+
+<html><head><title>
+
+Evaluation
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+Lambda Theories, Environment Models
+</center>
+
+</h1>
+
+
+<h2>Lambda Theories</h2>
+
+<p>We've shown that it's  natural to think  of mapping the  <img src=lambda.gif>-calculus
+onto a combinatory algebra.  Before we can go  much further in  obtaining a
+rigorous specification  of such  a  map into  what logicians  would  call a
+<em>model</em> it's  worth stepping  back to  build some  more  descriptive
+apparatus around the <img src=lambda.gif>-calculus  itself.
+So far,  we've seen that
+<em><img src=Lambda.gif> (C)</em> is a set of terms created from variables,
+constants in <em>C</em>, application and abstraction. We've seen that there
+are at  least  two  equivalences over  <em><img  src=Lambda.gif>  (C)</em>,
+namely <img src=alpha.gif>-equivalence and <img  src=beta.gif>-equivalence,
+under which  terms of  <em><img src=Lambda.gif>  (C)</em> are  regarded  as
+being in some way the "same". We might also expect that terms should be
+considered as being the "same" under <img src=eta.gif>-equivalence.
+
+<p>However, there might also be <em>laws</em> which hold between
+the constants in <em>C</em>. For example, if <em>C</em> contains an
+addition operator, "+", then we'd expect that <em>(+ x 0)</em>
+is equal to <em>x</em>.
+
+<p>If we want to support the notion of <em>proof</em> over <em><img
+src=Lambda.gif> (C)</em> then we clearly will have to incorporate laws
+which express the behaviour of elements of <em>C</em>.
+
+To this end, we now introduce the idea of <em>a rule of inference</em>. In
+our case, these have the form
+
+<ul>
+E<sub>1</sub> = F<sub>1</sub>,
+E<sub>2</sub> = F<sub>2</sub>,
+E<sub>3</sub> = F<sub>3</sub>
+<img src=turnstile.gif> E = F
+</ul>
+
+Such rules of inference can be used to define an <em>equational theory</em>
+that is to say, a set of formulae. The surface interpretation of a rule of
+inference is that if all the terms on the left of the "<img
+src=turnstile.gif>" symbol are in the theory, then the term on the right is
+also in the theory.
+
+<hr>
+<h3>Definition</h3>
+A lambda theory <img src="calT.gif">
+over a set <em>C</em> of constants is a
+set of equations between terms of <em><img src=Lambda.gif> (C)</em>
+containing all instances of
+
+<ul>
+<p><img src=alpha.gif><img src=space.gif>
+(<img src=lambda.gif> x . E) = (<img src=lambda.gif> y E[x:=y]) for
+<em>y</em> not free in <em>E</em>.
+
+<p><img src=beta.gif><img src=space.gif>
+((<img src=lambda.gif> x . E)F) = E[x:=F]
+
+</ul>
+and which is closed under the following rules of inference:
+
+<ul>
+<p>SYM   <img src=space.gif> <em>E = F  <img src=vdash.gif>  F = E</em>
+<p>TRANS <img src=space.gif> <em>E = F, F = G  <img src=vdash.gif>  E = G</em>
+<p>CONG <img src=space.gif> <em>E = E', F = F'  <img src=vdash.gif>  (E F) = (E' F')</em>
+<p><img src=xi.gif><img src=space.gif>
+<em> E = F  <img src=vdash.gif>  (<img src=lambda.gif> x.E) = (<img src=lambda.gif>
+x.F)</em>
+
+</ul>
+
+<hr>
+
+Note that a lambda theory is an infinite set of (formal) equations
+between terms.
+The notation
+<em> <img src=vdash.gif> <sub><img src = "calT.gif"></sub>
+E = F</em> means that the equation <em>"E
+= F"</em> is in <img src=calT.gif>
+
+<p>Where the meaning is clear, we shall abbreviate
+
+<em> <img src=vdash.gif> <sub><img src = "calT.gif"></sub>
+E = F</em> by
+<em> <img src=vdash.gif>
+E = F</em>.
+
+
+<p>In a given theory
+<img src=calT.gif>, the formal equalities of the theory define an
+equivalence relation on terms of <img src=Lambda.gif> <em>(C)</em>. The
+equivalence class of a term <em>E</em> is denoted by
+[[E]]<sub><img src=calT.gif></sub>. Thus:
+
+<ul>
+[[E]]<sub><img src=calT.gif></sub>
+= { F | <img src=space.gif>
+<img src=vdash.gif> <sub><img src=calT.gif></sub> E = F}
+</ul>
+
+<hr>
+<p>Recall
+that a <em>normal form</em> of <img src=Lambda.gif> <em>(C)</em> is
+a term that contains no redux. Recall also that if
+<em>E <img src=in.gif> <img src=Lambda.gif> (C)</em> has a normal form
+<em>E'</em>, say, then we can find it by normal order reduction. So
+<em>[[E]] = [[E']]</em>, and we can regard <em>E'</em> as the <em>canonical
+member</em> of <em>[[E]]</em> (up to alpha-equivalence).
+
+<p>If a term has no normal form, we can regard it as corresponding to a
+non-terminating computation.
+
+<hr>
+<h3>Definition</h3>
+
+A lambda theory <img src=calT.gif> over a set <em>C</em> of constants is
+said to be <em>extensional</em> if it contains all instances of
+
+<ul>
+<p><img src=eta.gif><img src=space.gif>
+(<img src=lambda.gif> x. E x) = E
+</ul>
+
+<hr>
+
+<h3>Lemma LT1</h3>
+If <img src=calT.gif> is a lambda-theory, and <em>E</em> is a term, then
+<em> <img src=vdash.gif> <sub><img src=calT.gif></sub> E = E</em>
+
+<h4> Proof</h4>
+By <img src=beta.gif> we have
+<ul>
+<img src=vdash.gif> (<img src=lambda.gif> x. x) E = E
+</ul>
+hence, by SYM
+<ul>
+<img src=vdash.gif> E = (<img src=lambda.gif> x. x) E
+</ul>
+Thus, by TRANS
+<ul>
+<img src=vdash.gif> E = E
+</ul>
+
+
+<hr>
+
+<p>We now introduce the notation
+<em>E
+[x<sub>1</sub>:=E<sub>1</sub>. . .x<sub>n</sub>:=E<sub>n</sub>]
+</em> to denote the <em>simultaneous substitution</em> of terms
+<em>E<sub>i</sub></em> for variables <em>x<sub>i</sub></em>
+(where the variables <em>x<sub>i</sub></em> are distinct and we follow
+the standard rules to avoid free variable capture.
+
+<hr>
+<h3>Lemma</h3>
+If <em> <img src=vdash.gif> <sub><img src=calT.gif></sub> E<sub>i</sub> = F<sub>i</sub></em>
+for <em>i = 0,. . .n</em> then
+<ul> <img src=vdash.gif> <sub><img src=calT.gif></sub>
+E<sub>0</sub>[x<sub>1</sub>:=E<sub>1</sub>. . .x<sub>n</sub>:=E<sub>n</sub>]
+=
+F<sub>0</sub>[x<sub>1</sub>:=F<sub>1</sub>. . .x<sub>n</sub>:=F<sub>n</sub>]
+</ul>
+
+<hr>
+
+<h3>The <b>Y</b> combinator is a fixed-point operator.</h3>
+
+<p>The following text is inserted from the CS287 class notes. I'll try to
+massage it into a more suitable form for our class. . .[RJP].
+
+<p>
+However it is not necessary to do this! Instead we introduce the
+<tt><b>Y</b></tt>-combinator,
+with the property that, for any function <tt>e</tt>:
+
+<ul>
+     (<b>Y</b> e)  = (e (<b>Y</b> e))
+</ul>
+
+<p> We say  that <tt><b>Y</b></tt>  is a  <em>fixed point  operator</em>, that  is
+<tt>(<b>Y</b> e)</tt> has  the property that  when we apply  <tt>e</tt> to it,  it
+remains unchanged. The  concept of  a fixed point  is an  important one  in
+mathematics and  physics.  Consider  for  example,  a  rotating  body.  The
+rotation can be considered as a mapping from where the body was  originally
+to where it  is now. The  fixed point of  this mapping is  the <em>axis  of
+rotation</em>. More generally, in Linear Algebra, we have the concept of an
+<em>eigenvector</em>.
+
+<p>
+In engineering generally, the design of a process for making an artefact  very
+often consists of finding an operation  whose fixed point is the artefact,  or
+at least a feature of it. Thus the fixed point of the operation of planing  is
+a planed surface. So, if we need a plane surface we think of planing as a  way
+of achieving it. Likewise the fixed point of the operation of screw-cutting is
+a threaded surface.
+
+<p>
+So, it is not  surprising in Computer Science  that a fixed-point operator  is
+important in constructing the artefacts that we produce - computer programs.
+
+<p> You  might  also  say  that  e  is a
+symmetry of <tt>(<b>Y</b> e)</tt>, and this  is
+a clue to why it works. Observe that the
+data-structures we  construct in  Scheme
+are  <em>self   similar</em>,  or   in a
+sense, symmetric. [Note however that  in
+Mathematics  it  is   usual  to   regard
+symmetry operators as being invertible -
+if you rotate a  body you can rotate  it
+back. Computation generally throws  away
+information, so is not invertible].
+
+When, for example,  you take the <tt>cdr</tt>
+of a
+list, you still have a list. Recursion works by exploiting this symmetry.
+
+
+
+<h3>2.3  But <b>Y</b> can be written as a <tt><img src=lambda.gif></tt> expression!</h3>
+
+
+<p>
+Now, in introducing  <b>Y</b>
+we are <em>not</em> introducing a new construct. Here is Turing's
+<b>Y</b>. [There's also one due to Curry].
+
+
+<pre>
+ (<img src=lambda.gif> h .
+     (
+      (<img src=lambda.gif> x . (h (x x)))
+      (<img src=lambda.gif> x . (h (x x)))
+      )
+     )
+</pre>
+
+<p>
+Let's see how this works - suppose we have some arbitrary expression
+<tt>e</tt>.
+Applying <tt><b>Y</b></tt> to  <tt>e</tt>
+
+<pre>
+  (<b>Y</b> e) <img src=Rightarrow.gif>   [use value for <b>Y</b> given above]
+   (
+     (<img src=lambda.gif> h .
+         (
+          (<img src=lambda.gif> x . (h (x x)))
+          (<img src=lambda.gif> x . (h (x x)))
+          )
+         ) e)
+
+<img src=Rightarrow.gif>  [substitute e for h in the body of the (<img src=lambda.gif> h . ..) function, strip
+      off <img src=lambda.gif> h . ]
+
+         (                                         [1]
+          (<img src=lambda.gif> x . (e (x x)))
+          (<img src=lambda.gif> x . (e (x x)))
+          )
+
+<img src=Rightarrow.gif> [substitute the second (<img src=lambda.gif> x . . . .) expression for x in the body of
+     the first (<img src=lambda.gif> x . . . .) expression, strip off <img src=lambda.gif>.
+
+    (e (                                           [2]
+        (<img src=lambda.gif> x . (e (x x)))
+        (<img src=lambda.gif> x . (e (x x))))
+        )
+
+</pre>
+
+<p>
+But what we have here is two expressions, [1] and [2] for <tt>(<b>Y</b> e)</tt>,
+but the second is of the  form <tt>(e (<b>Y</b> e))</tt>.
+
+
+<h3>2.4  Using <b>Y</b> to define recursive functions</h3>
+
+
+
+<p>
+The <tt><b>Y</b></tt>
+combinator is used in theory to create recursive functions by  providing
+a binding for the unbound recursive call that plagued us above.
+
+
+<pre>
+  (<img src=lambda.gif> sum .
+    (<img src=lambda.gif> l .
+        (if
+            (null? l)
+            0
+            (+ (car l) (sum (cdr l))))
+        )
+    )
+</pre>
+
+in:
+
+<pre>
+ (<b>Y</b>
+   (<img src=lambda.gif> sum .
+       (<img src=lambda.gif> l .
+           (if
+               (null? l)
+               0
+               (+ (car l) (sum (cdr l))))
+           )
+       )
+   )
+</pre>
+
+<p>
+This expression <em>is</em> the <tt>sum</tt> function that we are trying to
+define recursively.
+
+<p> So, if we  wanted to calculate <em>(sum  '(1 2))</em>, we would  simply
+apply our expression thus:
+
+<pre>
+
+ (
+  (<b>Y</b>
+     (<img src=lambda.gif> sum .
+         (<img src=lambda.gif> l .
+             (if
+                 (null? l)
+                 0
+                 (+ (car l) (sum (cdr l))))
+             )
+         ) ; end of E
+     )     ; end of (<b>Y</b> E), that is the sum function.
+  '(1 2))  ; the argument of (<b>Y</b> E)
+</pre>
+
+<p>
+The way that  this works as  a recursive definition  is by making  use of  the
+identity <tt>(<b>Y</b> E) = (E (<b>Y</b> E)).</tt>  Applying the identity we obtain:
+
+<pre>
+
+    (
+     (                                         ; start of (E (<b>Y</b> E))
+      (<img src=lambda.gif> sum .                            ; start of E
+          (<img src=lambda.gif> l .
+              (if
+                  (null? l)
+                  0
+                  (+ (car l) (sum (cdr l))))
+              )
+          )                                     ; end of E
+      (<b>Y</b>                                        ; start of         (<b>Y</b> E)
+         (<img src=lambda.gif> sum .
+             (<img src=lambda.gif> l .
+                 (if
+                     (null? l)
+                     0
+                     (+ (car l) (sum (cdr l))))
+                 )
+             )                                   ; end of E
+         )                                       ; end of (<b>Y</b> E)
+      )                                          ; end of (E (<b>Y</b> E))
+     '(1 2))                                     ; the argument of (E (<b>Y</b> E))
+
+</pre>
+
+
+<p>
+We can now use the fact that <tt>E</tt>, that is the <tt>(<img src=lambda.gif> sum .  . . .
+)</tt>   expression,   is   <em>applied</em>   to   the   <tt>(<b>Y</b>    (<img src=lambda.gif>
+sum . . ..))</tt>  expression;  using  the   rule  about  a   <tt><img src=lambda.gif></tt>
+expression  being  applied  to  an  argument,  we  substitute  (<b>Y</b>  E)   for
+<tt>sum</tt> in the body of E [remember that the (<b>Y</b> E) is the  <tt>sum</tt>
+function (we hope!)].  That is, wherever  we have the  "recursive" call  of
+<tt>sum</tt>,  we   may  replace   <tt>sum</tt>  by   the  <tt>(<b>Y</b>  (<img src=lambda.gif>
+sum . . ..))</tt> expression. The  fact that  we can do  this, and  do it  as
+often as we need to, is the secret of how <tt><b>Y</b></tt> works.
+
+
+<pre>
+<img src=Rightarrow.gif>
+
+
+    (
+     (<img src=lambda.gif> l .
+         (if
+             (null? l)
+             0
+             (+ (car l)
+                (                           ; (<b>Y</b> E) replaces sum
+                 (<b>Y</b>                         ; start of         (<b>Y</b> E)
+                    (<img src=lambda.gif> sum .
+                        (<img src=lambda.gif> l .
+                            (if
+                                (null? l)
+                                0
+                                (+ (car l) (sum (cdr l))))
+                            )
+                        )                                  ; end of E
+                    )                                      ; end of (<b>Y</b> E)
+                 (cdr l)))                                 ;
+             )                                             ; end if
+         )                                                 ; end (<img src=lambda.gif>l . . .)
+
+     '(1 2))                                 ; the argument of (<img src=lambda.gif> l . . ..)
+
+
+</pre>
+
+
+<p>
+You can see what has  happened - the expression <tt>(<b>Y</b> e)</tt> has been pulled  inside
+the <img src=lambda.gif>-expression that  we created  for <tt>sum</tt>, indeed  substituting for  the
+recursive call of <tt>sum</tt>. That is if <tt>(<b>Y</b> e)</tt> is indeed the desired <tt>sum</tt> function, it
+is behaving in the right way!. We can now reduce the outer <tt><img src=lambda.gif></tt>
+expression:
+
+
+<pre>
+    (if
+        (null? '(1 2))
+        0
+        (+ (car '(1 2)) (
+            (<b>Y</b> (<img src=lambda.gif> sum .         ; start of  (<b>Y</b> E)
+                   (<img src=lambda.gif> l .
+                       (if
+                           (null? l)
+                           0
+                           (+ (car l) (sum (cdr l))))
+                       )
+                   )
+
+               (cdr '(1 2)))))
+        )
+    )
+</pre>
+
+<p>
+We can now do some straightforward computation. The expression
+<tt>(null? '(1 2))</tt>
+evaluates to <tt>#f</tt>,
+and <tt>(cdr '(1 2))</tt> evaluates to <tt>'(2)</tt>
+so applying the rules for
+<tt>if</tt> we obtain:
+
+<pre>
+  <img src=Rightarrow.gif>
+
+  (+ 1 (
+    (<b>Y</b> (<img src=lambda.gif> sum .
+           (<img src=lambda.gif> l .
+               (if
+                   (null? l)
+                   0
+                   (+ (car l) (sum (cdr l))))
+               )
+           )
+
+       '( 2))))
+        )
+</pre>
+
+<p>
+We can now use <tt>(<b>Y</b> E) = (E (<b>Y</b> E))</tt> all over again, obtaining:
+
+<pre>
+  (+ 1
+    (if
+        (null? '( 2))
+        0
+        (+ (car '( 2)) (
+            (<b>Y</b> (<img src=lambda.gif> sum .
+                   (<img src=lambda.gif> l .
+                       (if
+                           (null? l)
+                           0
+                           (+ (car l) (sum (cdr l))))
+                       )
+                   )
+
+               (cdr '( 2)))))
+        )
+    )
+  )
+</pre>
+
+<p>
+One further use of <tt>(<b>Y</b> E) = (E (<b>Y</b> E))</tt> gives us:
+
+<pre>
+  (+ 1
+   (+ 2
+      (if
+          (null? '())
+          0
+          (+ (car '()) (
+              (<b>Y</b> (<img src=lambda.gif> sum .
+                     (<img src=lambda.gif> l .
+                         (if
+                             (null? l)
+                             0
+                             (+ (car l) (sum (cdr l))))
+                         )
+                     )
+
+                 (cdr '()))))
+          )
+      )
+   )
+</pre>
+
+<p>
+Now, because <tt>(null? '())</tt> evaluates to  <tt>#t</tt>,
+the <tt>(if..)</tt> expression
+evaluates  to
+<tt>0</tt>. So the whole expression evaluates to the simple form:
+
+<pre>
+  (+ 1
+   (+ 2 0))
+
+    <img src=Rightarrow.gif> 3
+</pre>
+
+<p>
+Note that, while the definition of the <tt><b>Y</b></tt>
+combinator can be written in  Scheme,
+we cannot get it to work correctly  in Scheme itself, since Scheme uses  eager
+evaluation and will give rise to  recursive run-away We treat the  application
+of <tt><b>Y</b></tt> to its argument in a lazy way to obtain a correct reduction.
+
+<p>
+Suppose we define <b>Y</b> as:
+
+<pre><code>
+(define <b>Y</b>
+    (<img src=lambda.gif> h .
+        (
+         (<img src=lambda.gif> x . (h (x x)))
+         (<img src=lambda.gif> x . (h (x x)))
+         )
+        )
+    )
+</code></pre>
+
+
+<h2>Curry's Paradox</h2>
+
+A reason for being interested in lambda-theories is that potentially they
+offer a route to creating a higher-order logic, essentially by
+implementing  propositional logic as part of a lambda-theory.
+
+The reason for learning about <b>Y</b> at this stage is that it lets us
+construct <em>Curry's Paradox</em>, which points out a significant problem
+with the use of lambda-theories as a basis of proof.
+
+<p>Let's consider what would happen if we tried to construct a
+lambda-theory which allowed us to do logical inference. One approach would
+be to make the propositional connectives &amp;,
+\/, ~,  <b>T</b> and <b>F</b>
+be constants in <em>C</em>, subject to appropriate laws.
+
+Such a theory would necessarily contain the tautologies
+of Boolean Algebra, expressed as equations, of which the following
+tautological gems
+will be adequate to make our point.
+
+<ul>
+<p>BOOL1 <img src=space.gif>
+<img src=vdash.gif> <b>T</b> &amp; <b>T</b> = <b>T</b>
+
+<!--
+<p>BOOL2 <img src=space.gif>
+<img src=vdash.gif> ~x &amp; x = <b>F</b> -->
+
+<p>BOOL2 <img src=space.gif>
+<img src=vdash.gif>  x &amp; (x <img src=Rightarrow.gif> y) = y
+
+
+<p>BOOL3 <img src=space.gif>
+ <img src=vdash.gif>(x <img src=Rightarrow.gif> (x <img src=Rightarrow.gif> y))
+    <img src=Rightarrow.gif> (x <img src=Rightarrow.gif> y)
+    = <b>T</b>
+</ul>
+
+<p>Now consider any term
+<em>Z <img src=in.gif> <img src=Lambda.gif>(C)</em>.
+
+<p>Let <em>X = <b>Y</b>(<img src=lambda.gif> z <img src=Rightarrow.gif> (z <img src=Rightarrow.gif> Z))</em>
+where <em>z <img src=not_in.gif> FV(Z)</em>. Since we know that
+<em>(<b>Y</b> E) = E (<b>Y</b> E)</em> for any term <em>E</em>, we can
+infer
+
+<ul>
+X =  (<img src=lambda.gif> z <img src=Rightarrow.gif> (z <img src=Rightarrow.gif> Z)) X
+_______________________________[1]
+</ul>
+<p>And now, by ordinary beta-reduction we get:
+
+<ul>
+   <img src=reduces_beta.gif>  (X <img src=Rightarrow.gif> (X <img src=Rightarrow.gif> Z))
+__________________________________[2]
+</ul>
+But, by the definition of alpha-beta-equivalence, this is equivalent to:
+<ul>
+   <img src=eqv.gif>  ((X <img src=Rightarrow.gif> (X <img src=Rightarrow.gif>Z)) <img src=Rightarrow.gif>
+    (X <img src=Rightarrow.gif> Z))
+____________________________[3]
+</ul>
+
+<p> However, since
+
+<ul> <p>
+<img src=vdash.gif> (x <img src=Rightarrow.gif> (x <img src=Rightarrow.gif> y))
+    <img src=Rightarrow.gif> (x <img src=Rightarrow.gif> y)
+    = <b>T</b>
+</ul>
+
+<p>it follows by LT2 that
+
+<ul> <p>
+<img src=vdash.gif> (X <img src=Rightarrow.gif>
+    (X <img src=Rightarrow.gif> Z))
+    <img src=Rightarrow.gif> (X <img src=Rightarrow.gif> Z)
+    = <b>T</b>
+_________________________[4]
+</ul>
+<p> and hence, from [2], <img src=beta.gif> that
+
+<ul>
+ <img src=vdash.gif>  (X <img src=Rightarrow.gif> (X <img src=Rightarrow.gif> Z)) = <b>T</b>
+</ul>
+From CONG and LT1 we obtain
+
+<ul>
+ <img src=vdash.gif>  (X <img src=Rightarrow.gif> (X <img src=Rightarrow.gif> Z))
+    &amp;
+   ((X <img src=Rightarrow.gif> (X <img src=Rightarrow.gif> Z))
+    <img src=Rightarrow.gif> (X <img src=Rightarrow.gif> Z))
+       = <b>T</b> &amp; <b>T</b>
+</ul>
+And, since
+<ul>
+<p> <img src=vdash.gif> <b>T</b> &amp; <b>T</b> = <b>T</b>
+</ul>
+TRANS gives us
+
+<ul>
+ <img src=vdash.gif>  (X <img src=Rightarrow.gif> (X <img src=Rightarrow.gif> Z))
+    &amp;
+((X <img src=Rightarrow.gif> (X <img src=Rightarrow.gif> Z))
+    <img src=Rightarrow.gif> (X <img src=Rightarrow.gif> Z))
+       = <b>T</b>
+</ul>
+Now we can apply BOOL2 (modus ponens) and TRANS (transitivity) to obtain
+
+<ul>
+<img src=vdash.gif> (X <img src=Rightarrow.gif> Z))
+       = <b>T</b>
+</ul>
+
+<p>But from [1..4] and the TRANS and <img src=beta.gif> we know that
+
+<ul>
+  <img src=vdash.gif> X = <b>T</b>
+</ul>
+
+<p>so, another application of modus ponens gives us
+
+<ul>
+    <img src=vdash.gif> Z = <b>T</b>
+</ul>
+
+<p>Thus we have shown, to our chagrin, that for any <em>Z <img src=in.gif>
+<img src=Lambda.gif>(C)</em>, <em> <img src=vdash.gif> Z </em>.  Or, in other words, if we
+try to use the lambda-calculus as a logic in this way, every statement is a
+theorem. This is obviously a useless kind of logic, since a logic
+is supposed distinguish between truth and falsehood.
+
+<p>Other approaches, using proof-rules, also lead to this kind of
+contradiction in circumstances in which their is unconstrained operation of
+the lambda-calculus over sentences containing propositional connectives.
+Since such higher-order use of the calculus is one of the attractions of
+being interested in its logical use, we appear to be doomed to
+disappointment.
+
+<p>However, we <em>can</em> mend the situation if we observe that the use
+of <b>Y</b> in the above argument is somehow inappropriate. For  <b>Y</b>
+is applied to what should be a boolean value; but we really want <b>Y</b>
+to act on functions. The remedy is to develop some kind of type theory that
+will disallow the inappropriate use of <b>Y</b>.
+
+
+<h2>Building an Environment Model</h2>
+We have seen earlier that an evaluation is a map from the <img src=lambda.gif>-calculus
+onto an applicative algebra, which is necessarily a combinatorial algebra.
+We'll now look at an alternative construction which makes more use of the
+environment concept. We can build our concepts on a given applicative
+algebra.
+
+<p>It's going to be desirable to be closer to the Meyer paper, so we'll
+redefine our notion of evaluation a little.
+
+<hr>
+
+<h3>Definition</h3>
+Let <img src=calC.gif> be an applicative algebra. Let <em>X</em> be a
+countably infinite set of variables. Let <em>D = | <img src=calC.gif> |
+</em>. We define an <em>applicative term-algebra</em> <img src=calC.gif>[X]
+inductively as follows
+<ul>
+<p>       <em>d <img src=in.gif> <img src=calC.gif>[X]</em> for all
+             <em>d <img src=in.gif> D</em>
+
+<p>       <em>x <img src=in.gif> <img src=calC.gif>[X]</em> for all
+             <em>x <img src=in.gif> X</em>
+
+<p>       if <em>E,F <img src=in.gif> <img src=calC.gif>[X] </em> then
+          <em>(E <img src=dot.gif> F) <img src=in.gif>
+        <img src=calC.gif>[X] </em>
+
+</ul>
+
+<hr>
+
+<h3>Definition</h3>
+<p>A <em>valuation mapping</em> defines for each <em>E</em> in
+an applicative term-algebra <img src=calC.gif>[X] a  function
+<em><img src=calV.gif>[E]</em>
+from environments to <img src=calC.gif>. Let <em>D</em>
+=
+| <img src=calC.gif> |. Then
+
+<p>A constant is evaluated to itself
+<ul>
+
+<img src=calV.gif> [d] (<img src=rho.gif>) = d, for
+        <em>d <img src=in.gif> D</em>
+</ul>
+
+<p>A variable is given its value in the environment <img src=rho.gif>.
+
+<ul>
+<img src=calV.gif> [x] (<img src=rho.gif>) = <img src=rho.gif>(x)
+</ul>
+
+<p>And an application in the term algebra  <img src=calC.gif>[X] maps
+to an application in  <img src=calC.gif>.
+
+<ul>
+<img src=calV.gif> [(F G)] (<img src=rho.gif>) =
+(<img src=calV.gif> [F] (<img src=rho.gif>) <img src=dot.gif>
+<img src=calV.gif> [G] (<img src=rho.gif>))
+</ul>
+
+
+<h3>Definition</h3>
+An equation <em>E = F</em> between members of <img src=calC.gif>[X] is said
+to be <em>valid</em> in <img src=calC.gif> iff the values of <em>E</em> and
+<em>F</em> are identical in all environments. That is the following
+equation holds between the two functions:
+<ul>
+<img src=calC.gif> |= E = F
+iff <img src=calV.gif>[E] = <img src=calV.gif>[F]
+</ul>
+
+[Remember that  <img src=calV.gif>[E] is a function from environments to
+<img src=calC.gif>, so if we equate the functions, we are saying that
+they must have the same value for any environment.]
+
+<h2>Functional Domains</em>
+
+<p>Thus we have defined a valuation map over an applicative term-algebra.
+Now, if we want to regard <img src=lambda.gif>-applications as functions
+defined over the domain we are in trouble, since then we require the
+valuation-mapping to have as its range all functions from <em>D</em> to
+<em>D</em> as well as <em>D</em> itself. Even more perplexing is the
+problem of defining a valuation of self-application.
+
+<p>We can solve this conundrum in  way that makes quite good computational
+sense if we decide that our valuation mapping, extended to
+<img src=lambda.gif> abstractions, maps such abstractions, along with
+all other terms of the <img src=lambda.gif>-calculus to
+some set <em>D</em>. A function is then associated with a
+<img src=lambda.gif> abstraction by way of a map <img src=Phi.gif> from
+<em>D</em> onto a set of functions from <em>D</em> to <em>D</em>
+which we shall denote by <em>D</em> <img src=rightarrow.gif> <em>D</em>.
+
+<p> Now considerations of cardinality make it clear that
+<em>D</em> <img src=rightarrow.gif> <em>D</em> cannot be
+the set of all functions from <em>D</em> to <em>D</em>,
+since the map <img src=Phi.gif> is an <em>onto</em> mapping. Instead we
+require that it should be a subset of the set of all functions from the
+domain to itself which is <em>adequate</em> for our purpose; by this we
+really mean that it contains all functions that can be specified as
+computations over <em>D</em>. <small>[Remark: Actually we may wish to have
+a wider class of functions than those which are usually regarded as
+computable - implementation of the HOL system for example, requires the
+existence of a functional-equality oracle in <em>D</em> to <em>D</em>.
+</small>
+
+<p> A possible computational interpretation of <img src=Phi.gif> is clear
+enough. A given <em>d <img src=in.gif> D</em> could be a code-block, such
+as is created by the Poplog Virtual Machine. The function
+<em><img src=Phi.gif>(d)</em> corresponds to the action of calling that
+code-block to effect a transformation of one element <em>c</em> in
+<em>D</em> into another, <em><img src=Phi.gif>(d)(c)</em>. It is thus
+similar to the <tt>apply</tt> function of Lisp or Scheme or POP-11.
+
+<p>Now we are actually going to specify the value of a
+<img src=lambda.gif>-abstraction by specifying the corresponding
+member of <em>D</em> <img src=rightarrow.gif> <em>D</em> - that is we
+specify an abstraction by specifying a corresponding function, but require
+its <em>value</em> to be a member of <em>D</em>
+
+<p>For this to work we require a converse mapping
+<img src=Psi.gif> which maps <em>D</em> <img src=rightarrow.gif>
+<em>D</em> into <em>D</em>, since having specified that an abstraction
+corresponds to a function in  <em>D</em> <img src=rightarrow.gif>
+<em>D</em>, we need to be able to map this function back to the actual
+member of <em>D</em> which is the value of the abstraction.
+
+<p>This leads us to the following definition in which the basic
+requirements are bundled into a structure:
+
+<hr>
+
+<h3>Definition</h3>
+
+The structure
+<img src=calF.gif> = &LT;D, <img src=Phi.gif>, <img src=Psi.gif> >
+where for all <em>f <img src=in.gif> D <img src=rightarrow.gif> D</em>,
+<em>f =  <img src=Phi.gif>(<img
+src=Psi.gif>(f))</em> is called a </em>functional domain</em>.</p>
+
+<hr>
+
+<p>The fact that <img src=Phi.gif> is a partial (left) inverse
+of <img src=Psi.gif> provides a necessary link between the definition
+of a <img src=lambda.gif>-abstraction and its subsequent
+<em>application</em>. In effect, the behaviour of an abstraction is
+specified as an <em>f</em> in the above definition, and subsequently used
+as <em><img src=Phi.gif>(<img src=Psi.gif>(f))</em>.
+
+<p>Our
+basic strategy for treating <img src=lambda.gif>-abstractions in this
+context is to use the <em>environment</em> as a means of implementing the
+binding of variables. Thus, to evaluate a <img src=lambda.gif>-abstraction
+applied to an argument we must evaluate the body of the abstraction in an
+environment in which the formal parameter is mapped to the actual
+parameter. To accomplish this, we will need the following operation,
+which we define for a general function, though as the notation suggests, we
+will use it for environments.
+
+<hr>
+
+<h3>Definition</h3>
+Let <img src=rho.gif> be a function. Then we write
+<em>g = <img src=rho.gif>[a:=b]</em>
+for the function <em>g</em> which is defined by
+
+<ul>
+<p>g(a) = b
+<p>g(x) = <img src=rho.gif>(x),  x <img src=not_eq.gif> a
+</ul>
+
+<hr>
+
+<p>That is to say, <em><img src=rho.gif>[a:=b]</em> agrees with
+<img src=rho.gif> everywhere except at <em>a</em>.
+
+
+<p>[<b>Note:</b> Though as the notation suggests,
+any functional characterisation of the updating of data-structures will
+probably make use of this construct. For any given machine-state, we can
+regard an array <tt>A</tt> as a mapping from indices to values. So the
+interpretation of an array-update
+<pre>
+    A[i] := A[i] + x
+</pre>
+will be something like
+<ul>
+<img src=calV.gif>[A](<img src=rho.gif>')
+= <img src=calV.gif>[A](<img src=rho.gif>)
+[<img src=calV.gif>[i](<img src=rho.gif>) :=
+<img src=calV.gif>[x](<img src=rho.gif>)]
+</ul>
+
+Where <img src=rho.gif>' characterises the machine after the update.]
+
+<p>However, <em>revenons &agrave nos moutons fonctionelles</em>.</p>
+
+
+<p>We are now  ready to define a valuation mapping over a functional
+domain, using the <img src=Phi.gif> map to translate from the application
+of member of <em>D</em> to the corresponding function.
+
+<hr>
+
+<h3>Definition</h3>
+
+<p>A <em>valuation mapping</em> defines for each <em>E</em> in
+an applicative term-algebra <img src=calF.gif>[X] (defined
+over a functional domain <img src=calF.gif>) a  function
+<img src=calV.gif> from environments to <img src=calF.gif>. Let <em>D</em>
+= | <img src=calF.gif> |. Then
+
+<p>A constant is evaluated to itself
+<ul>
+
+<p>VFD1 <img src=space.gif>
+<img src=calV.gif> [d] (<img src=rho.gif>) = d, for
+        <em>d <img src=in.gif> D</em>
+</ul>
+
+<p>A variable is given its value in the environment <img src=rho.gif>.
+
+<ul>
+<p>VFD2 <img src=space.gif>
+<img src=calV.gif> [x] (<img src=rho.gif>) = <img src=rho.gif>(x)
+</ul>
+
+<p>And an application <em>(F G)</em> in the term algebra  <img
+src=calV.gif>[X] is evaluated using the function <img src=Phi.gif> to map
+the value of <em>F</em> to the corresponding function in
+<em> D <img src=rightarrow.gif> D</em>
+
+<ul>
+<p>VFD3 <img src=space.gif>
+<img src=calV.gif> [(F G)] (<img src=rho.gif>) =
+<img src=Phi.gif>(<img src=calV.gif> [F](<img src=rho.gif>))
+( <img src=calV.gif> [G] (<img src=rho.gif>))
+</ul>
+
+<p> Finally, an abstraction is specified by defining a function.
+
+<ul>
+<p>VFD4 <img src=space.gif>
+<img src=calV.gif> [<img src=lambda.gif> x . E] (<img src=rho.gif>) =
+    <img src=Psi.gif> (f)
+
+<p>where the function <em>f</em> is defined by
+<em>f(d) = <img src=calV.gif>[E](<img src=rho.gif>[x:=d])</em>
+
+</ul>
+
+<hr>
+<p>The
+obvious snag with the above definition is that, since not all functions
+from <em>D</em> to <em>D</em> are in
+<em> D <img src=rightarrow.gif> D</em>,
+the particular <em>f</em> specified in VFD4 in the previous definition
+might fail to be a member of <em> D <img src=rightarrow.gif> D</em>.
+Since our system would be, in an important way, <em>too weak</em> if
+this happens, it seems natural to <em>require</em> that <em> D <img
+src=rightarrow.gif> D</em> contain the necessary functions. With this we
+obtain the following concept.
+</p>
+
+<hr>
+
+<h3>Definition</h3>
+An <em>environment model</em> of the lambda calculus is any functional
+domain such that if VFD1-4 are used to assign values to lambda-terms, then
+the functions <em>f</em> specified in
+VFD4 are all in  <em> D <img src=rightarrow.gif> D</em></p>
+
+<hr>
+<h3>In Which Hackers May Sight a Familiar Landmark</h3>
+If you are feeling lost in a sea of symbols, perhaps it may help to point
+out that our <em>valuation mapping</em> <img src=calV.gif> could be
+considered as akin to the familiar <tt>eval</tt> function of LISP, Scheme.
+It takes an expression (term) of the <img src=lambda.gif>-calculus and
+an environment and gives the term a value.
+
+<p>Likewise the <img src=Phi.gif> function can be considered as akin to the
+<tt>apply</tt> function, for it can be used to map an object and its
+argument into a value. The major difference between what we are doing and
+languages of the LISP tradition is that our functions take <em>one</em>
+argument.
+
+<p>Which leaves us with the <img src=Psi.gif> function - it's not too
+obviously constructive. However we can make it so if we regard it as
+creating a <em>closure</em>, that is to say an opaque data-object which
+encapsulates the <img src=lambda.gif>-abstraction being evaluated together
+with the environment <img src=rho.gif> in which the evaluation takes place.
+We then impose a requirement on the
+<img src=Phi.gif> function that it apply a closure to an argument by
+evaluating the body of the abstraction contained in the closure in the
+environment contained in the closure updated as specified in rule VFD4.
+
+<p>Thus, we could make a more constructive version of an environment model
+by taking an applicative algebra and extending it to contain closures.
+
+
+<hr>
+
+<h4>What Equations are Valid in an Environment Model?</h4>
+
+<hr>
+Recall that we earlier discussed the idea of an equation being
+<em>valid</em> in a model. In the case of an environment model
+we have the following definition.
+<hr>
+An equation <em>E = F</em> between terms of <em><img
+src=Lambda.gif>[D]</em> is said to be <em>valid</em> in the
+environment model <img src=calF.gif> iff <em>E</em> and <em>F</em> receive
+the same value in every environment.
+
+<ul>
+       <img src=calF.gif> |= E = F  <b>iff</b>
+<img src=calV.gif>[E] = <img src=calV.gif>[F]
+</ul>
+
+<hr>
+
+<h2>Soundness</h2>
+Earlier we characterised a lambda theory as a set of equations between
+terms of <em><img src=Lambda.gif>(C)</em>, where <em>C</em> is some set of
+constants. We required that a lambda-theory contain at least a minimal
+set of equations which related to <img src=alpha.gif> and <img
+src=beta.gif> equivalence. Let us now consider the issue of
+<em>soundness</em> of the rules specifying a lambda theory, with respect to
+the concept of an environment model.
+
+<p>The essential notion of soundness of a set of proof-rules is that any
+formula arrived at by application of the rules ought to be valid in
+a <em>model</em> of the logical system. That is to say,
+we could require that if, for some theory <img src=calT.gif>:
+<ul>
+<img src=vdash.gif><sub><img src=calT.gif></sub> F = G
+</ul>
+then
+<ul>
+<img src=calF.gif>|= F = G
+</ul>
+<p>Now we certainly can't require that <em>all</em> equations in every
+lambda-theory are valid in all environment models because we can thow
+in equations into the theory, for example <em>(+ x y) = (+ y x)</em> that
+may fail to be valid in many models (we've said nothing about the
+commutativity, or even existence, of addition in our specification of an
+evironment model). We can turn this discussion on its head, by saying that
+if an environment model <img src=calF.gif> really is a model of the
+lambda-calculus, then the set of equations that are valid in
+<img src=calF.gif> ought to form a lambda-theory, precisely because the
+equations that the definition of a lambda-theory requires to be present in
+any model <em>ought</em> all to be valid in <img src=calF.gif>.
+
+<p>The key to demonstrating soundness has to be to relate the basic
+apparatus of <img src=alpha.gif> and <img src=beta.gif> conversion, namely
+<em>substitution</em> to the valuation mapping that defines  the
+environment model. It's clear that we're in for more of those proofs by
+induction. . .
+
+<p>The first of these says that the value of a given term
+depends only on the variables that are free in that term. But first let's
+state a result whose proof is left to the reader.
+
+<hr>
+
+<h3>Lemma EM1 </h3>
+
+If <em>x <img src=not_eq.gif> y</em> then, for any function
+<img src=rho.gif>
+<ul>
+<img src=rho.gif>[x:=c][y:=d] = <img src=rho.gif>[y:=d][x:=c]
+<p><img src=rho.gif>[x:=c][x:=d] = <img src=rho.gif>[x:=d]
+</ul>
+
+<hr>
+Note that, while we need the above theorem for <em>environments</em>, it
+holds for any function whatsoever.
+
+<hr>
+
+<h3>Lemma EM2 (The free variable lemma)</h3>
+Let <em>E</em> in <img src=Lambda.gif><em>(D)</em>. Let <em>y</em> be a
+variable s.t. <em>y <img src=not_in.gif> FV(E) </em>. Let <em>d <img
+src=in.gif> D</em> Then for any environment <img src=rho.gif>:
+<ul>
+<img src=calV.gif>[E](<img src=rho.gif>) =
+<img src=calV.gif>[E](<img src=rho.gif>[y:=d])
+</ul>
+
+<h4>Proof</h4>
+By induction on <em>height(E)</em>.</p>
+
+<hr>
+
+<p><b>Base Case <em>n=0</em></b>
+
+<ul>
+
+<p><li> Suppose <em>E = x</em>, a variable. Since  <em>y <img
+src=not_in.gif> FV(D)</em> we have that <em>y <img src=not_eq.gif> x</em>
+
+<p><ul>
+<img src=calV.gif>[x](<img src=rho.gif>) = <img src=rho.gif>(x)
+= <img src=rho.gif>[y:=d](x)
+= <img src=calV.gif>[x]((<img src=rho.gif>)[y:=d])
+</ul>
+<p>since <em>y <img src=not_eq.gif> x</em>
+
+<p><li> Suppose <em>E = d' <img src=in.gif> D</em>.
+
+<p><ul>
+<img src=calV.gif>[d'](<img src=rho.gif>) = d'
+= <img src=calV.gif>[d'](<img src=rho.gif>[y:=d])
+</ul>
+</ul>
+
+<hr>
+
+<p><b> Inductive Step</b>
+
+<p>Suppose for a given <em>n</em> we have for any term <em>E</em> for which
+<em>height(E) <img src=leq.gif> n</em>
+
+<ul>
+<img src=calV.gif>[E](<img src=rho.gif>) =
+<img src=calV.gif>[E](<img src=rho.gif>[y:=d])
+</ul>
+
+
+
+Consider an expression <em>E</em> of height <em>n+1</em> We must show our
+result holds for <em>E</em>.</p>
+
+<ul>
+
+<p><li> Suppose <em> E=(F G) </em>.
+From
+VFD3  we have
+<p><ul>
+<img src=calV.gif> [(F G)] (<img src=rho.gif>) =
+<img src=Phi.gif>(<img src=calV.gif> [F](<img src=rho.gif>))
+( <img src=calV.gif> [G] (<img src=rho.gif>))
+<p> =
+<img src=Phi.gif>(<img src=calV.gif> [F](<img src=rho.gif>[y:=d]))
+( <img src=calV.gif> [G] (<img src=rho.gif>[y:=d]))
+</ul>
+<p>by the inductive hypothesis. Applying VFD3 again we have
+
+<p><ul>
+= <img src=calV.gif> [(F G)](<img src=rho.gif>[y:=d])
+</ul>
+
+
+
+
+<p><li> Suppose <em>E = <img src=lambda.gif> x . F</em>, an
+abstraction. From VFD4 we have.
+
+<ul>
+<p>
+<img src=calV.gif> [<img src=lambda.gif> x . F] (<img src=rho.gif>) =
+    <img src=Psi.gif> (f)
+</ul>
+<p>where the function <em>f</em> is defined by
+<p><ul>f(c) = <img src=calV.gif>[F](<img src=rho.gif>[x:=c])</ul>
+
+<p>Now consider
+<ul>
+<p>
+<img src=calV.gif> [<img src=lambda.gif> x . F] (<img
+src=rho.gif>[y:=d])
+=
+    <img src=Psi.gif> (g)
+</ul>
+<p>where the function <em>g</em> is defined by
+<p><ul>g(c) = <img src=calV.gif>[F](<img src=rho.gif>[y:=d][x:=c])</ul>
+<p>So, by Lemma EM1
+<p><ul> = <img src=calV.gif>[F](<img src=rho.gif>[x:=c][y:=d])</ul>
+
+<p><ul> = <img src=calV.gif>[F](<img src=rho.gif>[x:=c])
+</ul>
+<p>by the inductive hypothesis. So <em>f = g</em> and hence
+<em><img src=Psi.gif> (f) = <img src=Psi.gif> (g)</em>. Thus the result
+holds in this case.
+</ul>
+
+<hr>
+
+<h3>Lemma EM3 (The substitution lemma)</h3>
+Let <em>E</em> in <img src=Lambda.gif><em>(D)</em>. Let <em>x</em> be a
+variable. Let <em>F<img src=in.gif> <img src=Lambda.gif>(D)</em> Then:
+<p><ul>
+<img src=calV.gif>[E[x:=F]](<img src=rho.gif>) =
+<img src=calV.gif>[E]
+(<img src=rho.gif> [x:=<img src=calV.gif>[F]<img src=rho.gif>])
+</ul>
+
+<h4>Proof</h4>
+
+By induction on <em> n = height(E) </em>.
+
+<h4>Base Case</h4>
+<ul>
+<li> Suppose <em> E = x </em>
+
+<p><ul>
+<img src=calV.gif>[E[x:=F]](<img src=rho.gif>) =
+
+<img src=calV.gif>[F](<img src=rho.gif>)
+</ul>
+<p>On the other hand
+
+<p><ul>
+<img src=calV.gif>[E](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+=
+<img src=calV.gif>[x](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+<p> = <img src=calV.gif>[F](<img src=rho.gif>)
+</ul>
+
+<p><li> Suppose <em>E = y</em>, a variable not equal to <em>x</em>.
+
+<p><ul>
+<img src=calV.gif>[E[x:=F]](<img src=rho.gif>) =
+
+<img src=calV.gif>[y](<img src=rho.gif>)  = <img src=rho.gif>(y)
+</ul>
+
+<p>On the other hand
+
+<p><ul>
+<img src=calV.gif>[E]((<img src=rho.gif>)
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+=
+<img src=calV.gif>[y](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+<p>
+= (<img src=rho.gif> [x:=<img src=calV.gif>[F](<img src=rho.gif>)])(y)
+= <img src=rho.gif> (y)
+</ul>
+
+
+<p><li> Suppose <em>E = c</em>, a constant.
+
+<p><ul>
+<img src=calV.gif>[E[x:=F]](<img src=rho.gif>) =
+
+<img src=calV.gif>[c](<img src=rho.gif>)  = c
+</ul>
+
+<p>On the other hand
+
+<p><ul>
+<img src=calV.gif>[E]((<img src=rho.gif>)
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+=
+<img src=calV.gif>[c](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+=  c
+</ul>
+</ul>
+
+<h4>Inductive Step</h4>
+
+<p>Suppose for a given <em>n</em> we have for any term <em>E</em> for which
+<em>height(E) <img src=leq.gif> n</em>
+
+<p><ul>
+<img src=calV.gif>[E[x:=F]](<img src=rho.gif>) =
+<img src=calV.gif>[E](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+</ul>
+
+Consider an expression <em>E</em> of height <em>n+1</em> We must show our
+result holds for <em>E</em>.</p>
+
+<ul>
+
+<p><li> Suppose <em>  E = (G H) </em>, an application.
+<p><ul>
+<img src=calV.gif>[E[x:=F]](<img src=rho.gif>) =
+<img src=calV.gif>[(G H)[x:=F]](<img src=rho.gif>) =
+<p><img src=calV.gif>[(G[x:=F] H[x:=F])](<img src=rho.gif>) =
+<p><img src=calV.gif>[(G[x:=F] H[x:=F])](<img src=rho.gif>) =
+<p> <img src=Phi.gif>(<img src=calV.gif>[(G[x:=F]](<img src=rho.gif>))
+(<img src=calV.gif>[H[x:=F]])](<img src=rho.gif>)) =
+
+<p> <img src=Phi.gif>(<img src=calV.gif>[G]
+(<img src=rho.gif>[x:=<img src=calV.gif>[F](<img src=rho.gif>)))
+
+(<img src=calV.gif>[H](<img src=rho.gif>
+[x := <img src=calV.gif>[F](<img src=rho.gif>)])
+</ul>
+<p>By the inductive hypothesis.
+
+<p>On the other hand
+<p><ul>
+<img src=calV.gif>[E](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+
+<p> =
+<img src=calV.gif>[G H](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+<p>= <img src=Phi.gif>(<img src=calV.gif>[G]
+(<img src=rho.gif>[x:=<img src=calV.gif>[F](<img src=rho.gif>)))
+
+(<img src=calV.gif>[H](<img src=rho.gif>
+[x := <img src=calV.gif>[F](<img src=rho.gif>)])
+</ul>
+
+
+
+<p><li> Suppose <em>E = <img src=lambda.gif> x . G</em>, an
+abstraction.
+
+<p><ul>
+<img src=calV.gif>[E[x:=F]](<img src=rho.gif>) =
+<img src=calV.gif>[E](<img src=rho.gif>)
+</ul>
+
+<p>using VFD4 we have
+<ul>
+<p>
+= <img src=calV.gif> [<img src=lambda.gif> x . G] (<img src=rho.gif>) =
+    <img src=Psi.gif> (f)
+</ul>
+<p>where the function <em>f</em> is defined by
+<p><ul>f(d) = <img src=calV.gif>[G](<img src=rho.gif>[x:=d])
+
+</ul>
+
+<p>On the other hand
+<p><ul>
+<img src=calV.gif>[E](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+
+<p>= <img src=calV.gif>[<img src=lambda.gif> x . G](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+</ul>
+
+<p>and using VFD4 we have
+<ul>
+<p>
+  =  <img src=Psi.gif> (g)
+</ul>
+<p>where the function <em>g</em> is defined by
+<p><ul>g(d) = <img src=calV.gif>[G](<img
+src=rho.gif>[x:=<img src=calV.gif>[F](<img src=rho.gif>)][x:=d])
+</ul>
+<p>and using Lemma EM1 we have:
+
+<p><ul>
+g(d) = <img src=calV.gif>[G](<img src=rho.gif>[x:=d])
+</ul>
+<p>Thus <em>f = g</em>, so the result holds in this case.
+
+
+
+<p><li> Suppose <em>E = <img src=lambda.gif> y . G</em>, an
+abstraction, where
+<em>y <img src=not_in.gif> FV(F)</em> or
+<em>x <img src=not_in.gif> FV(G)</em>
+
+<p><ul>
+<img src=calV.gif>[(<img src=lambda.gif> y . G)[x:=F]](<img src=rho.gif>)
+<p>=
+<img src=calV.gif>[(<img src=lambda.gif> y . G[x:=F])](<img src=rho.gif>)
+<p>=
+    <img src=Psi.gif> (f)
+</ul>
+<p>where the function <em>f</em> is defined by
+
+<p><ul>f(d) = <img src=calV.gif>[G[x:=F]](<img src=rho.gif>[y:=d])
+<p> =
+<img src=calV.gif>[G](<img src=rho.gif>[y:=d]
+[x:=<img src=calV.gif>[F](<img src=rho.gif>[y:=d])])
+
+</ul>
+<p>by the inductive hypothesis.
+
+<p>On the other hand
+
+<p><ul>
+<img src=calV.gif>[E](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+<p>=
+
+<img src=calV.gif>[<img src=lambda.gif> y . G](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+<p>=
+    <img src=Psi.gif> (g)
+</ul>
+<p>where the function <em>g</em> is defined by
+
+<p><ul>g(d) = <img src=calV.gif>[G](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)] [y:=d])
+<p> =
+<img src=calV.gif>[G](<img src=rho.gif>[y:=d]
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+</ul>
+<p>by Lemma EM1.
+
+<p>To show <em>f(d) = g(d)</em> for all <em>d</em> we have to consider two
+sub-cases.
+
+<ul>
+<p><li>Subcase 1:
+<em>y <img src=not_in.gif> FV(F) </em>
+
+
+<p><ul>f(d) =
+<img src=calV.gif>[G](<img src=rho.gif>[y:=d]
+[x:=<img src=calV.gif>[F](<img src=rho.gif>[y:=d])])
+<p> =
+<img src=calV.gif>[G](<img src=rho.gif>[y:=d]
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)]) = g(d)
+</ul>
+<p>by Lemma EM2.
+
+
+<p><li>Subcase 2:
+<em> x <img src=not_in.gif> FV(G)</em>
+
+
+<p><ul>f(d)
+=
+<img src=calV.gif>[G](<img src=rho.gif>[y:=d]
+[x:=<img src=calV.gif>[F](<img src=rho.gif>[y:=d])])
+
+<p>=
+<img src=calV.gif>[G](<img src=rho.gif>[y:=d])
+</ul>
+<p>by Lemma EM2, which lemma also leads us to conclude
+
+
+<p><ul>g(d) =
+<img src=calV.gif>[G](<img src=rho.gif>[y:=d]
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+<p>=
+<img src=calV.gif>[G](<img src=rho.gif>[y:=d])
+
+</ul>
+
+
+
+
+</ul>
+
+
+<p>Thus <em>f(d) = g(d)</em> for all <em>d <img src=in.gif>
+D</em>. Hence  <em>f = g</em>, and the result follows in this case.
+
+
+<p><li> Suppose <em>E = <img src=lambda.gif> y . G</em>, an
+abstraction, where
+<em>y <img src=in.gif> FV(F) </em>and
+<em>x <img src=in.gif> FV(G)</em>
+
+
+
+<p><ul>
+<img src=calV.gif>[(<img src=lambda.gif> y . G)[x:=F]](<img src=rho.gif>)
+<p>=
+<img src=calV.gif>[(<img src=lambda.gif> y . G[x:=F])](<img src=rho.gif>)
+
+<p>=
+<img src=calV.gif>[(<img src=lambda.gif> w . G[y:=w][x:=F])]
+(<img src=rho.gif>)
+</ul>
+<p>Where <em> w <img src=not_in.gif> FV(F) </em>.
+<ul>
+<p>=
+    <img src=Psi.gif> (f)
+</ul>
+<p>where the function <em>f</em> is defined by
+
+<p><ul>f(d) = <img src=calV.gif>[G[y:=w][x:=F]](<img src=rho.gif>[w:=d])
+<p> =
+<img src=calV.gif>[G[y:=w]](<img src=rho.gif>[w:=d])
+[x:=<img src=calV.gif>[F](<img src=rho.gif>[w:=d])])
+
+<p> =
+<img src=calV.gif>[G](<img src=rho.gif>[w:=d])
+[x:=<img src=calV.gif>[F](<img src=rho.gif>[w:=d])][y:=d'])
+
+</ul>
+<p>by two applications of the inductive hypothesis, where
+<p><ul>
+     d' = <img src=calV.gif>[w](<img src=rho.gif>[w:=d]
+[x:=<img src=calV.gif>[F](<img src=rho.gif>[w:=d])] = d
+</ul>
+<p>Substituting <em>d</em> for <em>d'</em> we get
+
+<p><ul> f(d) =
+<img src=calV.gif>[G](<img src=rho.gif>[w:=d]
+[x:=<img src=calV.gif>[F](<img src=rho.gif>[w:=d])][y:=d])
+</ul>
+<p>But <em>w <img src=not_in.gif> FV(G) <img src=cup.gif> FV(F) </em>,
+so by Lemma EM2
+
+<p><ul> f(d) =
+<img src=calV.gif>[G](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)][y:=d])
+</ul>
+<p>On the other hand
+<p><ul>
+<img src=calV.gif>[E](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+
+<p> =
+<img src=calV.gif>[<img src=lambda.gif> y . G](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)])
+
+<p>=
+    <img src=Psi.gif> (g)
+</ul>
+<p>where <em>g</em> is defined by
+
+<p><ul>g(d) = <img src=calV.gif>[G](<img src=rho.gif>
+[x:=<img src=calV.gif>[F](<img src=rho.gif>)] [y:=d])
+</ul>
+<p>Hence we may conclude in this case also that <em>f = g</em>, and so
+the result holds in this case.
+
+</ul>
+
+<p>Which concludes the proof of Lemma EM3</p>
+
+<hr>
+Having tucked these lemmas under our belt, we may now progress to a result
+to which we accord the dignity of being a theorem.
+
+<hr>
+<h3>Soundness Theorem for Evaluation Models</h3>
+The equations valid in an environment model form a lambda theory.
+<h4>Proof</h4>
+[Follows Meyer 1982]
+<ul>
+<li>
+<p>By VFD3 and VFD4 the valuations of <em>(E F)</em> and of
+<em>(<img src=lambda.gif> x . E)</em> are determined solely by the
+valuation of <em>E</em> and of <em>F</em>. So CONG and <img src=xi.gif>
+preserve validity.
+
+<p><li>
+<p>To verify that <img src=alpha.gif> holds, let
+<p><ul>
+   <img src=calV.gif>[<img src=lambda.gif> x . E](<img src=rho.gif>)
+   = <img src=Psi.gif>(f)
+</ul>
+<p>as in VFD4, where the function <em>f</em> is defined by
+
+<p><ul>f(d) = <img src=calV.gif>[E](<img src=rho.gif>[x:=d])</ul>
+<p>Now consider a variable <em>y</em> distinct from <em>x</em> and not
+
+occurring free in <em>E</em>.
+<p><ul>
+   <img src=calV.gif>[<img src=lambda.gif> y . E[x:=y]](<img src=rho.gif>)
+   = <img src=Psi.gif>(g)
+</ul>
+<p>where the function <em>g</em> is defined by
+<p><ul>g(d) = <img src=calV.gif>[E[x:=y]](<img src=rho.gif>[y:=d])</ul>
+
+<p>So we have to show that <em>f = g</em>. Now
+we can trundle out the substitution lemma (EM3).
+<p><ul>
+     g(d) = <img src=calV.gif>[E](<img src=rho.gif>[y:=d][x:=d'])
+</ul>
+
+<p> where
+<p><ul>
+    d' = <img src=calV.gif>[y](<img src=rho.gif>[y:=d]) = d
+</ul>
+<p> But <em>y</em> is not free in <em>E</em>, so, by the free variable
+lemma (EM2)
+<p><ul>
+     g(d) = <img src=calV.gif>[E]([x:=d])
+</ul>
+<p>Thus showing that <em>f = g</em>, and hence that if <em>E</em> <img
+src=alpha.gif> converts to <em>F</em> then <em>E</em> and <em>F</em>
+receive the same value in every environment model.
+
+<p><li> To verify that <img src=beta.gif> holds, let us consider
+
+<p><ul>
+   <img src=calV.gif>[(<img src=lambda.gif> x . E) F](<img src=rho.gif>)
+<p> =
+<img src=Phi.gif>(
+<img src=calV.gif>[(<img src=lambda.gif> x . E)])(<img src=rho.gif>))
+(<img src=calV.gif>[F](<img src=rho.gif>))
+<p> =
+<img src=Phi.gif>( <img src=Psi.gif>(f))
+(<img src=calV.gif>[F](<img src=rho.gif>)) _______________[1]
+</ul>
+
+<p>as in VFD4, where the function <em>f</em> is defined by
+
+<p><ul>f(d) = <img src=calV.gif>[E](<img src=rho.gif>[x:=d])</ul>
+<p>So, [1] is
+
+<ul>
+
+<p> =
+f(<img src=calV.gif>[F](<img src=rho.gif>))
+<p>= <img src=calV.gif>[E](<img src=rho.gif>[x:=<img
+src=calV.gif>[F](<img src=rho.gif>)])
+
+<p>= <img src=calV.gif>[E[x:=F]](<img src=rho.gif>)
+</ul>
+<p>by Lemma EM3.
+
+</ul>
+
+
+<h3>Corollary</h3>
+If <em>E</em> converts to <em>F</em>, then <em>E = F</em> is valid in all
+environment models.
+
+</body>
+</html>

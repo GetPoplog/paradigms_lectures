@@ -1,0 +1,1280 @@
+
+
+
+<html> <head> <title>
+
+Hindley-Milner Types
+
+</title> </head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+Hindley-Milner Types
+</center>
+
+</h1>
+<h2>Hindley-Milner Type Algebras</h2>
+
+The monomorphic type system considered above can be regarded as an applicative
+algebra. It proves quite difficult to extend the above definition to
+a <em>combinatory model</em>, but let's come at it from another direction.
+
+<h3>Definition</h3>
+
+A Hindley-Milner type expression is defined:
+
+<p><ul>
+<li>A type-constant <img src=nu.gif> is a type expression.
+
+
+<li>If <img src=alpha.gif> is a type-variable, then
+<img src=alpha.gif> is a type-expression.
+
+<li>If <img src=sigma.gif><sub>1</sub>
+<img src=sigma.gif><sub>2</sub>
+are type-expressions then
+<img src=sigma.gif><sub>1</sub>
+<img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>
+is a type-expression.
+
+<li> <img src=bottom.gif>  is a type-expression.
+</ul>
+
+<h3>Definition</h3>
+If <img src=sigma.gif> is a type-expression, and <img src=rho.gif> is a map
+from  type-variables  to  type  expressions,  then  <img  src=rho.gif>(<img
+src=sigma.gif>) is extended to operate on type-expressions
+
+<ul>
+<li>
+<img src=rho.gif>(<img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif><img src=sigma.gif><sub>2</sub>) = <img src=rho.gif>(<img src=sigma.gif><sub>1</sub>)  <img src=rightarrow.gif> <img src=rho.gif>(<img src=sigma.gif><sub>2</sub>)
+<li>
+<img src=rho.gif>(<img src=nu.gif>) = <img src=nu.gif>
+</ul>
+
+If <img src=sigma.gif><sub>1</sub> = <img src=rho.gif>(<img src=sigma.gif><sub>2</sub>) for some <img src=rho.gif>, we say that <img src=sigma.gif><sub>1</sub> is an <em>instance</em> of <img src=sigma.gif><sub>2</sub>.
+
+<hr>
+
+<h3>Definition</h3>
+Two type-expressions, which have no variables in common, are said to be
+<em>unifiable</em> if they have a common instance.
+
+
+<p>We can define an equivalence relation on type expressions.
+
+ <img src=sigma.gif><sub>1</sub>  and
+ <img src=sigma.gif><sub>2</sub>  are equivalent if  there exist
+<img src=rho.gif> and <img src=rho.gif>' for which
+
+ <img src=sigma.gif><sub>1</sub> =
+<img src=rho.gif>( <img src=sigma.gif><sub>2</sub>)
+and also
+<img src=sigma.gif><sub>2</sub> =
+<img src=rho.gif>'( <img src=sigma.gif><sub>1</sub>)
+
+<p>Or in other words, two type-expressions are equivalent if each is an
+instance of the other.
+
+
+<h3>Lemma MGU1 (Robinson)</h3>
+If    two     type-expressions     <img     src=sigma.gif><sub>1</sub>,<img
+src=sigma.gif><sub>2</sub> are  unifiable,  then there  exists  a  <em>most
+general     unifier</em>     <em><img      src=rho.gif>     =      mgu(<img
+src=sigma.gif><sub>1</sub>,<img src=sigma.gif><sub>2</sub>)</em>, with  the
+property that
+
+<ul>  <p>   <img  src=rho.gif>(<img   src=sigma.gif><sub>1</sub>)  =   <img
+src=rho.gif>(<img     src=sigma.gif><sub>2</sub>)      <p>     if      <img
+src=rho.gif>'(<img src=sigma.gif><sub>1</sub>)  =  <img  src=rho.gif>'(<img
+src=sigma.gif><sub>2</sub>) then there exists <img src=rho.gif>" such  that
+<img src=rho.gif>'  =  <img  src=rho.gif>" <b>o</b> <img
+src=rho.gif>  where
+<b>o</b> is functional product.
+</ul>
+
+<p>The most general unifier is <em>unique</em> up to equivalence.
+
+
+<hr>
+Now  let's define an applicative algebra on equivalence
+classes of type-expressions.
+<hr>
+
+<h3>Definition</h3>
+A Hindley-Milner Applicative Algebra has as its carrier set a
+set of Hindley-Milner type expression-classes, and as its application
+rule
+
+<ul>  ((<img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>) <img src=dot.gif> <img src=sigma.gif>)
+= <img src=rho.gif>(<img src=sigma.gif><sub>2</sub>)
+if the most general unifier
+<img src=rho.gif> = mgu(<img src=sigma.gif><sub>1</sub>,
+<img src=sigma.gif>)
+exists.
+
+<p><img src=alpha.gif> <img src=dot.gif> <img src=sigma.gif> =
+<img src=alpha.gif>  for any type-variable <img src=alpha.gif>. (We can
+interpret this by saying that <img src=alpha.gif> can be unified
+with <img src=beta.gif> <img src=rightarrow.gif> <img src=gamma.gif>,
+so that the previous rule could be applied).
+
+<p>  ((<img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>) <img src=dot.gif> <img src=sigma.gif>)
+ = <img src=bottom.gif>  otherwise
+</ul>
+
+In the above definition, we may suppose that
+<img src=sigma.gif><sub>1</sub> and
+<img src=sigma.gif><sub>1</sub> have no variables in common (if not,
+we simply rename them).
+
+<h3>Lemma TA1 </h3>
+The <img src=dot.gif> operation defined above is well-defined.
+
+<h4>Proof</h4>
+Immediate from the definition of equivalence.
+<hr>
+
+<h3>Lemma MGU2</h3>
+mgu(<img src=sigma.gif><sub>1</sub>,
+mgu(<img src=sigma.gif><sub>2</sub>,
+<img src=sigma.gif><sub>3</sub>)) =
+mgu(mgu(<img src=sigma.gif><sub>2</sub>,
+<img src=sigma.gif><sub>2</sub>),<img src=sigma.gif><sub>3</sub>)
+
+<hr>
+<h3>Lemma TA2</h3>
+
+If, in a type-algebra that contains at least one constant
+<img src=nu.gif><sub>0</sub>, we have a type expression
+<img src=sigma.gif>   that unifies with every
+expression, then <img src=sigma.gif> = <img src=alpha.gif> for some
+type-variable <img src=alpha.gif>.
+
+<h4>Proof</h4>
+
+<p>Suppose <img src=sigma.gif> = <img src=nu.gif>,
+a type-constant. Then  <img src=sigma.gif> does not unify
+with <img src=beta.gif> <img src=rightarrow.gif> <img src=beta.gif> for
+any type-variable <img src=beta.gif>.
+
+
+
+
+<p>Suppose <img src=sigma.gif> =
+<img src=sigma.gif><sub>1</sub>
+<img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>
+
+Then  <img src=sigma.gif> does not unify with <img src=nu.gif><sub>0</sub>
+So the only possiblity is that <img src=sigma.gif> = <img src=alpha.gif>,
+a type-variable.
+
+
+<hr>
+
+<h3>Lemma TA3</h3>
+
+If, in a Hindley-Milner Applicative Algebra with at least one constant,
+two type expressions <img src=sigma.gif><sub>1</sub> and
+<img src=sigma.gif><sub>2</sub> have the property that for any
+<img src=sigma.gif>
+
+<p><ul>
+<img src=exists.gif> <img src=rho.gif>, <img src=rho.gif>
+= mgu(<img src=sigma.gif><sub>1</sub>, <img src=sigma.gif>)
+<b>iff</b>
+<img src=exists.gif> <img src=rho.gif>', <img src=rho.gif>'
+= mgu(<img src=sigma.gif><sub>2</sub>, <img src=sigma.gif>)
+</ul>
+
+then <img src=sigma.gif><sub>1</sub> and <img src=sigma.gif><sub>2</sub>
+are equivalent.
+
+<h4>Proof</h4>
+By induction on <em>h</em> the height of
+<img src=sigma.gif><sub>1</sub>
+<h4>Base Case</h4> <em>h=0</em>.
+
+<ul><li>Case 1: <img src=sigma.gif><sub>1</sub> = <img src=nu.gif>, a
+type-constant.
+
+<p>Then
+<img src=rho.gif> =
+mgu(<img src=sigma.gif><sub>1</sub>, <img src=sigma.gif><sub>1</sub>)
+exists, so that
+mgu(<img src=sigma.gif><sub>2</sub>, <img src=sigma.gif><sub>1</sub>)
+also exists. Therefore <img src=sigma.gif><sub>2</sub> = <img src=nu.gif>
+or  <img src=sigma.gif><sub>2</sub> = <img src=alpha.gif>, for some
+type-variable  <img src=alpha.gif>.  In the latter case,
+mgu( <img src=alpha.gif>, <img src=sigma.gif>) exists, where
+<img src=sigma.gif> =
+<img src=beta.gif> <img src=rightarrow.gif> <img src=beta.gif>
+for some type variable <img src=beta.gif>. But this does not unify
+with <img src=sigma.gif><sub>1</sub>, a contradiction. Therefore
+<img src=sigma.gif><sub>2</sub> = <img src=nu.gif>
+
+
+<p><li>Case 2: <img src=sigma.gif><sub>1</sub> = <img src=alpha.gif>, a
+type-variable.
+
+Then every expression unifies with
+<img src=sigma.gif><sub>1</sub>, and so every expression unifies with
+<img src=sigma.gif><sub>2</sub>
+Hence by the lemma above, <img src=sigma.gif><sub>2</sub> = <img
+src=beta.gif>, is  a type-variable, and so <img src=sigma.gif><sub>1</sub>
+and <img src=sigma.gif><sub>2</sub>
+are equivalent.
+</ul>
+
+<h4>Inductive Step</h4>
+Suppose that for all type-expressions <img src=sigma.gif><sub>1</sub>
+of height <em>h</em>
+
+<p><ul>
+<img src=exists.gif> <img src=rho.gif>, <img src=rho.gif>
+= mgu(<img src=sigma.gif><sub>1</sub>, <img src=sigma.gif>)
+<b>iff</b>
+<img src=exists.gif> <img src=rho.gif>', <img src=rho.gif>'
+= mgu(<img src=sigma.gif><sub>2</sub>, <img src=sigma.gif>)
+</ul>
+
+implies that
+<img src=sigma.gif><sub>1</sub> and <img src=sigma.gif><sub>2</sub>
+are equivalent.
+
+<p> Consider <img src=sigma.gif><sub>1</sub> of height <em>h + 1</em>,
+and <img src=sigma.gif><sub>2</sub>, supposing that
+
+<p><ul>
+<img src=exists.gif> <img src=rho.gif>, <img src=rho.gif>
+= mgu(<img src=sigma.gif><sub>1</sub>, <img src=sigma.gif>)
+<b>iff</b>
+<img src=exists.gif> <img src=rho.gif>', <img src=rho.gif>'
+= mgu(<img src=sigma.gif><sub>2</sub>, <img src=sigma.gif>)
+</ul>
+
+Now  <img src=sigma.gif><sub>1</sub> must have the form
+<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+ <img src=sigma.gif><sub>12</sub>, and since
+<img src=sigma.gif><sub>1</sub> unifies with itself, it unifies
+with  <img src=sigma.gif><sub>2</sub>. So  <img src=sigma.gif><sub>2</sub>
+is either (a) a type-variable, or (b) it has the form
+
+<img src=sigma.gif><sub>21</sub> <img src=rightarrow.gif>
+ <img src=sigma.gif><sub>22</sub>.
+
+But, if it were a type-variable, it would unify with
+<img src=nu.gif><sub>0</sub>, which <img src=sigma.gif><sub>1</sub>
+doesn't, so we are left with possibility (b).
+
+<p>Now suppose <img src=sigma.gif>' unifies with
+<img src=sigma.gif><sub>21</sub>. Then, for any type variable
+<img src=alpha.gif> it is clear that
+
+<img src=sigma.gif>' <img src=rightarrow.gif>
+ <img src=alpha.gif>
+unifies with
+<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+ <img src=sigma.gif><sub>12</sub>
+
+hence, by our supposition,
+
+<img src=sigma.gif>' <img src=rightarrow.gif>
+ <img src=alpha.gif>
+unifies with
+<img src=sigma.gif><sub>21</sub> <img src=rightarrow.gif>
+ <img src=sigma.gif><sub>22</sub>
+
+so that <img src=sigma.gif>' unifies with <img src=sigma.gif><sub>21</sub>.
+
+<p>Conversely, any <img src=sigma.gif>" which unifies with
+<img src=sigma.gif><sub>21</sub> also unifies with
+<img src=sigma.gif><sub>11</sub>. Hence by the inductive hypothesis,
+<img src=sigma.gif><sub>11</sub> is equivalent to
+<img src=sigma.gif><sub>21</sub>.
+
+<p>Similarly <img src=sigma.gif><sub>12</sub> is equivalent to
+<img src=sigma.gif><sub>22</sub>. Hence <img src=sigma.gif><sub>1</sub> is
+equivalent to <img src=sigma.gif><sub>2</sub>, establishing our result.
+
+<hr>
+
+
+
+<h3>Lemma</h3>
+The Hindley-Milner Applicative Algebra defined above is a
+combinatory algebra, with
+<ul>
+<p><b>K</b> = <img src=alpha.gif> <img src=rightarrow.gif>
+<img src=beta.gif> <img src=rightarrow.gif> <img src=alpha.gif>
+<p><b>S</b> =
+(<img src=alpha.gif> <img src=rightarrow.gif>
+<img src=beta.gif> <img src=rightarrow.gif> <img src=gamma.gif>)
+<img src=rightarrow.gif>
+(<img src=alpha.gif> <img src=rightarrow.gif> <img src=beta.gif>)
+<img src=rightarrow.gif>
+<img src=alpha.gif> <img src=rightarrow.gif> <img src=gamma.gif>
+</ul>
+
+<h4>Proof</h4>
+
+Consider
+<ul>
+(<b>K</b> <img src=dot.gif> <img src=sigma.gif> <img src=dot.gif>
+<img src=sigma.gif><sub>1</sub>)   =
+
+(<img src=alpha.gif> <img src=rightarrow.gif>
+<img src=beta.gif> <img src=rightarrow.gif> <img src=alpha.gif>)
+ <img src=dot.gif> <img src=sigma.gif> <img src=dot.gif>
+<img src=sigma.gif><sub>1</sub>
+
+
+<p>=
+
+((<img src=beta.gif> <img src=rightarrow.gif> <img src=sigma.gif>)
+<img src=dot.gif> <img src=sigma.gif><sub>1</sub>)  = <img src=sigma.gif>
+</ul>
+Thus <b>K</b> satisfies the required law.
+
+
+<p>Now consider
+<ul>
+(<b>S</b>
+<img src=dot.gif> <img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )   =
+
+
+
+
+<p>((<img src=alpha.gif> <img src=rightarrow.gif>
+<img src=beta.gif> <img src=rightarrow.gif> <img src=gamma.gif>)
+<img src=rightarrow.gif>
+(<img src=alpha.gif> <img src=rightarrow.gif> <img src=beta.gif>)
+<img src=rightarrow.gif>
+<img src=alpha.gif> <img src=rightarrow.gif> <img src=gamma.gif>)
+
+
+<img src=dot.gif> <img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )
+</ul>
+<p>We may suppose that the variables of
+<img src=sigma.gif><sub>1</sub>,
+<img src=sigma.gif><sub>2</sub> and
+<img src=sigma.gif><sub>3</sub>
+are distinct.
+
+<p>There are 2 cases.
+
+<ul>
+<li>Case 1: <em>mgu((<img src=alpha.gif> <img src=rightarrow.gif>
+<img src=beta.gif> <img src=rightarrow.gif> <img src=gamma.gif>),
+<img src=sigma.gif><sub>1</sub>)</em> exists.
+In this case,
+<ul>
+<img src=sigma.gif><sub>1</sub> =
+<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>12</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>13</sub>
+</ul>
+<p>for some
+<img src=sigma.gif><sub>11</sub>,
+<img src=sigma.gif><sub>12</sub>,
+<img src=sigma.gif><sub>13</sub>. Moreover
+<p><ul>
+(<b>S</b>
+<img src=dot.gif> <img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )   =
+
+<p>
+(((<img src=sigma.gif><sub>11</sub>
+<img src=rightarrow.gif> <img src=sigma.gif><sub>12</sub>)
+<img src=rightarrow.gif>
+<img src=sigma.gif><sub>11</sub>
+<img src=rightarrow.gif> <img src=sigma.gif><sub>13</sub>)
+<img src=dot.gif> <img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )
+
+</ul>
+
+
+<p>There are 2 sub-cases:
+
+<p><ul><li> Sub-case 1.1:
+<em><img src=rho.gif> = mgu(
+<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>12</sub> ,
+<img src=sigma.gif><sub>2</sub>)</em> exists.
+In this sub-case,
+<ul>
+<img src=sigma.gif><sub>2</sub> =
+<img src=sigma.gif><sub>21</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>22</sub>
+</ul>
+<p>where
+<p><ul>
+<img src=rho.gif>(<img src=sigma.gif><sub>11</sub>) =
+<img src=rho.gif>(<img src=sigma.gif><sub>21</sub>) =
+<img src=sigma.gif>'<sub>11</sub>
+<p>
+<img src=rho.gif>(<img src=sigma.gif><sub>12</sub>) =
+<img src=rho.gif>(<img src=sigma.gif><sub>22</sub>) =
+<img src=sigma.gif>'<sub>12</sub>
+<p>
+<img src=rho.gif>(<img src=sigma.gif><sub>13</sub>) =
+<img src=sigma.gif>'<sub>13</sub>
+</ul>
+<p>Moreover
+<p><ul>
+(<b>S</b>
+<img src=dot.gif> <img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )   =
+(<img src=sigma.gif>'<sub>11</sub>
+<img src=rightarrow.gif> <img src=sigma.gif>'<sub>13</sub>)
+<img src=dot.gif>
+<img src=sigma.gif><sub>3</sub>
+</ul>
+<p>There are two sub-sub-cases
+
+<p><ul><li>Sub-sub-case 1.1.1:
+
+<em><img src=rho.gif>' = mgu(
+<img src=sigma.gif>'<sub>11</sub> ,
+<img src=sigma.gif><sub>3</sub>)</em> exists. In this sub-sub-case
+<p><ul>
+(<b>S</b>
+<img src=dot.gif> <img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )   =
+
+<img src=rho.gif>'(<img src=sigma.gif>'<sub>13</sub>)  =
+
+<img src=rho.gif>'(<img src=rho.gif>(<img src=sigma.gif><sub>13</sub>))
+= <img src=sigma.gif>"<sub>13</sub>
+
+</ul>
+<p>We'll also write
+<img src=rho.gif>'(<img src=rho.gif>(<img src=sigma.gif><sub>12</sub>))
+= <img src=sigma.gif>"<sub>12</sub>  and
+<img src=rho.gif>'(<img src=rho.gif>(<img src=sigma.gif><sub>11</sub>))
+= <img src=sigma.gif>"<sub>11</sub>
+
+
+<p>Now <img src=sigma.gif><sub>11</sub> and
+<img src=sigma.gif><sub>3</sub> have a common instance in
+<img src=sigma.gif>"<sub>11</sub>, so that
+<p><ul><img src=rho.gif>"' =
+mgu(<img src=sigma.gif><sub>11</sub>, <img src=sigma.gif><sub>3</sub>)
+</ul><p> exists. Now consider
+<ul><p>
+(<img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+
+<p>=
+((<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>12</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>13</sub>) <img src=dot.gif>
+<img src=sigma.gif><sub>3</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+
+<p>=
+(
+<img src=sigma.gif>"'<sub>12</sub> <img src=rightarrow.gif>
+<img src=sigma.gif>"'<sub>13</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+
+</ul>
+<p>Where
+<p><ul>
+<img src=sigma.gif>"'<sub>11</sub> =
+<img src=rho.gif>"'(<img src=sigma.gif><sub>11</sub>)
+,
+<img src=sigma.gif>"'<sub>12</sub> =
+<img src=rho.gif>"'(<img src=sigma.gif><sub>12</sub>)
+,
+<img src=sigma.gif>"'<sub>13</sub> =
+<img src=rho.gif>"'(<img src=sigma.gif><sub>13</sub>)
+</ul>
+
+<p> Proceeding, we obtain
+<ul><p>
+(<img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+
+<p>=
+
+(
+<img src=sigma.gif>"'<sub>12</sub> <img src=rightarrow.gif>
+<img src=sigma.gif>"'<sub>13</sub>) <img src=dot.gif>
+(
+(<img src=sigma.gif><sub>21</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>22</sub> ) <img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+</ul>
+
+<p>But <img src=sigma.gif><sub>21</sub> and <img src=sigma.gif><sub>3</sub>
+also have a common instance in  <img src=sigma.gif>"<sub>11</sub>
+ so that
+<p><ul><img src=rho.gif>"" =
+mgu(<img src=sigma.gif><sub>21</sub>, <img src=sigma.gif><sub>3</sub>)
+</ul><p> exists.  Hence
+
+
+<ul><p>
+(<img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+
+<p>=
+
+(
+<img src=sigma.gif>"'<sub>12</sub> <img src=rightarrow.gif>
+<img src=sigma.gif>"'<sub>13</sub>) <img src=dot.gif>
+<img src=sigma.gif>""<sub>22</sub>
+</ul>
+<p>Where
+<img src=sigma.gif>""<sub>22</sub> =
+<img src=rho.gif>""(<img src=sigma.gif><sub>22</sub>).
+
+<p>Since
+
+ <img src=sigma.gif>"<sub>11</sub>
+
+is a common instance of
+<img src=sigma.gif><sub>11</sub>,  <img src=sigma.gif><sub>3</sub>
+
+
+there exists
+
+<img src=rho.gif><sup>-</sup> for which
+
+<p><ul>
+<img src=rho.gif><sup>-</sup>(<img src=rho.gif>'''
+(<img src=sigma.gif><sub>11</sub>))
+
+=
+<img src=rho.gif>'(<img src=rho.gif> (<img src=sigma.gif><sub>11</sub>))
+<p>
+
+<img src=rho.gif><sup>-</sup>(<img src=rho.gif>'''
+(<img src=sigma.gif><sub>12</sub>))
+
+
+=
+<img src=rho.gif>'(<img src=rho.gif> (<img src=sigma.gif><sub>12</sub>))
+=
+<img src=sigma.gif>"<sub>12</sub>
+
+<p>
+
+<img src=rho.gif><sup>-</sup>(<img src=rho.gif>'''
+(<img src=sigma.gif><sub>13</sub>))
+
+
+=
+<img src=rho.gif>'(<img src=rho.gif> (<img src=sigma.gif><sub>12</sub>))
+=
+<img src=sigma.gif>"<sub>13</sub>
+
+
+</ul>
+
+<p>(for we we are free to choose <img src=rho.gif><sup>-</sup> so that
+the function product
+<img src=rho.gif><sup>-</sup> <b>o</b> <img src=rho.gif>'''
+agrees with
+<img src=rho.gif>' <b>o</b> <img src=rho.gif>
+for those variables of <img src=sigma.gif><sub>12</sub>,
+<img src=sigma.gif><sub>13</sub> that do not
+occur in <img src=sigma.gif><sub>11</sub>).
+<p>
+Likewise, since <img src=sigma.gif>"<sub>11</sub> is a common instance of
+<img src=sigma.gif><sub>3</sub> and <img src=sigma.gif><sub>21</sub>
+there exists
+<img src=rho.gif><sup>x</sup>
+for which
+
+<p><ul>
+
+<img src=rho.gif><sup>x</sup>(<img src=rho.gif>""
+(<img src=sigma.gif><sub>21</sub>))
+
+=
+<img src=rho.gif>'(<img src=rho.gif> (<img src=sigma.gif><sub>21</sub>))
+
+= <img src=sigma.gif>"<sub>11</sub>
+
+<p>
+
+<img src=rho.gif><sup>x</sup>(<img src=rho.gif>""
+(<img src=sigma.gif><sub>22</sub>))
+
+=
+<img src=rho.gif>'(<img src=rho.gif> (<img src=sigma.gif><sub>22</sub>))
+
+= <img src=sigma.gif>"<sub>12</sub>
+</ul>
+
+<p>for we can choose <img src=rho.gif><sup>x</sup> so that the
+function product
+<img src=rho.gif><sup>x</sup> <b>o</b> <img src=rho.gif>""
+agrees with the function product
+<img src=rho.gif>' <b>o</b> <img src=rho.gif>
+for those variables of <img src=sigma.gif><sub>22</sub> that do not occur
+in <img src=sigma.gif><sub>21</sub>.
+
+<p>Thus <img src=sigma.gif>"<sub>12</sub> is an instance of
+<img src=sigma.gif>"'<sub>12</sub> and <img src=sigma.gif>""<sub>22</sub>.
+Hence there exists
+<p><ul>
+<img src=rho.gif><sup>+</sup> =
+mgu(
+<img src=sigma.gif>"'<sub>12</sub>, <img src=sigma.gif>""<sub>22</sub>),
+</ul>
+<p>and moreover <img src=sigma.gif>"<sub>12</sub> is an instance of
+<img src=rho.gif><sup>+</sup>(<img src=sigma.gif>'<sub>12</sub>)
+= <img src=sigma.gif><sup>+</sup><sub>12</sub>, say, that is, for
+some <img src=rho.gif><sup>y</sup>,
+
+<p><ul>
+ <img src=sigma.gif>"<sub>12</sub>
+=
+<img src=rho.gif> <sup>y</sup>
+(<img src=sigma.gif><sup>+</sup><sub>12</sub>),
+
+ <img src=sigma.gif>"<sub>13</sub>
+=
+<img src=rho.gif> <sup>y</sup>
+(<img src=sigma.gif><sup>+</sup><sub>13</sub>)
+
+
+
+</ul>
+
+<p>where again we may choose <img src=rho.gif> <sup>y</sup> so that
+<img src=rho.gif><sup>y</sup> <b>o</b>
+<img src=rho.gif><sup>+</sup><b>o</b> <img src=rho.gif>"'
+agrees with
+<img src=rho.gif>' <b>o</b> <img src=rho.gif>
+for those variables of <img src=sigma.gif><sub>13</sub> that do not
+occur in <img src=sigma.gif><sub>12</sub>.
+
+<p>Now <img src=sigma.gif><sup>+</sup><sub>12</sub> is an instance of
+<img src=sigma.gif><sub>12</sub> and <img src=sigma.gif><sub>22</sub>.
+Hence there exists  <img src=rho.gif><sup>#</sup> for which
+
+<p><ul>
+<img src=rho.gif><sup>#</sup>(<img src=sigma.gif>'<sub>12</sub>) =
+ <img src=sigma.gif><sup>+</sup><sub>12</sub>
+<p>
+<img src=rho.gif><sup>#</sup>(<img src=rho.gif>
+(<img src=sigma.gif><sub>11</sub>))
+=
+<img src=rho.gif><sup>+</sup>(<img src=rho.gif>"'
+(<img src=sigma.gif><sub>11</sub>))
+= <img src=sigma.gif><sup>+</sup><sub>11</sub>
+</ul>
+choosing <img src=rho.gif><sup>#</sup> as we have chosen maps before to
+agree appropriately on variables not occurring in
+<img src=sigma.gif><sub>12</sub>.
+
+
+<p>That is
+<p><ul>
+<img src=rho.gif><sup>#</sup>
+(<img src=sigma.gif>'<sub>11</sub>)
+=
+<img src=rho.gif><sup>+</sup>
+(<img src=sigma.gif>"'<sub>11</sub>)
+</ul>
+
+Hence <img src=sigma.gif><sup>+</sup><sub>11</sub> is a common
+instance of <img src=sigma.gif><sub>3</sub> and
+<img src=sigma.gif>'<sub>11</sub>. Therefore, as above, there exists
+<img src=rho.gif><sup>z</sup> for which
+
+<p><ul> <img src=rho.gif><sup>z</sup>(<img src=rho.gif>'
+(<img src=rho.gif>(<img src=sigma.gif><sub>1</sub>)))
+
+=
+
+<img src=rho.gif><sup>+</sup>(<img src=rho.gif>"'
+(<img src=sigma.gif><sub>1</sub>))
+<p>
+
+<img src=rho.gif><sup>z</sup>(<img src=rho.gif>'
+(<img src=rho.gif>(<img src=sigma.gif><sub>13</sub>)))
+
+=
+
+<img src=rho.gif><sup>+</sup>(<img src=rho.gif>"'
+(<img src=sigma.gif><sub>13</sub>)
+</ul>
+
+<p>On the other hand
+
+
+<p><ul>
+<img src=rho.gif><sup>y</sup>(<img src=rho.gif><sup>+</sup>
+(<img src=rho.gif>"'(<img src=sigma.gif><sub>13</sub>)))
+
+=
+<img src=rho.gif>'
+(<img src=rho.gif>(<img src=sigma.gif><sub>13</sub>))
+</ul>
+
+Thus <img src=sigma.gif>""<sub>13</sub> and
+<img src=sigma.gif>"<sub>13</sub> are instances of each other, and
+so the equivalence classes are equal.
+
+<p>Thus the result is true in this sub-sub-case.
+
+<p><li>Sub-sub-case 1.1.2:
+
+<em> mgu( <img src=sigma.gif>'<sub>11</sub> ,
+<img src=sigma.gif><sub>3</sub>)</em> does not exist. In this sub-sub-case
+
+<p><ul>
+(<b>S</b>
+<img src=dot.gif> <img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )   =
+<img src=bottom.gif>
+</ul>
+</p>
+
+<p>Now consider
+<ul><p>
+(<img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+<p>=
+((<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>12</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>13</sub>) <img src=dot.gif>
+<img src=sigma.gif><sub>3</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+</ul>
+<p>Now suppose
+<em><img src=rho.gif>"' =  mgu( <img src=sigma.gif><sub>11</sub> ,
+<img src=sigma.gif><sub>3</sub>)</em> does exist.
+<ul>
+<p>=
+<img src=rho.gif>"'(
+<img src=sigma.gif><sub>12</sub>  <img src=rightarrow.gif>
+<img src=sigma.gif><sub>13</sub>)
+ <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+
+<p>
+=
+<img src=rho.gif>"'(
+<img src=sigma.gif><sub>12</sub>  <img src=rightarrow.gif>
+<img src=sigma.gif><sub>13</sub>)
+ <img src=dot.gif>
+(
+(<img src=sigma.gif><sub>21</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>22</sub>)
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+</ul>
+<p>Likewise, suppose
+<em><img src=rho.gif>"" =  mgu( <img src=sigma.gif><sub>21</sub> ,
+<img src=sigma.gif><sub>3</sub>)</em> does exist.
+
+<p><ul>
+=
+<img src=rho.gif>"'(
+<img src=sigma.gif><sub>12</sub>  <img src=rightarrow.gif>
+<img src=sigma.gif><sub>13</sub>)
+ <img src=dot.gif>
+<img src=rho.gif>""(<img src=sigma.gif><sub>22</sub>)
+
+<p>=
+(<img src=rho.gif>"'(<img src=sigma.gif><sub>12</sub>)
+<img src=rightarrow.gif>
+<img src=rho.gif>"'(<img src=sigma.gif><sub>13</sub>))
+ <img src=dot.gif>
+<img src=rho.gif>""(<img src=sigma.gif><sub>22</sub>)
+</ul>
+
+<p>Finally, suppose
+<em><img src=rho.gif><sup>+</sup> =
+mgu
+(<img src=rho.gif>"'(<img src=sigma.gif><sub>12</sub>),
+<img src=rho.gif>""(<img src=sigma.gif><sub>22</sub>))</em>
+exists. Then <img src=sigma.gif><sup>+</sup><sub>12</sub> is a common
+instance of <img src=sigma.gif><sub>12</sub> and
+<img src=sigma.gif><sub>22</sub>. Therefore there exists
+<img src=rho.gif><sup>#</sup> for which
+<p><ul>
+
+<img src=rho.gif><sup>#</sup>(<img src=rho.gif>
+(<img src=sigma.gif><sub>12</sub>))
+=
+<img src=rho.gif><sup>+</sup>(<img src=rho.gif>"'
+(<img src=sigma.gif><sub>12</sub>))
+= <img src=sigma.gif><sup>+</sup><sub>11</sub>,
+
+
+<img src=rho.gif><sup>#</sup>(<img src=rho.gif>
+(<img src=sigma.gif><sub>11</sub>))
+=
+<img src=rho.gif><sup>+</sup>(<img src=rho.gif>"'
+(<img src=sigma.gif><sub>11</sub>))
+= <img src=sigma.gif><sup>+</sup><sub>11</sub>
+</ul>
+<p>Thus <img src=sigma.gif><sub>11</sub> and
+<img src=sigma.gif><sub>11</sub> have a common instance, a contradiction
+to the basic assumption of sub-sub-case 1.1.2. Hence either of the most
+general unifiers we have subsequently supposed to exist in this
+sub-sub-case does not exist. In either of these circumstances
+<ul><p>
+(<img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+=  <img src=Bottom.gif>
+</ul>
+
+</ul>
+
+<p><li> Sub-case 1.2:
+<em><img src=rho.gif> = mgu(
+<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>12</sub> ,
+<img src=sigma.gif><sub>2</sub>)</em> does not exist.
+
+<p>In this sub-case we can, as above, construct
+<img src=rho.gif><sup>+</sup>  and <img src=rho.gif><sup>#</sup> leading
+to the conclusion that, if
+(<img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+<img src=not_eq.gif> <img src=Bottom.gif> then
+<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>12</sub>
+and <img src=sigma.gif><sub>2</sub> does exist
+
+</ul>
+
+<p><li>Case 2: <em>mgu((<img src=alpha.gif> <img src=rightarrow.gif>
+<img src=beta.gif> <img src=rightarrow.gif> <img src=gamma.gif>),
+<img src=sigma.gif><sub>1</sub>)</em> does not exist. In this case
+<p>
+(<b>S</b>
+<img src=dot.gif> <img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )
+
+= <img src=Bottom.gif>
+
+</ul>
+
+<p><ul>
+<li> Sub-case 2.1:
+ <img src=sigma.gif><sub>1</sub> <img src=not_eq.gif>
+ (<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>12</sub>), for any  <img
+src=sigma.gif><sub>11</sub>, <img src=sigma.gif><sub>12</sub>
+(not the same as the previous quantities of this name)
+then
+
+<ul><p>
+(<img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub>) <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+
+=
+
+<img src=Bottom.gif> <img src=dot.gif>
+(<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif>
+ <img src=sigma.gif><sub>3</sub> )
+= <img src=Bottom.gif>
+
+<p>=
+(<b>S</b>
+<img src=dot.gif> <img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )
+</ul>
+
+
+<p><li>Subcase 2.2:
+ <img src=sigma.gif><sub>1</sub> =
+ (<img src=sigma.gif><sub>11</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>12</sub>)
+where <img src=sigma.gif><sub>12</sub> <img src=not_eq.gif>
+(<img src=sigma.gif><sub>121</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>122</sub>) (for if it had this form,
+we would be in Case 1)
+
+<p>In this case (<img src=sigma.gif><sub>1</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub>) is an instance
+of <img src=sigma.gif><sub>12</sub>, which will give <img src=Bottom.gif>
+when applied to (<img src=sigma.gif><sub>2</sub>
+<img src=dot.gif> <img src=sigma.gif><sub>3</sub> )
+</ul>
+
+
+
+
+
+</ul>
+
+
+
+
+<h3>Theorem</h3>
+The Hindley-Milner Applicative Algebra defined above is a combinatory model
+with
+<ul>
+<img src=epsilon.gif> = (<img src=alpha.gif>  <img
+src=rightarrow.gif> <img src=beta.gif>)
+<img src=rightarrow.gif> (<img src=alpha.gif>  <img src=rightarrow.gif><img src=beta.gif>).
+</ul>
+provided that it contains at least one type-constant.
+<h4>Proof</h4>
+We already know that we have a combinatory algebra.
+<p>
+
+<ul>
+
+<li> Firstly we need to show that
+    <ul> (<img src=epsilon.gif> <img src=dot.gif>
+        d<sub>0</sub>)  <img src=dot.gif> d<sub>1</sub> =
+
+        d<sub>0</sub>  <img src=dot.gif> d<sub>1</sub>
+
+
+    </ul>
+
+<p>There are 3 cases
+<p><ul>
+<li> Case 1: <em>d<sub>0</sub> = <img src=nu.gif></em> a type-constant.
+<p><ul>
+ (<img src=epsilon.gif> <img src=dot.gif>
+        d<sub>0</sub>)  <img src=dot.gif> d<sub>1</sub>
+        = <img src=Bottom.gif> <img src=dot.gif> d<sub>1</sub>
+        = <img src=Bottom.gif>
+        = d<sub>0</sub>  <img src=dot.gif> d<sub>1</sub>
+</ul>
+
+<p><li> Case 2 : <em>d<sub>0</sub>=<img src=alpha.gif></em> a
+type-variable.
+
+<p><ul>
+ (<img src=epsilon.gif> <img src=dot.gif>
+        d<sub>0</sub>)  <img src=dot.gif> d<sub>1</sub>
+=
+ (<img src=alpha.gif>  <img src=rightarrow.gif> <img src=beta.gif>)
+        )  <img src=dot.gif> d<sub>1</sub>
+=
+ <img src=beta.gif>
+</ul>
+<p>While
+d<sub>0</sub>  <img src=dot.gif> d<sub>1</sub> = <img src=gamma.gif>
+
+<p><li>Case 3:
+<em>d<sub>0</sub> =
+<img src=sigma.gif><sub>01</sub> <img src=rightarrow.gif>
+  <img src=sigma.gif><sub>02</sub>
+</em>
+<p>Here
+<img src=epsilon.gif> <img src=dot.gif> d<sub>0</sub> = d<sub>0</sub>
+so the required equation is immediate.
+
+</ul>
+
+<p><li>
+Secondly we need to show that, for all <em>d <img src=in.gif> D</em>
+<p><ul>
+ d<sub>0</sub>  <img src=dot.gif> d =  d<sub>1</sub>  <img src=dot.gif> d
+<img src=Rightarrow.gif>
+ <img src=epsilon.gif> <img src=dot.gif>
+        d<sub>0</sub> =
+ <img src=epsilon.gif> <img src=dot.gif>
+        d<sub>1</sub>
+</ul>
+
+<p>Then  for  any
+function    type    <img src=sigma.gif><sub>1</sub>    <img    src=rightarrow.gif><img src=sigma.gif><sub>2</sub>,
+<ul>
+<img src=epsilon.gif> <img src=dot.gif> <img src=sigma.gif><sub>1</sub> <img
+src=rightarrow.gif><img src=sigma.gif><sub>2</sub>
+= <img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif><img src=sigma.gif><sub>2</sub>.
+</ul>
+<p>However, for any  non-function
+type  <img  src=nu.gif>,  <img  src=epsilon.gif>  <img  src=dot.gif>   <img
+src=nu.gif> = bottom.
+
+Suppose
+<ul><em>(<img src=sigma.gif><sub>11</sub>   <img   src=rightarrow.gif><img src=sigma.gif><sub>12</sub>)    <img
+src=dot.gif> <img src=sigma.gif>  = (<img src=sigma.gif><sub>21</sub>  <img  src=rightarrow.gif><img src=sigma.gif><sub>22</sub>)
+<img src=dot.gif> <img src=sigma.gif></em> for all <em><img src=sigma.gif></em>.
+</ul>
+
+Then
+
+<ul>
+(<img src=sigma.gif><sub>11</sub> <img  src=rightarrow.gif><img src=sigma.gif><sub>12</sub>) <img  src=dot.gif>
+<img src=sigma.gif><sub>11</sub> = <img src=sigma.gif><sub>12</sub> = (<img src=sigma.gif><sub>21</sub> <img  src=rightarrow.gif>
+<img src=sigma.gif><sub>22</sub>)<img src=dot.gif> <img src=sigma.gif><sub>11</sub> = <img src=rho.gif>(<img src=sigma.gif><sub>22</sub>)
+</ul>
+
+<p>where
+<img src=rho.gif> = mgu(<img src=sigma.gif><sub>11</sub>,<img src=sigma.gif><sub>21</sub>).  Thus <img src=sigma.gif><sub>12</sub> is an instance of <img src=sigma.gif><sub>22</sub>. Likewise <img src=sigma.gif><sub>22</sub> is
+an
+instance of <img src=sigma.gif><sub>12</sub>. Hence <img src=sigma.gif><sub>12</sub> is equivalent to <img src=sigma.gif><sub>22</sub>.
+
+<p>Moreover, any <img src=sigma.gif> that unifies with
+<img src=sigma.gif><sub>11</sub> necessarily unifies with
+<img src=sigma.gif><sub>12</sub>, and conversely. So, by Lemma TA3 above,
+we have that <img src=sigma.gif><sub>11</sub> is equivalent to
+<img src=sigma.gif><sub>12</sub>.
+
+
+<li> Thirdly we need to show that
+   <img  src=epsilon.gif>  <img  src=dot.gif> <img  src=epsilon.gif>
+  = <img  src=epsilon.gif>
+
+ that is
+<p><ul>
+(<img src=alpha.gif>  <img src=rightarrow.gif> <img src=beta.gif>)
+<img src=rightarrow.gif>
+(<img src=alpha.gif>  <img src=rightarrow.gif><img src=beta.gif>)
+<img src=dot.gif>
+(<img src=gamma.gif>  <img src=rightarrow.gif> <img src=delta.gif>)
+<img src=rightarrow.gif>
+(<img src=gamma.gif>  <img src=rightarrow.gif><img src=delta.gif>)
+
+<p>=
+
+(<img src=gamma.gif>  <img src=rightarrow.gif> <img src=delta.gif>)
+<img src=rightarrow.gif>
+(<img src=gamma.gif>  <img src=rightarrow.gif><img src=delta.gif>)
+
+= <img src=epsilon.gif>
+
+</ul>
+</ul>
+<hr>
+
+<h3>Discussion</h3>
+
+Any term which features self-application, for example
+<em>(x <img src=dot.gif> x)</em> must have the type-value
+<img src=bottom.gif>, since if <em>x</em> had the type
+ (<img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+    <img src=sigma.gif><sub>2</sub>)
+we would require that a term unify with a proper sub-term, which is
+impossible.
+
+<p>In particular both Curry's and Turing's fixpoint combinators involve
+self-application, so both map to <img src=bottom.gif> in the type-algebra.
+However the following lemma shows that the existence of a
+well-typed fixpoint operator is not ruled out.
+
+
+<h3>Lemma</h3>
+
+A Hindley-Milner Combinatory Model contains a fixpoint combinator, namely:
+<ul>
+<b>Y</b><sub>type</sub> =
+((<img src=alpha.gif>  <img src=rightarrow.gif> <img src=beta.gif>)
+<img src=rightarrow.gif>
+<img src=alpha.gif>  <img src=rightarrow.gif><img src=beta.gif>)
+<img src=rightarrow.gif>
+<img src=alpha.gif>  <img src=rightarrow.gif><img src=beta.gif>
+</ul>
+
+<h4>Proof</h4>
+<ul>
+<li>Case 1
+Suppose
+    <img src=sigma.gif> =
+    (<img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+    <img src=sigma.gif><sub>2</sub>)
+    <img src=rightarrow.gif>
+    <img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+    <img src=sigma.gif><sub>2</sub>.
+
+Consider
+
+<p><ul>
+<b>Y</b><sub>type</sub> <img src=dot.gif>  <img src=sigma.gif>
+
+= <p>
+
+(((<img src=alpha.gif>  <img src=rightarrow.gif> <img src=beta.gif>)
+<img src=rightarrow.gif>
+<img src=alpha.gif>  <img src=rightarrow.gif><img src=beta.gif>)
+<img src=rightarrow.gif>
+<img src=alpha.gif>  <img src=rightarrow.gif><img src=beta.gif>)
+<img src=dot.gif>
+
+((<img   src=sigma.gif><sub>1</sub>    <img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>)
+
+<img       src=rightarrow.gif>
+
+ <img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>)
+
+<p>=
+ <img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>
+
+</ul>
+
+<p>On the other hand
+
+
+<p><ul>
+<img src=sigma.gif> <img src=dot.gif>
+(<b>Y</b><sub>type</sub> <img src=dot.gif>  <img src=sigma.gif>)
+
+<p> =
+
+((<img   src=sigma.gif><sub>1</sub>    <img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>)
+
+<img       src=rightarrow.gif>
+
+ <img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>)
+<img src=dot.gif>
+
+ <img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>
+
+<p>=
+
+
+ <img src=sigma.gif><sub>1</sub> <img src=rightarrow.gif>
+<img src=sigma.gif><sub>2</sub>
+
+</ul>
+<p><li>Case 2: If <img src=sigma.gif> has any other form, then
+
+<p><ul>
+<b>Y</b><sub>type</sub> <img src=dot.gif>  <img src=sigma.gif> =
+<img src=Bottom.gif> =
+<img src=sigma.gif> <img src=dot.gif>
+(<b>Y</b><sub>type</sub> <img src=dot.gif>  <img src=sigma.gif>)
+</ul>
+</ul>
+
+
+<p>Thus establishing our result.
+
+
+<h2>Type-inference</h2>
+
+Can use the above results for the practical purpose of assuring the
+type correctness of a program in a functional language? It would appear
+that we have above an adequate specification. To avoid a combinatorial
+explosion of combinators we would have to make use of the <b>S'</b>
+combinator, with additional efficiency from the <b>B</b> and <b>C</b>
+combinators. The type associated with these combinators is derived from
+the others.
+
+
+
+<h3>The <b>let</b> expression</h3>
+
+One problem that needs to be resolved is the <tt>let</tt> expression.
+It is usual to regard
+
+<pre>
+    let <b>variable</b> = <b>expr<sub>1</sub></b>
+    in <b>expr<sub>2</sub></b>
+    end
+</pre>
+
+as being a sugared form of
+
+<ul>
+    (<img src=lambda.gif>  <b>variable</b> .  <b>expr<sub>2</sub></b>)
+    <b>expr<sub>1</sub></b>
+</ul>
+
+however from the type-theory point of view this equivalence doesn't hold
+for most functional languages, since if  <b>expr<sub>1</sub></b> is
+parametrically polymorphic the variable is allowed to have different
+instances of the polymorphic type in every occurrence in the body of the
+<tt>let</tt> expression, but not in the body of the <img src=lambda.gif>
+expression. Consider for example the following POP2000 fragment
+
+<pre>
+    let m = map
+    in
+       length (m sin list1) + length (m hd list2)
+    end
+</pre>
+
+Here <tt>map</tt> has the polymorphic type
+<em>(<img src=alpha.gif>-><img src=beta.gif>) -> (List <img src=alpha.gif>) ->
+(List <img src=beta.gif>)</em>, but the first occurrence of <tt>m</tt>
+has the instance
+<pre>
+    (float -> float) -> (List float) -> (List float)
+</pre>
+while the second has type
+
+<pre>
+    ((List <img src=alpha.gif>) -> <img src=alpha.gif>) -> (List (List <img src=alpha.gif>)) -> (List <img src=alpha.gif>)</em>
+</pre>
+
+but if we consider the corresponding <img src=lambda.gif> form:
+
+<pre>
+    ((<img src=lambda.gif> m.
+       length (m sin list1) + length (m hd list2)
+    ) map)
+</pre>
+
+we have a problem that <tt>m</tt> is not, according to the usual rules, allowed
+to have different instances of a polymorphic type. We can
+
+
+<pre>
+    ((<img src=lambda.gif> m<sub>1</sub>.
+       length (m<sub>1</sub> sin list1) + length (m<sub>2</sub> hd list2)
+    ) map map)
+</pre>

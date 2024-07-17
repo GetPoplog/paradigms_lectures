@@ -1,0 +1,1157 @@
+
+
+
+<html><head><title>
+The Environment Model
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+
+ Lecture 18 The Environment Model Avoids Massive Substitution
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+<a href = "lecture18.html#inefficient">
+  1   The substitution model is inefficient, does not support set!
+</a><br>
+
+<a href = "lecture18.html#eliminates">
+  2   The environment model eliminates substitution.
+</a><br>
+
+
+<a href = "lecture18.html#eval>
+  3   Implementing (eval_env! expr env) to evaluate in an environment
+</a><br>
+<pre>
+  3.1   Implementing the environment - the lookup  function.
+  3.2   Methods for special forms
+  3.3   eval_compound! evaluates special forms, and any applicatio
+    ... Defining the method to evaluate the special form lambda
+    ... An abstract characterisation of closures.
+    ... Defining the method to evaluate closures
+    ... Defining the method to evaluate the special form if
+    ... Defining the method for quoted constants
+    ... And we can now implement set!
+    ... Testing out eval_env!
+  3.4   Defining apply_eager  to implement the application of a function.
+    ... We put primitives in the global environment
+    ... Applying a closure to arguments
+</pre>
+
+<a href = "lecture18.html#recursion">
+  4   Doing top-level recursion in the Environment Model
+</a>
+<pre>
+      4.1   Implementing the define special form
+      4.2   Making it easy to add new special forms
+      4.3   Implementing the begin special form.
+      4.4   Testing out the "banking" example.
+</pre>
+<a href = "lecture18.html#languages>
+  5   The substitution model &amp; environment model in computer languages
+</a>
+
+<a name="inefficient"> </a>
+<h2>1  The substitution model is inefficient, does not support set!</h2>
+
+
+
+<p>
+There are two problems with using the substitution model for implementing
+Scheme.
+
+<p>
+[1] It is inefficient. The bodies of <tt>lambda</tt>-expressions have to be  repeatedly
+copied during the substitution process. It would be much better if they  could
+be compiled into machine-code which is <em>executed</em> by
+the machine in the normal way.
+
+<p>
+[2] It does not support the mutation of variables achieved by the
+<em>set!</em> special form.
+
+
+<p>
+Consider for example:
+
+<pre>
+(define (make_account balance)
+    (lambda (amount)
+        (if (>= balance amount)
+            (begin (set! balance (- balance amount))
+                (list 'balance balance)
+                )
+            "Insufficient funds"
+            )
+        )
+    )
+</pre>
+
+<p>
+The substitution model would explain:
+
+<pre>
+    (make_account 34)
+</pre>
+
+<p>
+as evaluating to:                                                         
+
+<pre>
+
+   (lambda (amount)
+       (if (>= 34 amount)
+           (begin (set! 34 (- 34 amount))
+               (list '34 34)
+               )
+           "Insufficient funds"
+           )
+       )
+
+</pre>
+<p>
+Here we have introduced the statement <tt>(set! 34 .....)</tt>, which  is
+illegal.
+
+
+<a name = "eliminates"> </a>
+<h2>2  The environment model eliminates substitution.</h2>
+
+
+<p>
+Both of the  objections to  the substitution model  can be  surmounted by  the
+<em>environment
+model</em>.  The  basic  idea  is  that  instead  of  actually  making
+substitutions, we <em> remember</em>  which substitutions  would  have been
+made  in a
+structure called an <em>environment</em>.
+So, instead of substituting  9 for <tt>x</tt> in  the
+body of the <tt>lambda</tt>-expression:
+
+<pre>
+    ((lambda (x) (+ x 5)) 9)
+</pre>
+
+<p>
+obtaining the expression:
+
+<pre>
+    (+ 9 5)
+</pre>
+
+<p> which  we  evaluate  to  <tt>14</tt>, with  the  environment  model  we
+remember that  <tt>x =  9</tt>  in the  environment and  evaluate  <tt>(+ x
+5)</tt>, using the value of <tt>9</tt> for <tt>x</tt> when it is required.
+
+<p>
+All aspects of evaluation need  the environment, so we have  to pass it as  an
+extra parameter to most  of our functions. Our  basic function for  evaluating
+expressions we will call <tt>eval_env!</tt>.
+We put an exclamation point in the name
+because we are going to <em>mutate the environment when we implement</em>
+<tt>set!</tt>.
+
+<p>
+An environment is simply  a list of association  lists, each association  list
+holding the values of  variables for one function  call, except for the  last,
+which is called the <em>global
+environment</em>,  and which holds the values of  system
+variables such as <tt>car, cons, cdr</tt>
+and of user-defined global variables.
+
+<p>
+This environment model meets the objections listed above:
+
+<p>
+[1] Because we remember the substitutions (in effect the values of  variables)
+in the environment, we do not  have to copy the bodies of  <tt>lambda</tt>-abstractions
+making substitutions as we did in the substitution model, we only have to scan
+through these bodies, once per application of a <tt>lambda</tt>-abstraction to a  given
+list of arguments. This saves a lot of time.
+
+<p>
+[2] The <tt>set!</tt>
+operation can be supported because we can change the environment.
+For example:
+
+<pre>
+    (set!  x 34)
+</pre>
+
+<p>
+will change the appropriate entry in an environment, perhaps:
+
+<pre>
+      (... (...(x . 90)...)...)
+</pre>
+
+<p>
+to
+
+<pre>
+      (... (...(x . 34)...)...)
+</pre>
+
+
+<a name = "implementing"> </a>
+<h2>3  Implementing (eval_env! expr env) to evaluate in an environment</h2>
+
+<p>
+Let  us  now  define  our  top-level  function  for  evaluating   expressions,
+<tt>eval_env!</tt>. This function now takes an extra parameter:
+
+        (eval_env! expr env)
+
+<p>
+means "evaluate the expression <tt>expr</tt>
+in the environment <tt>env</tt>". So, we would wish
+to support a call such as
+
+<pre>
+        (eval_env! '(+ x (* 2 y))  '(((x . 3) (y . 5)) '()))
+</pre>
+
+<p>
+which would evaluate to 13.
+
+<p> Apart from the extra <tt>env</tt> argument, <tt>eval_env!</tt>  differs
+from <tt>eval_eager</tt> in the fact  that we need to  look a symbol up  in
+the environment to see if it "ought" to have been substituted for.
+
+
+<p> If  the expression  is a  pair [1]  it means  that we  have a  function
+<em>applied</em> to  arguments, or  a special  form. We  call the  function
+<tt>eval_compound!</tt> [2] to handle this case.
+
+<p>
+If the expression is a symbol [3] then we look up its value in the
+environment [4]. Otherwise it evaluates to itself [5]
+
+
+<pre><code>
+(define (eval_env! expr env)
+    (if (pair? expr)                                  ;[1]
+        (eval_compound! (car expr) (cdr expr) env)    ;[2]
+        (if (symbol? expr)                            ;[3]
+            (lookup expr env)                         ;[4]
+            expr )                                    ;[5]
+        )
+    )
+</code></pre>
+
+<p>
+So, as  before,  merely  having  defined  this  function,  we  can  evaluate a
+constant. We give the empty environment '() as second argument.
+
+
+<pre><code>
+(example '(eval_env! 34 '()) 34)
+</code></pre>
+
+<h3>3.1  Implementing the environment - the lookup  function.</h3>
+
+<p> We might choose  to implement an environment  as an association  list -
+this would be the  obvious choice. However we  prefer to implement it  as a
+sequence  of  association   lists.  Each  association   list  is   called a
+<em>frame</em>. The reason for making this  choice is that it allows us  to
+keep  the  variable-bindings  associated   with  a  given   <tt>lambda</tt>
+expression together in a frame. At the end of any environment for  actually
+executing a Scheme program there will  be the global frame, which  contains
+all the  bindings  of the  built-in  functions. The  rules  for  evaluating
+standard Scheme  treat this  global frame  somewhat differently,  so it  is
+helpful to be able to identify it easily.
+
+<p> We now write  the function <tt>lookup</tt> which  finds the value  of a
+variable in an environment.  It uses <tt>assoc</tt>  to examine each  frame
+until it finds the required one.
+
+<pre><code>
+(define (lookup var env)
+    (if (null? env) var
+        (let ((pair (assoc var (car env)))) ; look it up in current frame
+            (if pair
+                (cdr pair)                  ; found a binding for var in frame
+                (lookup var (cdr env)))     ; no binding in this frame
+            )
+        )
+    )
+</code></pre>
+
+<p>  Having  defined   <tt>lookup</tt>  it   is  now   possible  to   apply
+<tt>eval_env!</tt> to evaluate a variable in an environment.
+
+<pre><code>
+(example '(eval_env!
+    'x                           ; the variable x
+     '(
+       ((a . 16) (b . 7))        ; first frame of environment
+       ((x . 44) (y . 2))        ; second frame
+       ((pi . 3.141593))         ; global frame
+      )) 44)
+</code></pre>
+
+
+<p>
+Notice that we still evaluate an unbound variable <tt>x</tt>  to itself:
+
+<pre><code>
+(example '(eval_env! 'x '()) 'x)
+</code></pre>
+
+<h3>3.2  Methods for special forms</h3>
+
+
+<p> We can keep our old definition of <tt>method</tt>, although the methods
+themselves will be different.
+
+
+<pre><code>
+(define (method f)
+    (let ((pair (assoc f alist_method)))
+        (if pair (cdr pair) pair )
+        )
+    )
+</code></pre>
+
+
+<h3>3.3  eval_compound! evaluates special forms, and any application</h3>
+
+
+<p>
+The function <tt>eval_compound</tt> remains much the  same as before. We see if  there
+is a  method  to  handle a  special  form.  If  there is,  it  will  take  the
+environment as an extra  argument. If there is  not we evaluate the  arguments
+and apply the function. This  time we have to use  a <tt>lambda</tt> expression in  the
+map to ensure that <tt>eval_env!</tt> has its <tt>env</tt> argument.
+
+<pre><code>
+(define (eval_compound! f args env)
+    (let ((m (method f)))               ; get method if there is one
+        (if m
+            (m args env)                 ; use method if there is one
+            (apply_env! f
+                (map (lambda (e)
+                        (eval_env! e env))
+                    args)
+                env
+                )                       ; otherwise evaluate the arguments
+            ; and apply the function to them
+            )                           ; end if
+        )                               ; end let
+    )
+</code></pre>
+
+
+<h3>...  Defining the method to evaluate the special form <tt>lambda</tt></h3>
+
+
+Evaluating a <tt>lambda</tt> expression becomes more complicated. Consider:
+
+<pre>
+    (lambda (x) (+  x b))
+</pre>
+
+<p>  evaluated  with  the  environment  <tt>'(((b  .  2)))</tt>.  Since
+the
+environment holds  a  substitution  that  <em>should  have  been  made</em>
+according to the substitution  model, we must ensure  that <tt> b</tt>  has
+the value <tt>2</tt> whenever the body of of the <tt>lambda</tt>-expression
+is evaluated. However this evaluation will  take place in the future,  when
+the current  binding of  <tt>b</tt> may  have been  lost. For  example,  in
+Scheme we might have
+
+<pre>
+(define inc_b (lambda (b) (lambda (x) (+ x b))))
+
+(define add_2 (inc_b 2))
+</pre>
+
+<p> The substitution model  takes care of this  - <tt>add_2</tt> is  simply
+the expression <tt>(lambda (x) (+ x 2))</tt> because in applying the  outer
+<tt>lambda</tt>-expression to the argument  <tt>2</tt> the substitution  is
+made in  the inner  <tt>lambda</tt>-expression.  But with  the  environment
+model we have to preserve the environment, or at least the part of it  that
+says   that   <tt>b</tt>    is   <tt>2</tt>,   along    with   the    inner
+<tt>lambda</tt>-expression. Such a pairing of a  <tt>lambda</tt>-expression
+with an  environment  is  called  a  <em>closure</em>.  We  will  represent
+closures by the special form
+
+<pre>
+    (closure <b>lambda-expr environment</b>),
+</pre>
+
+<p>
+although it  should be  understood that  in a  standard Scheme  implementation
+closures just appear to be ordinary functions once created.
+
+
+<p>
+According to the rules for interpreting Scheme, we have to separate the global
+frame from the others:
+
+<pre><code>
+(define (method_lambda args_and_body env)
+    (list 'closure (cons 'lambda args_and_body) (remove_global env))
+    )
+
+(define (remove_global env)
+   (if (or (null? env) (null? (cdr env))) '()
+     (cons (car env) (remove_global (cdr env))))
+)
+
+
+(example '(remove_global
+        '(
+         ((a . 16) (b . 7))        ; first frame of environment
+         ((x . 44) (y . 2))        ; second frame
+         ((pi . 3.141593))         ; global frame
+         ))
+    '(
+     ((a . 16) (b . 7))        ; first frame of environment
+     ((x . 44) (y . 2))        ; second frame
+     )
+    )
+</code></pre>
+
+<h3>...  An abstract characterisation of closures.</h3>
+
+<p>
+We can characterise a closure abstractly by the following function-calls
+
+<pre>
+-------------------------------------------------------------------------------
+| (closure? c)          Returns #t if c is a closure                          |
+| (lambda_closure c)    Extracts the lambda-expression of the closure c       |
+| (env_closure c)       Extracts the environment contained in the closure c   |
+| (cons_closure l env)  Makes a closure with given lambda-expr and environment|
+-------------------------------------------------------------------------------
+</pre>
+
+<p>
+The definitions of these are:
+
+<pre><code>
+(define (closure? x)
+    (and
+        (pair? x)
+        (eq? (car x) 'closure))
+    )
+</code></pre>
+
+(define lambda_closure cadr)
+(define env_closure    caddr)
+
+
+<h3>...  Defining the method to evaluate closures</h3>
+
+
+<p>
+We need to define a method for evaluating closures - that is easy, since  they
+are self-contained they just evaluate to themselves:
+
+<pre><code>
+(define (method_closure args env)
+    (cons 'closure args)
+    )
+</code></pre>
+
+<p>
+Of course we are eventually going to have to look inside a closure - but  this
+will happen when it is <em>applied</em>.
+
+<p> We are now ready to  try out the creation of  a closure as a result  of
+evaluating a  <tt>lambda</tt>-expression,  provided we  temporarily  define
+<tt>alist_method</tt> to support it.
+
+<pre><code>
+(define alist_method
+    (list
+        (cons 'lambda method_lambda)
+        )
+    )
+
+
+(example
+    '(eval_env!
+        '(lambda (x) (+ x a))
+          '(
+             ((a . 34))
+               ()
+         ) )
+     '(closure (lambda (x) (+ x a)) (((a . 34))))
+    )
+</code></pre>
+
+
+<h3>...  Defining the method to evaluate the special form if</h3>
+
+<p>  The  method  for  <tt>if</tt>  is  implemented  in  a  straightforward
+modification of what we did for the substitutional model - we just pass the
+environment around as required.
+
+<p> To  evaluate  a conditional  expression  of the  form  <tt>(if  <b>bool
+expr<sub>1</sub> expr<sub>2</sub></b>)</tt> we  first evaluate  <b>bool</b>
+[1].   If    it    evaluates    to    <tt>#t</tt>    then    we    evaluate
+<b>expr<sub>1</sub></b> [2]. If <b>bool</b>  evaluates to <tt>#f</tt>  then
+we evaluate  <b>expr<sub>2</sub></b> [3].  Otherwise  we arrange  that  the
+<tt>(if...)</tt> expression evaluates  to itself. Note  that here again  we
+have a rule for evaluation that differs from standard Scheme.
+
+
+<pre><code>
+(define (method_if args env)
+    (let ((bool (eval_env! (car args) env)))               ;[1]
+        (cond                                             ;
+            ((eq? bool #t) (eval_env! (cadr args) env))    ;[2]
+            ((eq? bool #f) (eval_env! (caddr args) env))   ;[3]
+            (else (cons 'if args))                        ;[4]
+            )
+        )
+    )
+</code></pre>
+
+
+<h3>...  Defining the method for quoted constants</h3>
+
+
+<p> It turns  out that  quotation is easier  to handle  in the  environment
+model, largely because we do not have to manipulate program text as much as
+we did  in the  substitution model,  and  so there  is less  possiblity  of
+confusion between an expression which  is to be <em>evaluated</em> and  one
+which is a <em>value</em> by virtue of the fact that it was quoted. So, our
+special form <tt>quote</tt> simply strips off the quotation.
+
+
+<pre><code>
+(define (method_quote args env)
+    (car  args)
+    )
+</code></pre>
+
+<h3>...  And we can now implement set!</h3>
+
+
+And we can  now implement <tt>set!</tt>.  It is going  to change the  value
+associated with  a variable  in the  environment. To  do this,  we need  to
+define a function to update an environment.
+
+<p>
+The function-call (update! val var env)
+
+<pre><code>
+(define (update! var val env)
+    (if (null? env)
+        (error "set! of undefined variable " var )
+        (let ((pair (assoc var (car env)))) ; look it up in current frame
+            (if pair
+                (set-cdr! pair val)         ; found a binding for var in frame
+                (update! var val (cdr env)))     ; no binding in this frame
+            )
+        )
+    )
+
+
+(define (method_set! args env)
+    (update! (car args)
+        (eval_env! (cadr args) env) env
+        )
+    )
+</code></pre>
+
+
+<p> We can  dispense with  the Y-combinator because  the environment  model
+supports recursion directly using <tt>set!</tt>.
+
+<h3>...  Testing out <tt>eval_env!</tt></h3>
+
+
+<p> We need to create <tt>alist_method</tt> first, and then we are ready to
+try out simple examples of the use of <tt>eval_env!</tt>.
+
+<pre><code>
+(define alist_method
+    (list
+        (cons 'lambda method_lambda)
+        (cons 'closure     method_closure)
+        (cons 'if     method_if)
+        (cons 'quote  method_quote)
+        (cons 'set!   method_set!)
+        )
+    )
+</code></pre>
+
+<p>
+To test <tt>set!</tt>, let us set up an environment:
+
+<pre><code>
+(define env_test   '(((x . 2)) ()))
+</code></pre>
+
+<p>
+Evaluating <tt>x</tt>  in this environment gives <tt>2</tt>.
+
+<pre><code>
+(example '(eval_env! 'x env_test) 2)
+</code></pre>
+
+
+
+<p>
+Now let us evaluate <tt>(set! x 44)</tt>:
+
+<pre><code>
+(eval_env! '(set! x 44) env_test)
+</code></pre>
+
+<p>
+And we find that the environment has changed...
+
+<pre><code>
+(example 'env_test '(((x . 44)) ()))
+</code></pre>
+
+<p>
+As has the value of <tt>x</tt>.
+
+<pre><code>
+(example '(eval_env! 'x env_test) 44)
+</code></pre>
+
+<p>
+Note that when we evaluate a quoted list we get no extra layer of quotation as
+we did with the substitution model.
+
+<pre><code>
+(example '(eval_env! ''(3 4 5) env_test) '(3 4 5))
+</code></pre>
+
+<p>  [Note:  it  is  possible   to  avoid  using  the  mutation   operation
+<tt>set-cdr!</tt> in implementing <tt>set!</tt>. This requires however that
+all our functions return a pair
+
+<pre>
+    (<b>value environment</b>)
+</pre>
+
+<p>
+which  is  bothersome   to  write.   A  purely  functional   account  of   the
+non-functional aspects  of Scheme  can however  be achieved,  using this,  and
+other, techniques].
+
+
+<h3>
+3.4  Defining apply_eager  to implement the application of a function.</h3>
+
+We now come to  the definition of  the function <tt>apply_eager</tt>  which
+implements our call of <tt>(apply_eager f args env)</tt> back i
+
+<h4>... We put primitives in the global environment</h4>
+
+Our treatment of primitives will be  much easier in the environment  model,
+because we will not get  hung up on quotation. In  fact, we can simply  put
+all the  primitives in  a <em>global  environment</em>, so  that they  will
+evaluate  to  procedures  which   satisfy  the  standard  Scheme   function
+<tt>procedure?</tt>.
+
+<pre><code>
+(define the-global-environment
+    (list(list
+      (cons '+ +)
+      (cons '- -)
+      (cons '* *)
+      (cons '/ /)
+      (cons '>= >=)
+      (cons '>  >)
+      (cons '<  <)
+      (cons '<= <=)
+      (cons 'null? null?)
+      (cons 'car   car)
+      (cons 'cdr   cdr)
+      (cons 'cons  cons)
+      (cons 'list list )
+     ))
+    )
+</code></pre>
+
+<p>  In  defining  <tt>apply_env!</tt>,  we  use  <tt>eval_env!</tt>   to
+evaluate the  function, to  an entity  <tt>p</tt>, which  may be  a  Scheme
+procedure if <tt>f</tt> was a primitive, or it may be a closure, or it  may
+be something else. If it  is a primitive, they we  just apply it using  the
+standard Scheme <tt>apply</tt> function.  If it is a  closure then we  call
+<tt>apply_closure</tt> to deal with it. If  it is something else, we  can't
+apply it except symbolically.  Note in particular that  we can never  get a
+"raw"   <tt>lambda</tt>    expression   -    <tt>lambda</tt>    expressions
+<em>always</em> evaluate to closures.
+
+<pre><code>
+(define (apply_env! f args env)
+    (let ((p (eval_env! f env)))
+        (cond
+            ((procedure? p)         ; f names a primitive function like car
+             (apply p args))        ; use the standard Scheme apply function
+            ((closure? p)           ; Do we have a closure?
+             (apply_closure
+                 (lambda_closure p) ; lambda expr
+                 (env_closure p)    ; environment from closure
+                 args               ; original arguments
+                 )
+             )
+            (else (cons f args))    ; Return a symbolic application.
+            )
+        )
+    )
+</code></pre>
+
+
+<p>
+We can now try applying a primitive function to arguments:
+
+<pre><code>
+(example '(apply_env! '+ '(2 3) the-global-environment) 5)
+</code></pre>
+
+<p>
+Indeed, we can evaluate an expression involving primitives:
+
+<pre><code>
+(example '(eval_env! '(+ (* 4 5) 3) the-global-environment) 23)
+</code></pre>
+
+<h4>...  Applying a closure to arguments</h4>
+
+
+<p> When  we  come  to  apply  a  closure  to  its  arguments  we  have  to
+<em>construct  an  environment  in  which  to  evaluate  the  body  of  the
+<tt>lambda</tt> expression contained in the closure</em>.
+
+This new environment consists of 3 parts:
+<ul>
+<li>
+    [1] The <em>current</em> global environment is used to create the last
+    (global) frame of the new environment. This means that changes made
+    to the global environment by <tt>set!</tt> and <tt>define</tt>
+    statements will be "seen" in the body of the
+    <tt>lambda</tt>-expression.
+<li>
+    [2] The environment stored in the closure is used to create frames
+    in the new environment specifying the values of variables in the
+    body of the <tt>lambda</tt>-expression that are <em>non-local</em>
+    and <em>non global</em>.
+<li>
+    [3] The first frame of the new environment specifies the values of the
+    arguments of the <tt>lambda</tt>-expression derived by pairing them up with the
+    actual parameters of the <tt>lambda</tt>-expression.
+</ul>
+
+
+<p> Coming  closer  to  our  implementation,  we  can  rephrase  the  above
+requirements by saying  that applying  a closure <tt>  C</tt> to  arguments
+<tt>v1,v2...vn</tt>  requires   us  to   evaluate  the   body  of
+    <tt>L = (lambda_closure C)</tt>  in  an  environment which  consists
+of  <tt>E_c = (environment_closure C)</tt> modified as follows:
+
+<p> [1] We  append the  global environment to  the end  of the  environment
+<tt>E_c</tt>, obtaining an environment <tt> E_cg</tt>. This allows for  the
+fact that in Scheme, a redefinition  of a global function affects  previous
+calls of that function. For example:
+
+<pre><code>
+(define (mary x)
+   (+ x 45)
+)
+
+
+(define (fred x)
+     (mary x)
+)
+
+
+(example '(fred 2) 47)
+
+</code></pre>
+
+<p>
+Now if we redefine <tt>mary</tt> this redefinition affects <tt>fred</tt>:
+
+<pre><code>
+(define (mary x)
+    (* x 6)
+)
+
+
+(example '(fred 2) 12)
+</code></pre>
+
+<p> [Note  that  more modern  functional  languages like  SML  eschew  this
+special behaviour  of  top-level functions.  This  is less  convenient  for
+debugging, but is almost necessitated by the fact that these languages  are
+statically typed, so that if you redefined <tt> mary</tt> with a  different
+type, <tt>fred</tt> would have a different  type if it "saw" the change  in
+<tt>mary</tt>. This kind of change could propagate throughout the program]
+
+<p> [2]  We have  to extend  the environment  to provide  bindings for  the
+variables of  <tt>L</tt> (that  is  the formal  parameters) to  the  actual
+parameters. If <tt>L</tt> has the form
+
+<pre>
+     (lambda  (x1 x2 ... xn) body)
+</pre>
+
+<p>
+And the arguments evaluate to <tt>(v1 .... vn)</tt> then we make the frame
+
+<pre>
+     ((x1 . v1) (x1 . v2) .... (xn . vn))
+</pre>
+
+<p>
+be the first frame of our new environment.
+
+<p>
+Thus, to sum up, to perform
+
+<pre>
+     (apply_env!  '(closure L E_c) E)
+</pre>
+
+<p>we  evaluate  the   <tt>lambda</tt>-expression  <tt>L</tt>  with   the
+environment <tt>E_c</tt> extended by the global environment at the end  and
+by the frame <tt>((x1 . v1) ....)</tt> at the front.
+
+
+<pre><code>
+(define (apply_closure  L E_c args)
+    (let ((E_cg (append E_c the-global-environment)))
+        (eval_sequence
+            (body_lambda L)
+            (cons                               ; Extend E_cg with
+                (map cons (vars_lambda L) args) ; ((x1.v1) (xn.vn))
+                E_cg)
+            )
+        ) ; end let
+    ) ; end define
+
+
+(define vars_lambda cadr)
+(define body_lambda cddr)
+</code></pre>
+
+
+<p> Thus  <tt>apply_closure</tt>  replaces <tt>apply_lambda</tt>,  and  the
+substitution  required  in  <tt>apply_closure</tt>   is  replaced  by   the
+extension of the environment.
+
+<p> In the  definition of  <tt>apply_closure</tt> we allowed  for the  fact
+that  a  body  of  a  <tt>lambda</tt>-expression  can  be  a  sequence   of
+expressions. So we have to define:
+
+<pre><code>
+(define (eval_sequence seq env)
+    (cond
+        ((null? seq) (error "cannot evaluate null seqence"))
+        ((null? (cdr seq)) (eval_env! (car seq) env))
+        (else
+            (eval_env! (car seq) env)
+            (eval_sequence (cdr seq) env)
+            )
+        )
+    )
+
+(example '(eval_env! '((lambda (x y) (+ x (* 2 y))) 3 4)
+            the-global-environment)
+         11
+         )
+</code></pre>
+
+
+<a name = "recursion"></a>
+<h2>4  Doing top-level recursion in the Environment Model</h2>
+
+
+<p>
+In this section we will add enough capabilities to our interpreter to  support
+a considerable measure of ordinary Scheme  programming. We will then test  out
+the resulting interpreter.
+
+<h4>4.1  Implementing the define special form</h4>
+
+
+<p>  In  Scheme  we  can  define  recursion  at  the  top-level  using  the
+<tt>define</tt> construct. To  do this  we need  to make  <tt>define</tt> a
+special form which, if  necessary, creates the  variable being defined  and
+then assigns a  value to  it. We will  not implement  the "shorthand"  form
+exemplified by: <tt>(define (fred x) (+ x 1))</tt>.
+
+<p> Suppose we are executing:
+
+<pre>
+      (define VAR EXPR)
+</pre>
+
+<p>
+We must first make a  null entry for VAR in  the global environment, and  then
+evaluate the expression EXPR in  the modified global environment, and  finally
+update that environment so that VAR has the value of EXPR.
+
+
+<p> In  detail, we  define the  function <tt>method_define</tt>  which  [1]
+performs an initial check that the  form of the define statement is  valid.
+Next [2] it unpacks the variable  <tt>var</tt> being defined and the  value
+<tt>expr</tt>  of  that  variable.  Now  follows  [3]  a  check  that   the
+<tt>var</tt> is truly a variable  [this is where we'd  put in code for  the
+"shorthand" construction, by replacing the error message [7]].
+
+<p> Having checked  the legality of  the construct, we  proceed [4] to  add
+<tt>var</tt> as a variable  to the global  environment if necessary,  which
+leaves us free [5] to update the  value of that variable with the value  of
+the expression <tt> expr</tt> evaluated in the global environment.
+
+<p> All that is left to us [7-8] is to provide suitable error reports about
+malformed <tt>define</tt> statements.
+
+
+<pre><code>
+(define (method_define args env)
+    (if (= (length args) 2)                                         ; [1]
+        (let ((var (car args)) (expr (cadr args)))                  ; [2]
+            (if (symbol? var)                                       ; [3]
+                (begin
+                    (set! the-global-environment                    ; [4]
+                        (add_variable var the-global-environment))
+                    (update!                                        ; [5]
+                        var
+                        (eval_env! expr the-global-environment)     ; [6]
+                        the-global-environment)
+                    )
+                (error "variable needed in define statement"        ; [7]
+                    (cons 'define args))
+                )
+            ) ; end let
+
+        (error "wrong form for define statement" (cons 'define args)) ;[8]
+        ) ; end if
+    )
+</code></pre>
+
+<p>
+The  function  <tt>add_variable</tt>
+makes  the  new  entry  for  a  variable  in   an
+environment if one is required.
+
+<pre><code>
+
+(define (add_variable var env)
+    (if (eq? (lookup var env) var)
+        (cons
+            (cons
+                ; extend the first frame
+                (cons var "undefined") (car env))
+            (cdr env))
+        env)
+    )
+</code></pre>
+
+<h3>4.2  Making it easy to add new special forms</h3>
+
+
+<p>
+For convenience, let us define a mutating procedure to add a method so that we
+can extend our repetoire of special forms on the fly.
+
+<pre><code>
+(define (add_method! name m)
+    (set! alist_method (cons (cons name m) alist_method))
+    )
+</code></pre>
+
+We can now incorporate the <tt> define</tt> special form into our
+interpreter.
+
+<pre><code>
+(add_method! 'define method_define)
+</code></pre>
+
+
+<h3>4.3  Implementing the begin special form.</h3>
+
+
+<p> We also  need to  provide a method  for <tt>begin</tt>.  We simply  use
+<tt>eval_sequence</tt> to evaluate the sequence of expressions forming  the
+body of a <tt>begin</tt> expression.
+
+<pre><code>
+(add_method! 'begin
+    (lambda (seq env)
+        (eval_sequence  seq env)
+        )
+    )
+</code></pre>
+
+<h3>4.4  Testing out the "banking" example.</h3>
+
+
+<p> For  convenience,  let  us  define a  function  <tt>  evalg</tt>  which
+evaluates an expression in  the global environment. This  will allow us  to
+implement the  equivalent of  the "read-eval"  loop of  the Scheme  system,
+whereby it continually reads  an expression, evaluates  it, and writes  out
+the value.  Without learning  more about  the input-output  aspects of  the
+Scheme language we can't make our interpreter behave <em>exactly</em>  like
+the built-in system, but we can make it tolerably convenient to use.
+
+<pre><code>
+(define (evalg expr)
+    (writeln "=:> " (eval_env! expr the-global-environment))
+    )
+</code></pre>
+
+<p>
+Note that we have only treated the most basic kind of definition - we have to
+have an explicit <tt>lambda</tt> if we are going to define functions. To define a
+function <tt>fred</tt> to our interpreter, we need to do:
+
+<pre><code>
+(evalg
+    '(define fred (lambda (x) (+ x 2)))
+    )
+</code></pre>
+
+<p> Now,  we can  check whether  this definition  has "taken",  by  looking
+<tt>fred</tt> up in the global environment.
+
+<pre><code>
+(example '(lookup 'fred the-global-environment)
+    '(closure (lambda (x) (+ x 2)) ())
+    )
+</code></pre>
+
+<p> For  convenience,  let us  define  <tt>evals</tt> which  allows  us  to
+evaluate a sequence of expressions in the global environment.
+
+<pre><code>
+(define (evals seq) (for-each evalg seq))
+</code></pre>
+
+<p> We  can  now  do our  banking  example  and see  what  happens  in  the
+environment model when we have  a <tt>set!</tt>. Let us use  <tt>evals</tt>
+to define the <tt>make_account</tt>  function, and to  make an account  for
+Jane.
+
+<pre><code>
+(evals
+    '(
+     (define make_account
+         (lambda (balance)
+             (lambda (amount)
+                 (if (>= balance amount)
+                     (begin (set! balance (- balance amount))
+                         (list 'balance balance)
+                         )
+                     "Insufficient funds"
+                     )
+                 )
+             )
+         )
+     (define jane (make_account 100))
+     jane
+     )
+    )
+</code></pre>
+
+<p>
+The <tt>jane</tt> account is simply the closure [1]:
+
+<pre><code>
+(example
+    '(lookup 'jane the-global-environment)
+    '(closure                                        ; [1]
+        (lambda (amount)
+            (if
+                (>= balance amount)
+                (begin (set! balance (- balance amount))
+                    (list 'balance balance))
+                "Insufficient funds"
+                )
+            ) (((balance . 100))))
+    )
+</code></pre>
+
+<p>
+Now let us make an account for Fred, and debit Jane's account.
+
+<pre><code>
+(evals
+    '(
+     (define fred (make_account 75))
+     (jane 34)
+     )
+    )
+
+(example '(lookup 'jane the-global-environment)
+    '(closure
+        (lambda (amount)
+            (if
+                (>= balance amount)
+                (begin
+                    (set! balance (- balance amount))
+                    (list 'balance balance))
+                "Insufficient funds"
+                )
+            ) (((balance . 66))))
+    )
+</code></pre>
+
+<p>
+Note that when we make  closures, we do not  copy the <tt>lambda</tt> expressions,  but
+share them, so that  in making each  closure, although it  looks big, we  only
+have to allocate enough memory to hold the association list.
+
+
+<a name = "languages"></a>
+<h2>
+5  The substitution model &amp; environment model in computer languages
+</h2>
+
+<p> The substitution model serves as  a basis for the concept of  <em>macro
+expansion</em>  as  found  for  example  in  the  pre-processor  for  the C
+language. Unfortunately, as we have  seen, the substitution model does  not
+support the  imperative paradigm  well. So,  while in  a purely  functional
+context the choice of the  substitution model versus the environment  model
+is an efficiency issue, if you "bolt on" a macro-facility to an  imperative
+language, you end up  with a system in  which behaviour depends on  whether
+you are using a  macro or a regular  function definition. For example,  you
+can write a  C macro  <tt>swap</tt> for which  the call  <tt>swap(x,y)</tt>
+will swap the values  of the variables <tt>x</tt>  and <tt>y</tt>. But  you
+cannot achieve the same result if <tt>swap</tt> is an ordinary C function -
+you would have to write <tt>swap(&amp;x,&amp;y)</tt>.
+
+<p> More recent languages than C have attempted to preserve transparency as
+between the substitution model  and the environment  model (from which  the
+compilation model is  derived). For  example C++  has the  concept of  <em>
+inline</em> functions which  the compiler will  treat as macro  definitions
+<em>only</em> if the meaning of the program is unchanged by so doing.
+
+<p>
+It should  be  noted  that while  in  <em>general</em>
+the substitution  model  is  an
+inefficient way to implement  a language, it  can be a  very efficient way  of
+implementing small functions. For  example the <tt>swap</tt>
+macro might generate  the
+code:
+
+<pre>
+    {int tmp = x; x = y; y = tmp}
+</pre>
+
+<p>
+which is significantly  faster than  the function  call reqired  if
+<tt>
+is a function.

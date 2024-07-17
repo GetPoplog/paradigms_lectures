@@ -1,0 +1,613 @@
+
+
+<html><head><title>
+
+Representation of Sets
+
+</title></head>
+<BODY bgcolor = "white">
+
+
+<h1>
+<center>
+    LECTURE 14 Representation of Sets
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+
+
+<a href = "lecture14.html#operations">
+Operations on sets and the representations we'll consider</a><br>
+
+
+<a href = "lecture14.html#abstract">
+The Abstract Class class_set. </a><br>
+<pre>
+      2.1   The abstract implementation of  ->set
+      2.2   The abstract implementation of  intersect
+      2.3   The abstract implementation of  '<=
+      2.4   The abstract implementation of  =
+</pre>
+
+
+<a href = "lecture14.html#unordered">
+Methods for Sets as unordered lists</a><br>
+<pre>
+      3.1   Implementing the empty set as an unordered list
+      3.2   Implementing '->list representing sets as unordered lists
+      3.3   Implementing 'member? representing sets as unordered lists
+      3.4   Implementing 'adjoin  representing sets as unordered lists
+      3.5   What's inherited
+
+</pre>
+
+
+<a href = "lecture14.html#ordered">
+Methods for Sets as ordered lists</a><br>
+<pre>
+      4.1   Implementing the empty set as an ordered list
+      4.2   Implementing '->list representing sets as ordered lists
+      4.3   Implementing 'member?  representing sets as ordered lists
+      4.4   Implementing 'adjoin  representing sets as ordered lists
+      4.5   We have a big win implementing intersect on ordered lists
+</pre>
+<a href = "lecture14.html#trees">
+Sets as Trees - an Introduction
+</a><br>
+
+<a name = "operations"></a>
+<h2>Operations on sets and the representations we'll consider</h2>
+
+<p>
+A set is  a fundamental  concept of  mathematics. Unfortunately,  there is  no
+single uniform representation  of set  that meets  all our  needs as  computer
+scientists. The  most important  distinction is  between finite  and  infinite
+sets. A finite set can be represented by some kind of explicit enumeration  in
+a data-structure, whereas an infinite set must be represented by some kind  of
+description that does not explicitly enumerate the elements. Of course, it  is
+not always practicable to enumerate large finite sets.
+
+<p>
+We shall study three representations of finite sets from the point of view of
+a small number of basic operations on sets. Let's use <tt>cs</tt> for
+our implementation of the current class of sets.
+
+
+<pre>
+    (send cs 'empty)         The representation of the empty set.
+
+    (send cs '->set l)       Creates a set which consists of the elements of a
+                             list.
+
+    (send s '->list)         Creates a list of the elements of the set in an
+                             undefined order. This will be the identity function
+                             for representations of sets as lists.
+
+    (send s 'member? x)      Computes whether a given object x is a member of a
+                             set s.
+
+    (send s1 '<= s2)      Computes whether each member of s1 is a
+                             member of s2
+
+    (send s1 '= s2)          Computes whether two sets s1 s2 are the same set.
+
+    (send s 'adjoin x)       Makes a new set by adding the element x to the set s.
+
+    (send s1 'intersect s2)  Computes the intersection of the two sets s1, s2.
+
+</pre>
+<p>
+In particular we need to study the relationship between the representation and
+how fast we can make these basic operations run - their time complexity.
+
+<p>
+The 3 representations are
+
+<pre>
+    Unordered lists: A set {1,2,3} may be represented as the list (3 1 2)
+    Ordered lists:   A set {1,2,3} will be represented as the list (1 2 3)
+    Binary trees:    A set {1,2,3,4,5} may be represented as the tree:
+</pre>
+
+<center>
+<IMG SRC = "sets_as_trees0.gif">
+</center>
+
+
+<p>
+All of these representations require that  we be able to compare for  equality
+<em>elements</em>
+which  occur  in sets.  The  ordered list  and  tree  representations
+require that an ordering relation be defined on the elements. For  simplicity,
+we shall  confine  ourselves to  sets  of numbers,  where  &lt;=
+is  an  ordering relation.
+
+<a name = "abstract"></a>
+<h2> The Abstract Class for Sets</h2>
+
+An <em>abstract</em> class of objects is one that can have no instances,
+typically because it isn't fully implemented. It's a useful place to
+hang methods that are quite generic - they will work for all sets, for
+example.
+
+<p>We can define an abstract class for sets
+
+<pre>
+
+(define class_set
+       (make_class 'set class_object '() #f)
+    )
+
+
+</pre>
+<p>
+We   can   regard   the   functions   <tt>->list</tt>,    <tt>member?</tt>,
+<tt>adjoin</tt> together with <tt>empty_set</tt> as being basic  operations
+which we have to  define for all representations  of sets. [If we had
+implemented <em>interfaces</em>, we would specify these as methods in
+the interface for sets.]
+Using these,
+we can  provide  abstract  implementations  of  the  methods
+<tt>->set</tt>,
+<tt><=</tt>, <tt>equal_set?</tt> and <tt>intersect</tt>. While  these
+abstract implementations  will always  work, they  will not  always be  the
+fastest possible implementation for a given representation, since we may be
+able to exploit the special properties of that representation.
+
+<h3> 2.1  The abstract implementation of  <tt>list->set</tt> </h3>
+
+
+<p>
+We can  convert  a  list to  a  set  by repeated  application  of  the  <tt>adjoin</tt>
+operation, giving us the function:
+
+<pre><code>
+(insert_static_method
+    class_set
+    '->set
+    (lambda (l)
+        (if (null? l)
+            (send class_set 'empty)
+            (send
+                'adjoin
+                (send '->set class_set (cdr l) )
+                (car l)
+                )
+            ) ; end if
+        )     ; end lambda
+    ))        ; end insert
+
+</code></pre>
+
+<h3> The abstract implementation of <tt>intersect</tt></h3>
+
+<p>
+We can conveniently make use of the <tt>reduce</tt>
+function that we defined earlier in
+the course to save us writing some explicit recursions.
+
+<pre><code>
+(define (reduce f acc base l)
+   (if (null? l)
+       base
+       (acc (f (car l)) (reduce f acc base (cdr l)))))
+</code></pre>
+
+<p>
+Using <tt>reduce</tt>
+we can write a  abstract <tt>intersect</tt> function. This converts one  of
+the sets to a list, and then uses an accumulator function in which <tt>member_set?</tt>
+is used to determine if each member of the list is a member of the other  set.
+If it is, it  is combined into the  result, and if not  it isn't. The base  is
+simply the <tt>empty_set</tt>.
+
+<pre><code>
+(insert_instance_method class_set
+    'intersect
+    (lambda (this s2)
+        (reduce
+            (lambda (x) x)                   ;f
+            (lambda (x s)                    ;acc
+                (if (send s2 'member? x )
+                    (send s  'adjoin x)
+                    s)
+                )
+            (send s1 'empty)                 ;base
+            (send s1 '->list)                ;list
+            )
+        )
+    )
+</code></pre>
+
+2.3  The abstract implementation of  included_in?
+
+Likewise, we can define <tt>included_in?</tt>
+with <tt>reduce</tt>. Here the base is <tt>#t</tt> and  the
+accumulator function  is the  "and"  operation, and  the mapping  function  is
+<tt>member_set?</tt>
+
+<pre><code>
+(insert_instance_method
+    class_set
+    '<=
+    (lambda (this s)
+        (reduce
+            (lambda (x) (send s member? x))    ;f
+            andf                               ;acc
+            #t                                 ;base
+            (send '->list this))               ;list
+        )
+    )
+</code></pre>
+
+
+We need to define <tt>andf</tt>
+as a proper function, since <tt>and</tt> is a special form which
+can't be passed as an argument.
+
+<pre><code>
+(define (andf b1 b2)
+    (and b1 b2)
+    )
+</code></pre>
+
+<h3>2.4  The abstract implementation of  <tt>equal_set?</tt></h3>
+
+We can define <tt>equal_set?</tt> in terms of <tt>included_in?</tt>:
+
+<pre><code>
+(insert_instance_method
+    class_set
+    '=
+    (lambda (this s)
+        (and (send s1 '<= s2) (send  s2 '<= s1))
+        )
+    )
+</code></pre>
+
+<a name = "unordered"></a>
+<h2>3  Sets as unordered lists</h2>
+
+
+<p>
+A set can be represented as a list with no duplicates. The fact that the  list
+contains  no   duplicates  can   be  regarded   as  an   invariant  for   this
+representation.
+
+<h3>3.1  Implementing the empty set as an unordered list</h3>
+
+<h3>3.2 Implementing <tt>set->list</tt> representing sets as unordered
+lists </h3>
+
+<pre>
+(define class_set_uol
+    (make_class 'set_uol 'class_set '() '(->list)))
+
+</pre>
+
+
+
+<p>
+The empty set is simply implemented as the empty list.
+
+
+<pre><code>
+(insert_static_method
+    class_set_uol
+    'empty
+    (lambda () (send class_set_uol 'new '()))
+    )
+</code></pre>
+
+<pre>
+(example
+    '(send  (send class_set_uol 'empty) '->list)
+    '())
+</pre>
+
+
+
+
+
+<h3>3.3 Implementing <tt>member_set?</tt> representing sets as unordered
+lists </h3>
+
+<p>
+To implement set  membership, we  can use  the built-in  <tt>member</tt>
+function,  but ensure that an actual boolean value is returned.
+
+<pre><code>
+(insert_instance_method
+    class_set_uol
+    'member?
+    (lambda (this x)
+        (if (member x (send this '->list)) #t #f)
+        )
+    )
+</code></pre>
+
+<p>
+This takes O(n) time, since <tt>member</tt>
+takes O(n) time to go through the list  and
+compare each element for equality with <tt>x</tt>.
+
+
+<h3>3.4
+Implementing <tt>adjoin</tt>  representing sets as unordered lists </h3>
+
+<p>
+For <tt>(adjoin x s)</tt>
+we need to test  membership and only <tt>cons</tt>  on <tt>x</tt> to
+the  list
+representing s if it is not already there. This preserves the "no  duplicates"
+invariant.
+
+<pre><code>
+(insert_instance_method
+    class_set_uol
+    'adjoin
+    (lambda (this x)
+        (if (send this 'member? x)
+            this
+            (send set_uol 'new (cons x (send this '->list)))
+            )
+        )
+    )
+</code></pre>
+
+(send class_set_uol '->set '(1 2 3))
+
+<p>
+This takes  <em>O(n)</em>
+time,  since <tt>member_set?</tt>  takes  O(n) time.
+
+<h3>3.5  We inherit the abstract
+functions for <tt>intersect, equal_set? </tt></h3>
+
+
+<p>
+We can use  the abstract definitions  of <tt>intersect</tt>
+and  <tt>equal_set?</tt>. These  both
+take <em> O(n^2)</em> time.
+
+
+
+<a name = "ordered"></a>
+<h2>4  Sets as ordered lists</h2>
+
+
+
+
+<p>
+If we add the additional requirement (invariant) that our sets be  represented
+as lists with the elements placed in  order, we find that intersection can  be
+done more efficiently.
+
+
+<h3>4.1  Implementing the empty set as an ordered list</h3>
+<h3>4.2 Implementing <tt>set->list</tt> representing sets as ordered
+lists</h3>
+
+<p>
+As before, the empty_set is represented by the empty list.
+
+<pre><code>
+(define class_set_ol
+    (make_class 'set_ol 'class_set '() '(->list)))
+</code></pre>
+
+
+
+4.3  Implementing the <tt>'member?</tt> method
+for the ordered list representation.
+
+<hr>
+
+<p>
+We can make the <tt>member?</tt> method
+rather more efficient. Assuming a uniform distribution
+of values of x we can halve the expected time for an evaluation of
+<tt>(send s member? x)</tt>
+in the cases in which <tt>x</tt> actually is a member of s by
+using the fact  that
+if the first member of s larger than x we cannot possibly find x in s (see (1)
+below). However <tt>member_set?</tt> still remains O(n).
+
+<pre><code>
+(insert_instance_method
+    class_set_ol 'member?
+    (lambda (this x)
+        (let ((s (send this '->list)))
+            (cond
+                ((null? s) #f)
+                ((= x (car s)) #t)
+                ((> (car s) x) #f)                  ; (1)
+                (else (send
+                        (send 'class_set_ol 'new (cdr s))
+                        'member
+                        x)
+                    )
+                )
+            )
+        )
+    )
+</code></pre>
+
+<h3>4.4  Implementing <tt>adjoin</tt>  representing sets as ordered
+lists</h3>
+
+<p>
+In this representation,  <tt>adjoin</tt> still takes O(n) time, since we have
+in the worst case to examine the entire list. For example:
+<pre>
+(example
+    '(send
+      (send class_set_ol '->set '(1 2 3 4))
+      'adjoin
+     )
+    (send class_set_ol 'new '(1 2 3 4 5))
+)
+</pre>
+<p>
+But we can achieve a small improvement if we recognise that if the first
+member of the list representing the set is greater than the element we are
+adjoining, then we don't have to look any further. Let's for a change,
+write our <tt>adjoin</tt> method as a Scheme function which we then
+make into a method.
+
+<pre><code>
+(define (adjoin_ol x s)
+    (cond
+        ( (null? s) (list x))
+        ( (> x (car s)) (cons (car s) (adjoin_ol x (cdr s))))
+        ((= x (car s)) s)
+        (else (cons (car s) (cdr s)))
+        )
+    )
+
+(insert_instance_method
+    class_set_ol
+    'adjoin
+    (lambda (this x)
+        (send class_set_ol 'new (adjoin_ol x (send this '->list)))
+        )
+    )
+
+
+</code></pre>
+Exercise: Use <tt>letrec</tt> for the above definition of the
+<tt>'adjoin</tt> method.
+
+
+<h3>4.5  We have a big win implementing intersect on ordered lists</h3>
+
+
+<p>
+However we  can  improve  our implementation  of  <tt>intersect</tt>
+significantly  by
+exploiting the fact that the two sets are represented as ordered lists. To  do
+this we  employ  a  kind  of  algorithm known  as  <em>merging</em>.
+
+<p>
+The function below, based on merging, takes <em>O(n)</em>
+where <em>n</em> is the maximum of the
+size (cardinality) of the two sets. The idea is that we go through the ordered
+lists in "lock step" successively comparing the first elements and deciding on
+the basis of the comparison whether to incorporate them in the result,  always
+taking the <tt>cdr</tt> of the list with the smaller first element.
+
+ <pre>
+     '(2 3 4 6 7)
+     '(1 3 5 6)         First element not in the intersection, take cdr
+
+     '(2 3 4 6 7)       First element not in the intersection, take cdr
+     '(3 5 6)
+
+     '(3 4 6 7)         First elements are in the intersection, take cdr
+     '(3 5 6)           of both, incorparate car's in the result.
+
+     '(4 6 7)           First element not in the intersection, take cdr
+     '(5 6)
+
+     '(6 7)
+     '(5 6)             First element not in the intersection, take cdr
+
+
+     '(6 7)             First elements are in the intersection, take cdr
+     '(6)               of both, incorporate car's in the intersection.
+
+     '(7)
+     '()               No elements in the intersection.
+</pre>
+
+
+<pre><code>
+(define (intersect_ol s1 s2)
+    (if (or (null? s1) (null? s2)) '()
+        (let (
+             (x1 (car s1))
+             (x2 (car s2))
+             ); end let binding
+            (cond
+                ((= x1 x2) (cons x1 (intersect_ol (cdr s1) (cdr s2))))
+                ((&lt; x1 x2) (intersect_ol (cdr s1) s2))
+                (else (intersect_ol s1 (cdr s2)))
+                ) ;end cond
+            ) ; end let
+        ) ;end if
+    ) ;end define
+</code></pre>
+
+(insert_instance_method
+    class_set_ol
+    'intersect
+    (lambda (this s)
+        (send class_set_ol 'new
+            (intersect_ol
+                (send this '->list)
+                (send s '->list)
+                ) ; end intersect
+         )        ; end send
+    )             ; end lambda
+)                 ; end insert
+<p>
+We can test  for the equality  of sets under  the ordered list  representation
+very simply - if they are equal as sets they must be equal as lists.
+
+<pre><code>
+(insert_instance_method
+    class_set_ol
+    '=
+    (lambda (this s)
+        (equal?
+            (send this '->list)
+            (send s    '->list)
+            )
+        )
+    );
+
+</code></pre>
+
+<p>
+Note that <tt>intersect_ol</tt>
+is an example of a general kind of operation, the <tt>merge</tt> in
+which two ordered  sequences are  compared in  lock-step to  produce a  result
+derived from both of them. This is a very important kind of algorithm in cases
+in which you have large sets of data and only have sequential access to  them.
+It past  years, the  only way  that large  data-sets could  be stored  was  on
+magnetic tape,  and all  commercial  data-processing depended  on the  use  of
+merging operations. For example  a bank would have  records of the balance  of
+customer accounts  on  one  (or  more  than  one!)  tape,  kept  in  order  of
+account-number. The transactions  for the day  would be put  on another  tape,
+also in order of account-number. Then  the two tapes would be merged,  thereby
+updating the  balances to  allow for  the transactions.  Even the  process  of
+preparing the sorted-tape  for merging  would take place  using a  merge-based
+sorting operation.
+
+
+
+
+<a name = "trees"></a>
+<h2>5  Sets as Trees - an Introduction </h2>
+
+<p>
+If we represent a set as a <em>balanced</em>
+tree we can achieve a significant speed up
+in evaluating the  <tt>member_set?</tt> and <tt>adjoin</tt>  functions. The idea  of a  balanced
+tree is illustrated below - essentially the  idea is that we want to  equalise
+the number  of  entries  to  the  left  and right  of  each  node  as  far  as
+practicable.</p>
+
+<center>
+<IMG SRC = "sets_as_trees.gif">
+</center>
+
+<p>
+If a tree is balanced, we can get  to any given node in a rather small  number
+of steps, in fact in a number  of steps logarithmic in the cardinality  (size)
+of the set represented in the tree. The details of how we can achieve this are
+discussed in Lecture 15.

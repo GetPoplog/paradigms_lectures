@@ -1,0 +1,199 @@
+
+From ssaha@elux3.cs.umass.edu Thu Apr  9 21:26:47 1998
+Received: from freya.cs.umass.edu (freya.cs.umass.edu [128.119.40.195]) by roo.cs.umass.edu (8.7.6/8.6.9) with ESMTP id VAA01664 for <pop@roo.cs.umass.edu>; Thu, 9 Apr 1998 21:26:46 -0400 (EDT)
+Received: from el19.cs.umass.edu (el19.cs.umass.edu [128.119.42.29])
+    by freya.cs.umass.edu (8.8.7/8.8.7) with ESMTP id VAA01257
+    for <pop@freya.cs.umass.edu>; Thu, 9 Apr 1998 21:26:45 -0400
+Received: (from ssaha@localhost)
+    by el19.cs.umass.edu (8.8.7/8.8.7) id VAA19165
+    for pop@cs.umass.edu; Thu, 9 Apr 1998 21:26:45 -0400 (EDT)
+Date: Thu, 9 Apr 1998 21:26:45 -0400 (EDT)
+From: SARANYA SAHA <ssaha@elux3.cs.umass.edu>
+Message-Id: <199804100126.VAA19165@el19.cs.umass.edu>
+To: pop@freya.cs.umass.edu
+
+SOLTIONS FOR HW6:
+*****************
+(1) Power products form  what algebraists would  call a commutative
+semigroup with identity. In general a set S with operation * and a
+distinguished element 1 is a semigroup with identity if and only if, for
+all x,y,z in S:
+
+                1*x = x
+                x*(y*z) = (x*y) * z
+                x*y = y*x
+
+Write a  Scheme  function  laws_power_product which  checks  for  given  x,y,z
+whether the laws for a commutative semigroup are satisfied by power  products,
+with the * operation being *_pp.
+
+
+
+
+(2)
+Using the following functions which generate random power-products on the
+variables w, x, y, z, and your laws_power_product  function, write a test
+program for checking out that your implementation of *_pp actually satisfies
+the laws by running through 100 random power products.
+
+(define (random_pp)
+    (cons '* (help_random_pp '(u v w x y z)))
+    )
+
+(define (help_random_pp vars)
+    (cond
+        ((null? vars) '())
+        ((= (random 2) 0) (help_random_pp (cdr vars)))
+        (else (cons
+                (list '^ (car vars) (+ 1 (random 5)))
+                (help_random_pp (cdr vars))
+                )
+            )
+        )
+    )
+
+(3)
+In algorithmic algebra, a  monomial is an expression of  the form (* k  p)
+where k is a number called the coefficient, and p is a power-product.
+
+(a) Write Scheme  functions cons_mono, coef_mono,  pp_mono which  respectively
+build a  monomial  out  of a  coefficient  and  a power  product,  select  the
+coefficient  component  of  a  monomial  and  select  the  power-product  of a
+monomial.
+
+(b) Write a Scheme function *_mono which multiplies two monomials.
+
+(example
+    '(*_mono
+        '(* 2 (* (^ x 2)))
+        '(* 3 (* (^ x 3) (^ z 6)))
+        )
+    '(* 6 (* (^ x 5) (^ z 6)))
+    )
+
+(c)  The  lexicographical  comparison  of  monomials  is  determined  by   the
+comparison of their power products only. Define a Scheme function compare_mono
+which compares two monomials.
+
+
+
+(d) Monomials also form a commutative semigroup. Adapt your laws_power_product
+function to a laws_monomial function which expresses the fact that monomials
+are a commutative semigroup, write a function for creating random  monomials,
+and check out you *_mono function with 100 trials.
+
+********************SOLUTIONS**************************************************
+1)
+
+(define (-> x y)
+ (or(not x)y))
+
+(define <-> equal?)
+
+(define law_pp_commutative
+    (lambda (x y)
+        (:-
+            (= (*_pp x y) (*_pp y x)))))
+
+(define law_pp_identity
+    (lambda (x)
+        (:-
+            (= (*_pp x '(*)) x))))
+
+(define law_pp_associative
+    (lambda (x y z)
+        (:-
+            (= (*_pp z (*_pp x y)) (*_pp x (*_pp y z))))))
+
+(define laws_power_products
+   (lambda (x y z)
+        (and
+           (law_pp_commutative x y)
+           (law_pp_identity x)
+           (law_pp_associative x y z)
+        )
+    )
+)
+**************************************************
+2)
+
+(define (test_laws_pp)
+  (test_pp 100))
+
+(define (testpp n)
+    (if (= n 0) #t
+       (if (laws_power_products (random_pp) (random_pp) (random_pp))
+            (testpp (- n 1))
+             #f)))
+
+************************************
+3)
+a)
+
+(define cons_mono
+  (lambda (k p)
+     (list '* k p)))
+
+(define coef_mono cadr)
+
+(define pp_mono caddr)
+
+b)
+(define *_mono
+  (lambda (x y)
+    (cons_mono (* (coef_mono x) (coef_mono y))
+               (*_pp (pp_mono x) (pp_mono y))
+    )
+  )
+)
+
+c)
+
+
+(define compare_mono
+  (lambda (x y)
+    (compare_pp (pp_mono x) (pp_mono y))))
+ ;compare_pp was defined in HW5
+
+d)
+
+
+(define law_mono_commutative
+    (lambda (x y)
+        (:-
+            (= (*_mono x y) (*_mono y x)))))
+
+(define law_mono_identity
+    (lambda (x)
+        (:-
+            (= (*_mono x '(* 1 (*))) x))))
+
+(define law_mono_associative
+    (lambda (x y z)
+        (:-
+            (= (*_mono z (*_mono x y)) (*_mono x (*_mono y z))))))
+
+(define laws_monomial
+   (lambda (x y z)
+        (and
+           (law_mono_commutative x y)
+           (law_mono_identity x)
+           (law_mono_associative x y z)
+        )
+    )
+)
+
+(define (random_mono)
+    (cons_mono (random 999) (random_pp)))  ; this generates a nurandom no.
+                                          ; for coef_mono also
+
+
+
+(define (test_laws_mono)
+  (test_mono 100))
+
+(define (testmono n)
+    (if (= n 0) #t
+       (if (laws_mono (random_mono) (random_mono) (random_mono))
+            (testmono (- n 1))
+             #f)))

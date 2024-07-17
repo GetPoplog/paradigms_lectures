@@ -1,0 +1,172 @@
+
+      Implementing the Unification Algorithm
+
+
+Possible constants can include Scheme symbols
+
+Distinguish between a  symbol  acting  as a
+constant  and  as variable?
+
+We will treat a  variable as a list (? v )
+
+
+(define (var? e)
+    (and (pair? e) (eq? (car e) '?))
+    )
+
+(define constant? atom?)
+
+(define =_constant? equal?)
+
+ 
+Binding variables to values; making frames
+
+
+To unify two terms t1 and t2 we must determine
+a mapping  f  from  variables to  constants
+
+f(t1) = f(t2)
+
+Represent such a mapping as a frame
+
+
+               Operations on Frames
+
+make_binding      Makes a "binding" associating
+                  a variable with a value.
+
+binding-in-frame  Finds a binding for a given
+                  variable in a frame
+
+binding-value     Extracts the value component
+
+extend            Adds new binding to a frame.
+
+
+Implement using association lists
+
+
+(define make-binding cons)
+
+(define binding-in-frame assoc)
+
+(define binding-value cdr)
+
+(define (extend var val frame)
+    (cons (make-binding var val) frame))
+
+ The function unify
+
+(unify p1 p2 frame)
+
+frame serves the same  role as
+in Scheme interpreter, BUT:
+
+    Unification may not be possible;
+    Cannot unify 2 with 3
+    frame may have value #f
+    Distinguish from empty frame '()
+    May unify 2 with 2, giving '()
+    Depends on the use of Scheme
+    with IEEE standard #f different from '()
+
+
+    Variables may be bound to variables.
+    (? x) unifies with (? y) as
+    specified in the frame ( ((? x) . (? y)))
+
+
+(define (unify p1 p2 frame)
+    (cond
+        ((eq? frame #f) #f)                       ;[1]
+        ((var? p1) (unify_var p1 p2 frame))       ;[2]
+        ((var? p2) (unify_var p2 p1 frame))       ;[3]
+        ((constant? p1)                           ;[4]
+         (if (constant? p2)
+             (if (=_constant? p1 p2) frame #f)
+             #f))
+        ((constant? p2) #f)                       ;[5]
+        (else                                     ;[6]
+            (unify (cdr p1)                       ;[6.1]
+                (cdr p2)
+                (unify                            ;[6.2]
+                    (car p1)
+                    (car p2)
+                    frame)))))
+
+
+The unify_var function unifies a variable with a term
+
+    (g (? x) (f (? x)))
+    (g (? y) (? y))
+
+
+(define (unify_var var val frame)
+    (if (equal? var val)                                ;[1]
+        frame                                           ;[1.1]
+        (let ((value-cell (binding-in-frame var frame)));[2]
+            (if (not value-cell)                        ;[3]
+                (if (freefor? var val frame)            ;[3.1]
+                    (extend var val frame)              ;[3.2]
+                    #f)                                 ;[3.3]
+                (unify (binding-value value-cell)       ;[4]
+                    val
+                    frame)))))
+
+
+(define (freefor? var exp frame)
+    (letrec
+        (
+         (freewalk
+             (lambda (e)
+                 (cond
+                     ((constant? e) #t)                            ;[1]
+                     ((var? e)                                     ;[2]
+                      (if (equal? var e) #f                        ;[2.1]
+                          (let ((b (binding-in-frame e frame)))    ;[2.2]
+                              (if (not b) #t                       ;[2.3]
+                                  (freewalk (binding-value b)))))) ;[2.4]
+                     ( (freewalk (car e)) (freewalk (cdr e)))      ;[3]
+                     (else #f))                                    ;[4]
+                 )  ;end lambda
+             ) ; end freewalk binding
+         ) ;end letrec bindings
+        (freewalk exp)
+        ) ;end letrec
+    )
+
+(example
+    '(freefor? '(? x) '(f (? x)) '())
+    #f)
+(example
+    '(unify 'Liz 'Phil '())
+    #f)
+(example
+    '(unify '(+ a b) '(+ a b) '())
+    '())
+(example
+    '(unify '(+ a 2) '(+ a b) '())
+    #f)
+(example
+    '(unify '(+ (? a) 4) '(+ b 4) '())
+    '(((? a) . b)))
+
+
+(example
+    '(unify '(+ (? a) (? a)) '(+ b b) '())
+    '(((? a) . b)))
+(example
+    '(unify '(+ (? a) (? a)) '(+ 4 3) '())
+    #f)
+(example
+    '(unify '(+ (? a) 7) '(+ 4 (? b)) '())
+    '(((? b) . 7) ((? a) . 4)))
+(example
+    '(unify '(+ (? a) 4 ) '(+ 5 (? b)) '())
+    '(((? b) . 4) ((? a) . 5))
+    )
+
+
+
+</body>
+</html>

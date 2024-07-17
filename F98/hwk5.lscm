@@ -1,0 +1,161 @@
+
+                         CMPSCI 287 F98 Homework 5
+                   Due 23.59 on  22 OCT 98  as hwk5.scm
+
+Please document your program carefully. For each function you write,
+you should generate some extra examples of your own to test it.
+
+It must be possible for the TA to load your program file into Scheme
+to check it.
+
+Note that while Netscape does a tolerable job of viewing this file,
+it's best looked at using Scheme - see the 287 menu. You can print
+this using the print option in the file menu.
+-------------------------------------------------------------------------------
+
+(1)
+Recall  that lambda  is the  language whose  only member  is the  empty
+sequence (and is ___not to be confused with lambda in the Lambda Calculus).
+
+Write a function mk_parser_kleene for which making the definition:
+
+    (define p2 (mk_parser_kleene p1))
+
+takes a parser p1 and creates a parser p2 which parses sentences  according
+to the grammar
+
+       p2 -> lambda
+       p2 -> p1 p2
+
+
+That is p2 recognises sentences which consist of a sequence (of length zero
+or more) of repetitions of those recognised by parser p1.
+
+The tree_parse component of the result returned by the parser p2 should  be
+a list of the trees built by the successive calls of p1.
+
+[Hint - this  will require  the use of  the letrec  construction to  make a
+local recursive function. It is probably simpler ___not  to use parse_lambda
+in doing this exercise]
+
+FOR EXAMPLE
+
+(define parse_adjective
+    (mk_parser_singleton '(fat big small thin greedy yellow brown)))
+
+(define parse_quals (mk_parser_kleene parse_adjective))
+
+(example
+    '(parse_quals '(the big greedy dog))
+    (cons_parse '() '(the big greedy dog)))
+
+(example
+    '(parse_quals '(yellow canary))
+    (cons_parse  '(yellow) '(canary)))
+
+(example
+    '(parse_quals '(big greedy dog))
+    (cons_parse '(big greedy) '(dog)))
+
+;;; Just to make sure we are actually using the parsers properly,
+;;; let's try this:
+
+(define   parse_noun  (mk_parser_singleton '(cat dog canary cake banana seed)))
+(define parse_qualnoun  (mk_parser_seq parse_quals parse_noun list))
+
+(example
+    '(parse_qualnoun '(big greedy dog eat the cake))
+    (cons_parse '((big greedy) dog) '(eat the cake)))
+
+
+(define parse_exhortation (mk_parser_kleene parse_qualnoun))
+
+(example
+    '(parse_exhortation
+        '(big greedy dog yellow canary watch out the cats about))
+    (cons_parse
+       '(((big greedy) dog) ((yellow) canary))
+            '(watch out the cats about)))
+
+(2) Write a parser for algebraic expressions according to the following
+rules:
+
+    primitive  -> number
+    primitive  -> variable
+
+    exponent_expr -> exponent_expr ^ primitive
+    exponent_expr -> primitive
+
+    mult_expr -> exponent_expr * mult_expr
+    mult_expr -> exponent_expr / mult_expr
+    mult_expr -> exponent_expr
+
+    add_expr  -> mult_expr + add_expr
+    add_expr  -> mult_expr - add_expr
+    add_expr  -> mult_expr
+
+    expression -> add_expr
+
+Note that the variable parser will have to accept any symbol ______except the
+"reserved words" of the grammar, such as ^,+, -, *, /, [, ].
+
+Your parser should build as parse-tree the Scheme structure corresponding
+to the mathematical sense of the expression. Each class in the above
+grammar should give rise to a corresponding ________parse... function.
+
+(example
+    '(parse_expression '(x + 2 * y))
+    (cons_parse
+        '(+ x (* 2 y))
+        '()))
+
+
+(example
+    '(parse_primitive '(x + 2 * y))
+    (cons_parse
+        'x
+        '(+ 2 * y)))
+
+
+(example
+    '(parse_expression '(x + y + z))
+    (cons_parse
+        '(+ x (+ y z)) '()))
+
+[Hint - use the Kleene parser-maker to  make a parser to recognise
+sequences such as:
+
+    x * y * z *
+
+and then use mk_parser_seq to "glue" on the final component e.g.
+
+
+    x * y * z * w
+
+at the same time reformulating the list made by the Kleene parser to the
+correct form. You will have to be careful in defining your "build"
+functions.
+
+(3) Extend your grammar to allow for an extended definition
+
+    primitive  -> number
+    primitive  -> variable
+    primitive  -> [ expression ]
+
+Here the brackets, "[" and "]" are terminal symbols.
+
+(example
+    '(expression '(a * (b + c)))
+    (cons_parse '(* a (+ b c)) '()))
+
+[Hint - this is a problem that sometimes gets Jeremiah, Madeleine and Naomi
+blamed for tolerating a peculiar implementation of Scheme - you can get
+a version of this problem to work by writing one "solution" and compiling
+it several times... DONT do this.
+
+
+Actually, the thing to do is to recognise that you will need to write
+parse_expression  as an ordinary Scheme function at the start of your code.
+It should call a helper-parser, parse_expression_1, say. You can then
+define parse_expression_1 using the parser-makers. That way, you will
+be able to "tie the recursive knot" in the grammar.

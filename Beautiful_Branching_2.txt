@@ -1,0 +1,33 @@
+
+Beautiful Branching - Sketchy Cucumber Division
+~~~~~~~~~~~~~~~~~~~
+
+    It has come to our attention that  your growing company is in the  need
+of an automated telephone directory. Our company, Beautiful Branching,  has
+dedicated itself to the custom development of automated phone systems.
+    Our research/estimates suggest that your company, Big Carrot,  requires
+a search engine for up to 100,000 employees/customers. We propose, by using
+anAVL tree, that minimum access time and minimum hardware will be required.
+A serial processor, memory resident data structure, and fast hard disk  for
+swap are all that is necessary.
+    You will find  that our technique  will allow for  O(logn) costs to  be
+most efficient on large searches. Some of the advantages to AVL are that no
+items are more than  two nodes apart. An  AVL tree always remains  balanced
+which makes searching through larger  trees most efficient. AVL trees  also
+constantly  maintain  themselves  in  order,  which  requires  less  system
+overhead.
+    If  you  have  any  further  questions  about  our  innovative   search
+algorithm,  please  do  not  hesitate  to  contact  our  division,  Sketchy
+Cucumber. Thank you for your time and  we look forward to working with  you
+in the future.
+
+                    Sincerely,
+                    Product Design and Sales Team
+
+Li Ping Chu
+Mike Shailer
+Geoff Harm
+Marc Lefkowitz
+Mike Mageau
+Eric Magazu
+Nick Papadonis

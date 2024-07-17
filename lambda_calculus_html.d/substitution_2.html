@@ -1,0 +1,329 @@
+
+<h3>Lemma Sub.3</h3>
+Let  <em>E<sub>1</sub></em> and <em>E<sub>2</sub></em>
+be  expressions of the  <img src=lambda.gif>-calculus
+Let <em>x</em> be a variable, and let <em>y <img
+src=not_in.gif>FV(E<sub>1</sub>) </em> be a variable. Then
+
+<em>E<sub>1</sub>[x:=E<sub>2</sub>]
+= (E<sub>1</sub>[x:=y])[y:=E<sub>2</sub>]
+</em>
+
+<h4>Proof.</h4>
+
+If <em>y=x</em> then using Lemma Sub.2
+
+<UL>
+<em>(E<sub>1</sub>[x:=y])[y:=E<sub>2</sub>]</em>
+=<em>(E<sub>1</sub>[x:=x])[x:=E<sub>2</sub>]</em>
+<img src=converts.gif> <em>E<sub>1</sub>[x:=E<sub>2</sub>]</em>
+</UL>
+
+
+<p>Otherwise, if <em>x <img src=not_eq.gif> y</em> we
+proceed by induction on the height of the expression being substituted
+in.
+
+<p><b>Base
+Case</b> Let <em>E<sub>1</sub></em> be an expression of height 0. Then we
+have the following cases:
+
+<ul>
+<li>
+<em>E<sub>1</sub> = x </em><br>
+In this case we have, by S1:<br>
+<em>LHS = x [x:=E<sub>2</sub>]  =E<sub>2</sub></em><br>
+<em>RHS = (x [x:=y])[y:=E<sub>2</sub>] = y[y:=E<sub>2</sub>]  =
+E<sub>2</sub></em>
+</p>
+
+<li>
+<em>E<sub>1</sub> = u </em>, where <em>u <img src=not_eq.gif> x</em><br>
+In this case we have, by S2<br>
+<em>LHS = u [x:=E<sub>2</sub>]  = u</em><br>
+<em>RHS = (u [x:=y])[y:=E<sub>2</sub>] = u[y:=E<sub>1</sub>]<br>
+= u<br></em>
+since by FV1,  <em>y <img src=not_in.gif>FV(E<sub>1</sub>) = {u} </em><br>
+</p>
+
+<p>
+<li> <em>E<sub>1</sub> = c <img src=in.gif> C</em><br>
+In this case we have, by S3<br>
+<em>LHS = c [x:=E<sub>2</sub>]  = c</em><br>
+<em>RHS = (c [x:=y])[y:=E<sub>2</sub>] = c[y:=E<sub>1</sub>] = c</em><br>
+</ul>
+
+<p><b>Inductive step:</b>
+<p>Suppose for some <em>n</em>, for all
+<em>i <img src = leq.gif> n</em></p>
+<ul>
+<em>y <img src = not_in.gif> FV(E<sub>1</sub>)</em> and
+<em>height(E<sub>1</sub>)=i</em> implies
+<em>E<sub>1</sub>[x:=E<sub>2</sub>] = (E<sub>1</sub>[x:=y])[y:=E<sub>2</sub>]
+</em></ul>
+
+<p>Consider
+an expression <em>E</em> of height <em>n+1</em>. We must show that our
+result holds for <em>E</em>. <em>E</em> can be formed by application (case S4)
+of the definition of substitution, or by <img src=lambda.gif>-abstraction (cases
+S5-S7).
+
+<ul>
+<li> Suppose <em>E = (F<sub>1</sub>F<sub>2</sub>),
+y <img src = not_in.gif> FV(E)</em>.
+Recall that from FV3,</p>
+<ul>
+<em>FV(E) = FV(F<sub>1</sub>) <img src=cup.gif> FV(F<sub>2</sub>))</em>,
+</ul>
+<p>and hence  <em> y <img src = not_in.gif> FV(F<sub>1</sub>),  y
+<img src = not_in.gif> FV(F<sub>2</sub>)</em>.
+Note that both
+<em>F<sub>1</sub></em> and <em>F<sub>2</sub></em> are of height <em>n</em>
+or less. So we can write</p>
+<ul>
+<em>LHS = E[x:=E<sub>2</sub>] =
+(F<sub>1</sub>F<sub>2</sub>)[x:=E<sub>2</sub>]</em>
+</ul>
+<p>and by S4 this is</p>
+<ul>
+<em>= (F<sub>1</sub>[x:=E<sub>2</sub>] F<sub>2</sub>[x:=E<sub>2</sub>])
+</em></ul>
+<p>which by the inductive hypothesis is </p>
+
+<ul>
+<em>=((F<sub>1</sub>[x:=y])[y:=E<sub>2</sub>]
+(F<sub>2</sub>[x:=y])[y:=E<sub>2</sub>])</em>
+</ul>
+
+<p> Now, starting from the right hand side we have:</p>
+
+<ul><em>RHS = (E[x:=y][y:=E<sub>2</sub>]</em>
+= ((F<sub>1</sub>F<sub>2</sub>)[x:=y])[y:=E<sub>2</sub>]</ul>
+
+<p> and by S4 this can be written</p>
+<ul><em>=
+(F<sub>1</sub>[x:=y] F<sub>2</sub>[x:=y])[y:=E<sub>2</sub>]</em></ul>
+
+<p>and again using S4 we have</p>
+
+
+<ul><em>= ((F<sub>1</sub>[x:=y])[y:=E<sub>2</sub>]
+(F<sub>2</sub>[x:=y])[y:=E<sub>2</sub>])</em></ul>
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>x . F</em>.</p>
+
+In this case <em>FV(E) = FV(F)-{x}</em> by FV4, so
+<em>y <img src=not_in.gif> FV(F) </em>
+
+</p>
+<ul><em>LHS =  (<img src=lambda.gif>x . F)[x:=E<sub>2</sub>]
+ = (<img src=lambda.gif>x . F)</em> </ul>
+
+<p>by S5. On the other hand</p>
+
+<ul><em>RHS =  (<img src=lambda.gif>x . F)[x:=y][y:=E<sub>2</sub>]</em>
+<em> =  (<img src=lambda.gif>x . F)[y:=E<sub>2</sub>]</em>
+<em> =  (<img src=lambda.gif>x . F)</em></ul>
+
+<p>by Lemma Sub.1 since <em>y <img src=not_in.gif> FV(F) </em></p>
+
+
+
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>u . F</em>
+where <em>u <img src=not_eq.gif> x</em> and
+<em>u <img src=not_in.gif> FV(E<sub>2</sub>)</em>. We have to consider
+the possibility that <em>y=u</em>, giving 2 sub-cases.</p>
+
+<ul>
+<li>Sub-case 1: <em>y=u</em>
+
+
+<p> We have</p>
+<ul><em>LHS =  (<img src=lambda.gif>u . F)[x:=E<sub>2</sub>]</em></ul>
+
+<p>which, by S6</p>
+
+<ul><em> =  (<img src=lambda.gif>u . F[x:=E<sub>2</sub>])</em></ul>
+
+<p>On the other hand</p>
+
+<ul><em>RHS =  ((<img src=lambda.gif>u . F)[x:=u])[u:=E<sub>2</sub>]</em>
+</ul>
+
+<p>Which by S7, choosing
+
+<em>w <img src=not_in.gif> FV(E<sub>2</sub></em>
+
+is</p>
+
+<ul><em>=  ((<img src=lambda.gif>w . F[u:=w])[x:=u])[u:=E<sub>2</sub>]</em>
+<br><em>=  (<img src=lambda.gif>w . F[u:=w])[x:=E<sub>2</sub>]</em>
+</ul>
+
+<p>So <em> RHS <img src=converts.gif> LHS </em></p>
+
+
+<li>Sub-case 2: <em>y <img src=not_eq.gif> u</em>
+<p> We can conclude that, as above, <em>y <img src=not_in.gif> FV(F) </em>.
+We have</p>
+<ul><em>LHS =  (<img src=lambda.gif>u . F)[x:=E<sub>2</sub>]</em></ul>
+
+<p>which, by S6</p>
+
+<ul><em> =  (<img src=lambda.gif>u . F[x:=E<sub>2</sub>])</em></ul>
+<p>where the height of <em>F</em> is <em>n</em>. </p>
+
+<ul><em> <img src=converts.gif>
+(<img src=lambda.gif>u . F[x:=y][y:=E<sub>2</sub>])</em></ul>
+
+<p>by the inductive hypothesis.</p>
+
+<p>On the other hand, given that <em>x<img src=not_eq.gif>u</em></p>
+
+<ul>
+<em>RHS =  ((<img src=lambda.gif>u . F)[x:=y])[y:=E<sub>2</sub>]</em> <br>
+
+<em> =  (<img src=lambda.gif>u . F[x:=y])[y:=E<sub>2</sub>]</em> <br>
+
+<em> =  (<img src=lambda.gif>u . F[x:=y][y:=E<sub>2</sub>])</em> <br>
+</ul>
+
+<p>since <em>u <img src = not_in.gif> FV(E<sub>2</sub>) </em>
+
+
+
+</ul>
+
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>u . F</em>
+where <em>u <img src=not_eq.gif> x</em> and
+<em>u <img src=in.gif> FV(E<sub>2</sub>)</em>. We have to consider
+the possibility that <em>y=u</em>, giving 2 sub-cases.</p>
+Let us choose
+<em>w <img src=not_in.gif> FV(E<sub>2</sub>) <img src=cup.gif> {u}</em>
+
+
+<ul>
+<li>Sub-case 1: <em>y=u</em>.
+
+
+<p> We have</p>
+<ul><em>LHS =  (<img src=lambda.gif>u . F)[x:=E<sub>2</sub>]</em></ul>
+
+<p>which, by S7, with our choice of <em>w</em> which ensures
+<em>w <img src=not_eq.gif> u</em></p>
+
+<ul><em> =  (<img src=lambda.gif>w . F[u:=w][x:=E<sub>2</sub>])</em></ul>
+
+<p>On the other hand</p>
+
+<ul><em>RHS =  ((<img src=lambda.gif>u . F)[x:=u])[u:=E<sub>2</sub>]</em>
+</ul>
+
+<p>Which by S7, with our choice of <em>w</em>,
+
+is</p>
+
+<ul><em>=  ((<img src=lambda.gif>w . F[u:=w])[x:=u])[u:=E<sub>2</sub>]</em>
+<br><em><img src=converts.gif>
+(<img src=lambda.gif>w . F[u:=w])[x:=E<sub>2</sub>]</em>
+</ul>
+
+<p>by the inductive hypothesis</p>
+
+<p>So <em> RHS <img src=converts.gif> LHS </em></p>
+
+<li>Sub-case 2: <em>y <img src=not_eq.gif> u</em>
+<p> We can conclude that, as above, <em>y <img src=not_in.gif> FV(F) </em>.
+We have</p>
+<ul><em>LHS =  (<img src=lambda.gif>u . F)[x:=E<sub>2</sub>]</em></ul>
+
+<p>which, by S7</p>
+
+<ul><em> =  (<img src=lambda.gif>w . F[u:=w][x:=E<sub>2</sub>])</em></ul>
+<p>where the height of <em>F</em> is <em>n</em>. </p>
+
+<ul><em> <img src=converts.gif>
+(<img src=lambda.gif>u . F[x:=y][y:=E<sub>2</sub>])</em></ul>
+
+<p>by the inductive hypothesis.</p>
+
+<p>On the other hand, given that <em>x<img src=not_eq.gif>u</em></p>
+
+<ul>
+<em>RHS =  ((<img src=lambda.gif>u . F)[x:=y])[y:=E<sub>2</sub>]</em> <br>
+
+<em> =  (<img src=lambda.gif>u . F[x:=y])[y:=E<sub>2</sub>]</em> <br>
+
+<em> =  (<img src=lambda.gif>w . F[u:=w][x:=y][y:=E<sub>2</sub>])</em> <br>
+</ul>
+
+</ul>
+
+</ul>
+
+
+
+
+
+<h3><img src=eta.gif>-reduction</h3>
+
+<p>
+We observed <a href = "lambda.html#eta"> early on </a> that the meaning of
+</p>
+
+<ul>
+    (<img src=lambda.gif> x. + 5 x)
+</ul>
+
+<p>and the meaning of <tt> (+ 5) </tt> were both the function "add 5". This
+observation can be generalised and encoded as a reduction rule.
+
+<p> For the pure  <img src=lambda.gif>-calculus, the <em><img  src=eta.gif></em>
+rule can be stated:
+
+<p><ul>
+<em>(<img src=lambda.gif> v . E v)  <img src=longrightarrow.gif>
+E</em> provided <em>v <img src=not_in.gif> FV(E)</em></ul>
+
+In an impure <img src=lambda.gif>-calculus, it is customary to restrict the
+<img src=eta.gif>-rule to the case
+in which <em>E</em> denotes a function.
+
+
+<hr>
+
+
+
+<h3><img src=delta.gif>-reduction and laws</h3>
+
+When we originally defined the <img src=lambda.gif>-calculus we specified
+that it could (and indeed would) contain constants, including the natural
+numbers <em>0,1,2,3...</em>. However, we haven't said how to do anything
+with these constants. For example, we can form the expression
+<em>(+ 2 3)</em>, but have no rules for reducing it further.
+
+Since being able to perform arithmetic is a capability built-in to all real
+computers it makes sense to extend  the <img src=lambda.gif> - calculus to
+allow expressions which correspond to standard computations that are
+built-in to computers to be performed.
+
+It is the role of <img src=delta.gif>-reduction to do this.
+
+
+
+we have to admit <img
+src=delta.gif>-reduction,
+and its inverse, into our rules for equality,
+together with the <em> laws</em> of the algebra(s) to which the constants
+belong. Thus
+
+<p><ul>
+<img src=lambda.gif> x. (+ (+ x 3) 9) <img src=converts.gif>
+<img src=lambda.gif> x.
+(+ x 12)
+</ul>

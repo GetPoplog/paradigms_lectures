@@ -1,0 +1,537 @@
+
+
+
+
+
+
+<html><head><title>
+Lecture 3: Conditionals, Recursion and Lists
+
+</title></head>
+<body bgcolor="white">
+
+<compiler = POP2000>
+
+
+<h1> Lecture 3: Conditionals, Recursion and Lists </h1>
+<br>
+<h1>*** This document is in preparation ***</h1>
+<hr>
+
+ <a href="#interact">  Remember - all expressions in this file can be
+evaluated</a><br>
+ <a href="#special">  Special Forms are not evaluated in the usual
+way.</a><br>
+
+
+ <a href="#BVF">  Boolean valued functions usually begin with
+<tt>is_</tt></a><br>
+
+ <a href="#types">  POP2000 Types.</a><br>
+
+<!-- if --> <a href="#if">  The
+    if <b>expr<sub>1</sub></b> then <b> expr<sub>2</sub></b> else
+     <b>expr<sub>3</sub></b> end if
+</a><br>
+
+ <a href="#arithmetic">  Arithmetic in POP2000</a><br>
+
+<!-- factorial -->
+<a href="#factorial">  The factorial function - an example of
+recursion</a><br>
+
+ <a href="#eager">  POP2000 evaluates expressions in an Eager
+way.</a><br>
+
+<!-- lists -->
+<a href="lean3#quote">  Lists are Compound Data.</a><br>
+
+<!-- () -->  <a href="lean3#nil">  The empty list</a><br>
+
+<!-- cons -->  <a href="lean3#cons">  Making Lists.</a><br>
+
+ <a href="#identities">  Two Identities which hold for POP2000 Lists</a><br>
+
+<hr>
+
+<h2><a name = "interact">
+Remember - all expressions in this file can be evaluated
+</a></h2>
+
+You will find it worthwhile to read these notes on-line using UMASS  POP2000
+as a browser because every POP2000 expression occurring on a line by  itself
+can be run. You can then try changing it and seeing what happens. Do not be
+afraid of playing with the machine - you cannot break it!
+
+
+<h2><a name="special">Special Forms are not evaluated in the usual
+way.</a></h2>
+
+As we  have seen  the  standard way  to evaluate  a  POP2000 expression  is  to
+evaluate the function and  arguments and then to  <em>apply</em>
+the function to  the
+arguments.
+
+<p>
+This rule does not hold for certain <i>special forms</i>.
+Examples of special forms we have  seen so far are:</p>
+
+<h3>Lambda Abstraction</h3>
+
+An expression such as <code> \x. x*x </code> is an example of  the
+<em>lambda abstraction</em> special form. We can think of this as having a
+pattern described by:
+
+<pre>
+   \ <b>formals . body </b>
+</pre>
+
+
+
+You  can  think  of  this  as  evaluating  to  itself,  with  a  rule   for
+<em>applying</em> it to arguments (strip off \ and <b>formals</b>
+and substitute...)
+
+
+In the Lambda Calculus, there is only ONE special form, namely lambda
+abstraction.  Having  a  small  number  of  special  forms  is  mathematically
+desirable, since the  number of  different cases to  consider in  mathematical
+analysis is reduced. However, in creating a practical programming language,
+certain other special forms are usually introduced.  Where possible, these
+are made <em>exactly equivalent</em> to forms that can be expressed just
+using the Lambda Calculus.
+
+
+<h3><a name="define">Defining a variable</a></h3>
+<pre>
+   Definition <b>variable = expression</b> End;
+</pre>
+
+This special  form evaluates  the  <b>expression</b>
+and  <e>binds</e>  the
+variable to the resulting value.
+
+
+<h3><a name = "if">
+Conditional Expressions - the <tt>if</tt> construct.
+</a></h3>
+
+POP2000 provides <em> conditional expressions</em> in
+which  a condition (an  expression
+which can have a boolean  value) or conditions are  used to choose which  of a
+number of other expressions is to be evaluated.
+
+The simplest form of conditional in POP2000 is the special form:
+
+<pre>
+ if <b>condition</b> then <b>expr<sub>1</sub></b> else <b>expr<sub>2</sub></b> end if
+</pre>
+
+<p>  It  evaluates  <b>condition</b>.  If  <b>condition</b>  evaluates   to
+<tt>true</tt> the result is obtained by evaluating <b>expr<sub>1</sub></b>.
+
+If <b>condition</b>  evaluates to  <tt>false</tt> then  the result  of  the
+<tt>if</tt> expression is obtained by evaluating <b>expr<sub>2</sub></b>.
+
+<p>In POP2000 it is an error for the <b>condition</b> to evaluate to
+anything other than <tt>true</tt> or <tt>false</tt>.
+
+<p>
+[WHY does it have to be a special form? Could it NOT be a special form? ].
+
+
+
+<h2><a name="BVF">Boolean valued functions</a></h2>
+
+Functions which return a boolean value (<tt>true</tt>&#160;
+or <tt> false</tt>&#160;) are often called
+"<em>predicates</em>".
+
+By convention,  predicates have  a  name which  begins with <tt>is_</tt>.
+Certain common predicates like '&lt;' are exceptions to this rule.
+
+<h2><a name="symbol">Symbols</a></h2>
+
+<p> An isolated POP2000 identifier can be quoted, for example <tt>  'a</tt>.
+As such, it  is called a  <em>symbol</em>, and is  a member of  one of  the
+basic datatypes of POP2000. </p>
+
+<pre>
+  'CaT'
+</pre>
+
+is a symbol distinct from
+
+<pre>
+  'cat'
+</pre>
+
+<p>
+This reflects the fact that in  POP2000 case is significant, as it is in C,
+but not in Scheme or Pascal.
+</p>
+
+<h3>The form <b>expr</b>.<b>symbol</b> is an expression.</h3>
+
+In POP2000 the construct
+
+<pre>
+    <b>expr</b>.<b>symbol</b>
+</pre>
+
+is an expression exactly equivalent to <tt><b>expr</b>
+'<b>symbol</b>'</tt>.
+Why
+does the language support this minor syntactic variant? This was done to
+provide syntactic continuity between POP2000 <em>classes</em>, which are
+functions mapping from <em>symbols</em> to <em>values</em> and constructs
+of other languages (Java, SML, Modula...) which play a similar role, though
+with a more restricted semantics.
+
+
+
+
+<h2><a name="types">POP2000 Types.</a></h2>
+
+Objects which can exist in an  implementation of POP2000 belong to  exactly
+one basic type. The built-in types are:
+
+<pre>
+    Boolean,Char,Null,Number,Pair,
+    Procedure,String,Symbol,Vector,Composite,Theorem
+</pre>
+
+With each of these basic types there is associated a <em>class</em>. In
+POP2000 a class is a <em>function</em> which provides a basic collection of
+capabilities for recognising, creating and manipulating members of a type
+or types.
+Each type-name above has a corresponding class-variable which is bound to
+a class-function which provides basic support for members of that type,
+so that
+<tt>Boolean</tt> is the class-function associated with the type Boolean.
+
+To recognise whether a particular datum <tt>d</tt> belongs to a given type,
+we have the following construct <tt><b>Class</b> . ? d</tt>
+
+<pre>
+    Boolean.? d       is d a boolean?
+    Char.? d          is d a character?
+    Composite.? d     is d a composite expression?
+    Null.? d          is d null?
+    Number.? d        is d a number?
+    Pair.?  d         is d a pair?
+    Procedure.? d     is d a procedure, that is a function object.
+    String.? d        is d a string, e.g. `the fat cat`
+    Symbol.? d        is d a symbol, e.g. 'x'
+    Theorem.? d       is d a the member of type Theorem?
+    Vector.? d        is d a vector of values, e.g. {2,3,4}
+</pre>
+
+You will doubtless recall that the form <tt>Class.?</tt> is shorthand for
+for <tt><b>Class</b> '?'</tt>.
+
+<p>For any <b>Class</b>, the expression <tt><b>Class</b>.?</tt> is a
+predicate for recognising members of that class.
+
+<p> There is a convention in POP2000 that identifiers beginning
+with an upper-case letter are the names of <em>classes</em> (a concept
+related to type).
+
+The predicates listed above, which
+recognise members of the basic types of POP2000 which  do  <b>not</b>
+overlap, that is for a given datum <tt>d</tt>, <tt><b>Class</b>.? d</tt>
+will only evaluate to <tt>true</tt> for precisely one of the basic classes.
+
+There may be others basic types, e.g. files, and, in some environments,
+the <em>widgets</em>  or   <em>windows</em>   which  support   graphical
+user interfaces.
+
+<p>The POP2000 language system "knows" quite a lot about the types of data
+that the built-in functions can operate on, and is able to detect certain
+errors as  you compile code you have written. For example if you try to
+compile</p>
+
+<pre>
+Definition funny =
+    \x. x + (y>z)
+End
+</pre>
+
+you will get an error message, because the system knows that <tt>y > z</tt>
+is a boolean, and you can't do arithmetic on a boolean.
+
+POP2000 has a limited built-in ability to
+<em>infer</em> the types which a user-defined function can manipulate.
+
+<h2>Subdivisions of the Number Type</h2>.
+
+The type <tt>Number</tt> has a number (some pun intended..) of sub-types.
+
+<pre>
+    Int         Fixed precision integers, at least 30 bits of precision
+    Integer     Arbitrary precision integers.
+    Rational
+    Float
+    Double
+    Complex
+</pre>
+
+If "<" means "set inclusion", then the following hold:
+<pre>
+    Int < Integer < Rational < Number
+    Float  < Number
+    Double < Number
+    Complex < Number
+</pre>
+
+These inclusion relations are necessitated by closure requirements. The sum
+of the rationals 1/2+1/2 is the integer 1, so the set of POP2000
+<tt>Integers</tt> actually must be included in the POP2000 rationals. This
+is not true of the <tt>Float</tt> type - the sum 0.5+0.5 is the
+<tt>Float</tt> <tt>1.0</tt>, and not the integer <tt>1</tt>.
+
+<h2> We shall not be concerned with vector and char</h2>.
+
+In this class we shall not be concerned with the types <em>vector,
+char</em>.
+
+<h2><a name="arithmetic">Arithmetic in POP2000</a></h2>
+
+
+Arithmetic operations are denoted by the  conventional  symbols:
+
+<pre>
+    +
+    -
+    *
+    /
+</pre>
+
+There are also the usual  algebraic and trancendental functions. They  operate
+on  integers,  rationals,  floating-point  representation  of  reals,  complex
+numbers. Try:
+
+
+<pre>
+    sqrt -1;
+</pre>
+
+the answer is the complex number:
+
+<pre>
+    0.0+1.0i
+</pre>
+
+Comparisons between numbers are denoted by the conventional symbols.
+
+<pre> &lt; &gt; &lt;= &gt;=
+</pre>
+
+<h2><a name="factorial">The factorial function - an example of
+recursion</a></h2>
+
+The well known factorial function can be defined using the recurrence
+relations:
+
+<pre>
+    0! = 1
+    n! = n(n-1)!
+</pre>
+
+These translate into POP2000 as follows:
+
+<pre>
+Definition factorial =
+    \n. if n=0 then 1 else n*factorial(n-1) end if
+End;
+
+factorial 5;
+
+120
+</pre>
+
+Try evaluating
+<tt>&#160; factorial 1000</tt>&#160;, and <tt>&#160;
+factorial  1000 / factorial 999 </tt>.
+
+<h2><a name="eager">POP2000 evaluates expressions in an Eager way.</a></h2>
+
+The rule that POP2000 evaluates the arguments of an expression before  applying
+the function is called <em>eager</em> evaluation, or
+<em>call-by-value</em>.
+
+Some functional  languages,  such  as  Haskell,  are  <em>lazy</em>,
+and  evaluate  no
+expression unless it is actually needed.
+
+They have a better logical  structure (e.g. <tt>if&#160;</tt>&#160;
+does not  need to be a  special
+form in these languages), but are hard to make efficient.
+
+<h2><a name="list">Lists are Compound Data.</a></h2>
+
+So far we have seen that POP2000 has numbers, booleans and functions as objects
+that a program can use.  These are simple data-types,  which we can regard  as
+having no internal structure to be explored.
+
+POP2000 provides a general-purpose compound data-type, the <tt>List</tt>.
+A sequence of expressions, separated by commas, and enclosed in square
+brackets is itself an expression, whose value is a <em>list</em>.
+
+For example:
+
+<pre>
+    [1,2,3,4]
+</pre>
+
+is a list.
+
+<h2><a name="nil">The empty list</a></h2>
+
+The empty  list, denoted  by &#160;<tt>&#160; [] &#160;</tt>&#160;
+has  no  elements  in it.  It is the only member of a  distinct
+class, <tt>Null</tt>
+
+The predicate:
+
+<pre>
+    Null.?
+</pre>
+
+recognises the empty list. It is an error to apply the functions
+<tt>&#160; front</tt>&#160;
+or  <tt>&#160;&#160; back</tt>&#160;&#160;
+to the empty list.
+
+
+<pre>
+    front [];
+
+Error: PAIR NEEDED
+Culprits: (),
+In file: /users/users3/fac/pop/poplocal/local/POP2000/lean3.lam
+
+Calling sequence:
+    front
+This error report was prepared for Robin Popplestone
+ by Jeremiah Jolt, your compile-time helper.
+
+</pre>
+
+<h2><a name="cons">Making Lists.</a></h2>
+
+Quotation allows us to  make constant lists. However  we also want to  allow a
+program to make lists that the programmer has not explicitly created. This  is
+done with the function <tt>&#160; cons</tt>&#160;
+
+<pre>
+     cons x y
+</pre>
+
+makes a list whose <tt>&#160; front</tt>&#160;
+is <tt>&#160; x</tt>&#160; and whose  <tt>&#160; back</tt>&#160; is <tt>&#160; y</tt>&#160;.
+So to make a list  containing
+just the number <tt>&#160; 23</tt>&#160; we do:
+
+
+<pre>
+   cons 23 []
+
+    [23]
+</pre>
+
+
+Now let's define a function to make a "sandwich" list:
+
+
+<pre>
+Definition sandwich =
+    \ x y. cons x (cons y (cons x []))
+End;
+</pre>
+
+This could be written, equivalently but more conveniently, as
+
+<pre>
+Definition sandwich =
+    \ x y. [x,y,x]
+End;
+</pre>
+
+
+So:
+
+<code>
+    sandwich 1 2;
+</code>
+
+evaluates to:
+
+<pre>
+    [1, 2, 1]
+</pre>
+
+
+<h2><a name="identities">Two Identities which hold for POP2000
+Lists</a></h2>
+
+
+POP2000 is subject to the mathematical laws:
+
+<pre>
+    front (cons x y) = x
+    back (cons x y) = y
+</pre>
+
+
+
+<h2>The Theorem Type</h2>
+<p>We can't use the theorem type until we have a considerably more
+sophisticated understanding of the language, but in essence a theorem is
+a statement that is guaranteed to be true in a correctly implemented
+POP2000 system.
+
+<p>As an example, the theorem
+
+<pre>
+    |- All x y.  front (cons x y) = x
+</pre>
+
+follows immediately from the built-in axioms of POP2000.
+
+<p>The only theorem-constructing functions available in POP2000 are
+guaranteed
+to create valid theorems. So, the predicate-call
+<pre>
+    Theorem.?  x
+</pre>
+is not asking if <tt>x</tt> is true - it's asking if <tt>x</tt> is a member
+of the type <tt>Theorem</tt>. If it is it's guaranteed to be true - the
+good news. The bad news is that the built-in functions for constructing
+theorems only make very simple steps in proof. So that it is not easy or
+automatic to make theorems of any profundity.
+
+<hr>
+<h2>A comparison with the SML and Java languages.</h2>
+
+<p>The Class concept in POP2000 has some superficial syntactic  resemblence
+to the Class concept of Java and the <em>structure</em> and <em> type </em>
+concepts of  SML. It  differs  from both  these  language in  that  POP2000
+classes are <em>first-class  objects</em>. In  Java a class  cannot be  the
+value of a variable of  the language. Likewise in SML  a class can only  be
+the value of a compile-time variable in a <tt>functor</tt>.
+
+<p>The built-in type-inference of POP2000 is much more restricted than is
+the Hindley-Milner type system  of SML. However, this deficiency is made up
+for by the existence of theorems, which, following Milner, are a data-type
+all of whose members are guaranteed to express facts valid in a
+correctly-implemented POP2000 system.
+
+<p>Our approach to theorem-proving is <em>not</em> foundational, since
+there is a rich set of axioms which say, for example, that POP2000 contains
+a correctly implemented representation of the integers. In this we differ
+from the HOL system, which creates its theories from very the simple
+foundation of the lambda-calculus itself.
+
+</body>
+</html>

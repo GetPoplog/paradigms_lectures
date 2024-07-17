@@ -1,0 +1,25 @@
+
+
+<p>
+To see the difficulty of proving that an exception can never occur,
+consider the exception raised by division by zero.
+We might think that we could elaborate our type-system to avoid the
+possibility of well-typed expressions raising an exception, but this can
+rapidly be seen to be impossible -  consider the rational function:
+
+<pre>
+                 P[x]
+    R[x]   =   --------
+                 Q[x]
+</pre>
+
+<p>
+to know whether R[x] will raise an exception, we have to know the zeros of the
+polynomial Q[x], which is a non-trivial (and indeed in a certain sense,
+insoluble) problem. Even if we relaxed our requirement to "f(a) evaluates
+without exception almost everywhere in A", we still have problems, since to
+know that this statement is true of R[x] requires knowledge, if not of
+the Fundamental Theorem of Algebra, at least of the fact that a polynomial can
+have at most n roots, which, if not exactly a profound theorem, is certainly
+beyond the scope of knowledge that it is reasonable to expect a type-system to
+possess.

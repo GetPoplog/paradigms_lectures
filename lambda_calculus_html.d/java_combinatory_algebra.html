@@ -1,0 +1,388 @@
+
+
+<html><head><title>
+
+Java Combinators
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+Implementing a Combinatory Algebra in Java
+</center>
+
+</h1>
+<hr>
+<center>
+[Edited from material submitted by Mr Schwartz, derived from our class
+discussion]
+</center>
+
+<p>We have seen that we can map the Lambda Calculus down into a combinatory
+algebra. How might we implement a combinatory algebra in the Java
+environment?
+
+
+<h2>The Carrier Set of the Algebra</h2>
+
+<p>The carrier set of an algebra is the set of objects upon which the
+operation(s) of the algebra work. Clearly, the carrier set of our Algebra
+should be implemented as a set of Java objects.
+
+<p>One approach would  be to treat our carrier set as a Java
+class <tt>P2KObj</tt>, which would thus be a  subclass of  the
+generic Java class  Object. <tt>P2KObj</tt> in  turn would have  subclasses
+<tt>P2KNum</tt> and  <tt>P2KFun</tt>,  representing numbers  and  functions
+respectively. The snag about this approach is that it would not be so  easy
+to use existing Java classes such as the <tt>BigInteger</tt> class.
+
+<p>So, it's probably  better to  treat the carrier  set of  our algebra  as
+being  simply   the   Java   <tt>Object</tt>  class,   and   to   develop a
+<tt>P2KFun</tt> class, which we really need to implement functions.
+
+<p>Each distinct function in POP2000 will be implemented using a separate
+sub-class of <tt>P2KFun</tt>, essentially because only classes can actually
+contain code, and (in the un-optimised form) calling a function is achieved
+only by activating its <em>apply-method</em>. So the apply-methods of
+distinct functions have to be distinct, that is they must be defined for
+different classes. The actual function-object
+will be the sole instance of its associated class.
+
+<p>Clearly, some new type classes (such as Rational) would  need
+to be developed; others, such  as integers of arbitrary precision,
+could simply be Java's <tt>BigInteger</tt> class. All these might be
+sub-classes of Java's abstract <tt>Number</tt>. class (except that that
+class consists of a lot of "useful jars to put things in").
+
+<p>The list of types that are required for POP2000 is as follows:
+
+<pre>
+    Boolean,Char,Null,Number,Pair,
+    Procedure,String,Symbol,Vector,
+    Application, Abstraction, Theorem
+</pre>
+
+Of these, all but <tt>Application, Abstraction, Theorem</tt>
+are Scheme datatypes. They serve to support the representation of a
+Lambda-Calculus based logic within POP2000. Note that we do not follow
+the Lisp tradition and represent terms as list-structures built out
+of the <tt>Pair</tt> datatype.  Instead we have a separate
+<tt>Application</tt> datatype, whose concrete representation is not
+specified as part of the POP2000 specification to the extent it would be if
+pairs were used.
+
+
+<h2>Application</h2>
+
+The binary operation "<img src=dot.gif>" of the combinatory algebra is most
+obviously rendered using an <tt>apply</tt> method, which is defined for
+every object of the <tt>P2KFun</tt> class.
+
+So, the combinatory
+algebra expression  <em> f <img src=dot.gif> x </em> is rendered in Java
+as
+
+<pre>
+        f.apply(x)
+</pre>
+
+where <tt>f</tt> is a procedure-object (of type <tt>P2KFun</tt>) and
+<tt>x</tt> can be any object.
+
+<p>Now, certainly in the untyped Lambda Calculus (with constants) it
+is possible to apply a non-function. This will be manifest in the Java
+framework because we will have to cast an object of unknown type to have
+type <tt>P2KFun</tt> before we can apply it: casting a non-function down
+to that type will raise an exception, which we'll need to catch in a user
+friendly way.
+
+<h2>Built-in Functions</h2>
+The functions built-in to POP2000 will be represented as objects of type
+<tt>P2KFun</tt>. Each will contain code actually to perform the required
+operation. However, acquiring the arguments for performing this operation
+is made somewhat complex by the fact that functions in the Lambda Calculus
+are themselves unary - (+ 2 3) is interpreted as ((+ 2) 3).
+
+<h3>Unary Functions</h2>
+These are the simplest case, and ought to be able to "do their thing" at
+the time that they are applied.
+
+<p>Let's consider the <tt>hd</tt> function, which finds the first component
+of a pair (what's called <tt>car</tt> in LISP). This will be the sole
+member of the class <tt>Hd</tt>. The
+class definition
+for Hd is quite simple. It's [1] a direct sub-class of the <tt>P2KFun</tt>
+class. The apply-method [2] takes any object as an argument, but, to
+succeed, this object <tt>p</tt> must be of class <tt>Pair</tt>.  We return
+[3] the <tt>hd</tt> field of the pair.
+
+<p>If
+a non-pair is given, the cast down the hierarchy to <tt>Pair</tt> will
+raise an exception.
+Note, that we will have to define an exception-handler for this class, so
+that the user is given the most useful possible information about what's
+amiss.
+
+<pre>
+class Hd extends P2KFun             /* [1] */
+{
+    public Object apply (Object p)  /* [2] apply method */
+        {return ((Pair)p).hd;}      /* [3] get hd field - must be Pair */
+}
+</pre>
+
+Most unary functions will follow this simple pattern. The main practical
+distinction will be between whether or not an internal method-invocation
+is required to achieve the required computation. For <tt>hd</tt>, the
+<tt>p.hd</tt> expression is (probably) a field-access. On the other hand,
+if we want to <tt>negate</tt> a member of the <tt>P2KNumber</tt> class, then
+a <tt>negate</tt> method-call will be required to do the right thing for
+the particular kind of number we happen to have.
+
+<pre>
+class Negate extends P2KFun              /* [1] */
+{
+    public Object apply (Object p)       /* [2] apply method */
+        {return ((P2KNumber)p).negate;}  /* [3] call the negate method */
+}
+</pre>
+
+<h3> Non-Unary  Functions </h3>
+
+<p>Where non-unary functions are involved,  if we follow the  specification
+of the Lambda Calculus literally we will always have to curry. For example,
+in implementing  <tt> ((plus 2) 3)  </tt> we  first create  a
+<tt>(plus 2)</tt>
+function-object, and then apply  this new object  to 3. Various  optimising
+schemes to avoid doing this unless strictly necessary are conceivable. For
+example we might have <tt>apply2, apply3...</tt> methods, so that the
+above might be translated as <tt> plus.apply2(Integer(2), Integer(3)) </tt>
+However we'll defer consideration of these.
+
+<p>Conceptually, the simplest approach to creating these curried functions
+might be to have a unique curried-class for each possible arity of call.
+So, for example, <tt>(plus 2)</tt> might be translated into a
+<tt>curried_plus</tt> object.
+
+<p>However it seems wasteful to have several distinct classes for just one
+operation. The code that accomplishes the currying ought to be generic and
+not specific.
+
+<h4>Implementing Binary Functions with apply2 methods</h4>
+<p> One approach to making a generic apparatus for currying is shown below.
+In this case, we handle binary functions using a <tt>Curried2</tt> object
+which represents a binary function with one of its arguments "partially
+applied".
+
+<p>
+Suppose <tt>plus</tt> is the (unique) member of class <tt>Plus</tt>  [1]
+that implements the addition function. Then the <tt>apply</tt> method
+[2] for
+<tt>plus</tt> creates a new <tt>Curried2</tt> object [4]. This embodies
+the argument <tt>x</tt> of the addition, and also the <tt>plus</tt> object
+itself.
+
+<p>The <tt>apply2</tt> method [5] is activated when the second argument
+to <tt>plus</tt> is available. It takes as arguments [5] the two objects
+to which <tt>plus</tt> has been successively applied. These [6] are cast
+down the hierarchy as numbers, and the "plus" method of <tt>x</tt> is
+called to add them.
+
+<pre>
+class Plus extends P2KFun                       // [1]
+{
+  public Object apply (Object x)                // [2]
+  {
+    P2KNumber nx = (P2KNumber) x;               // [3]
+    return new Curried2(this, nx);              // [4]
+  }
+  public Object apply2 (Object x, Object y)     // [5]
+    {
+     return ((P2KNumber)x).plus((P2KNumber)y);  // [6]
+    }
+}
+</pre>
+
+<p>The <tt>Curried2</tt> class provides generic support for the
+implementation of binary functions. It contains 2 fields. The
+<tt>f</tt> field [1] holds the function which has been curried, while the
+<tt>arg1</tt> field [2] holds its first argument which has been given
+to the function. A member of the class (of which there can be arbitrarily
+many) is created [3] by passing it the function-object and its first
+argument (see [4] above). These arguments are simply stored in the fields.
+
+<p>When the curried function is applied to its argument, <tt>arg2</tt>,
+it calls the <tt>apply2</tt> method of the original function-object
+(whatever it was) to finish "doing its thing".
+
+<pre>
+class Curried2 extends P2KFun
+{
+  private P2KFun f;                         // [1]
+  private Object arg1;                      // [2]
+  public Curried2(P2KFun f, Object arg1)    // [3]
+        {this.f = f; this.arg1 = arg1;}     // [4]
+  public apply(Object arg2)                 // [5]
+        {return f.apply2(arg1,arg2);}       // [6]
+}
+</pre>
+
+<h4>Polyadic Currying</h4>
+
+<p>
+For functions of more than two arguments, the above approach would get
+quite complicated, with the need to have curried classes for every possible
+adicity. An alternative approach is shown below. Here the <tt>Curried</tt>
+object contains an <em>array</em> which holds the arguments acquired so
+far. When this array contains the right number of arguments, the
+<tt>doit</tt> method of the original function is called.
+
+<p>The new <tt>Plus</tt> class is shown below. At [1] as before, we
+define the <tt>apply</tt> method, but when we make the <tt>Curried</tt>
+object [2], we pass an extra parameter specifying the reqired number
+of arguments.
+
+Addition is actually performed by the <tt>doit</tt> method [3], which takes
+as argument an array <tt>args</tt> containing the accumulated
+combinatory-algebra arguments. Having checked [4] that we have exactly 2
+arguments, we cast them as numbers [5] and [6], and [7] call the
+<tt>plus</tt> method to do the actual computation.
+
+<pre>
+class Plus extends P2KFun
+{
+
+  public Object apply (Object x)               // [1]
+  {
+    return new Curried(this, x, 2);            // [2]
+  }
+
+  public Object doit(Object [] args)               // [3]
+  {  if (args.length != 2) throw new Exception...  // [4]
+       {  P2KNumber arg1 = (P2KNumber)args[0],     // [5]
+                    arg2 = (P2KNumber)args[1];     // [6]
+          return arg1.plus(arg2);                  // [7]
+       }
+  }
+}
+</pre>
+
+The new <tt>Curried</tt> class is shown below. Each object in the class
+contains 3 fields. The <tt>f</tt> field [1] holds the function object which
+has been curried, the <tt>args</tt> field [2] holds in an array the
+arguments accumulated so far, while the <tt>depth</tt> field [3] holds the
+total number of arguments to be accumulated before the computation to be
+done by <tt>f</tt> can be performed.
+
+<p>There are two constructors. The first [4] is the one called by the
+function object to be curried. The function-object <tt>f</tt> is itself
+passed in, together with the first argument <tt>x</tt>, and <tt>depth</tt>
+which is the number of arguments <tt>f</tt> needs to accumulate to be
+activated. This constructor initalises [4-5] the <tt>f, depth</tt> fields
+from the arguments. The <tt>args</tt> field is initialised [7-8] with
+an array consisting of the one argument <tt>x</tt> already available.
+
+<p>Perusal of the <tt>apply</tt> method for <tt>Curried</tt> shows that
+it calls a constructor for <tt>Curried</tt>. This second constructor
+[9] takes an extra argument, which is an array of the arguments accumulated
+so far. The <tt>f, depth</tt> fields are initialised as before [10-11],
+but the <tt>args</tt> field [12] is initialised to an array large enough
+to hold the arguments now accumulated, including <tt>x</tt>. Arguments are
+copied from the old <tt>args</tt> array to the new [13-14]. As Mr Schwartz
+so perspicuously observes ("My vote went for allocation of new arrays;
+memory is cheaper these days than debugging time".)
+it's a good idea to make
+a new array - actually it's essential, because at any stage in the currying
+process, the same function-object may be curried to different objects.
+Finally [15] the new argument <tt>x</tt> is installed in <tt>args</tt>.
+
+<p> The <tt>apply</tt> method [16] is quite simple. If enough arguments
+[17] have been accumulated, the <tt>doit</tt> method of the original
+function is invoked. Otherwise [19] a new <tt>Curried</tt> object is
+created embodying the argument <tt>x</tt> just acquired.
+
+
+<pre>
+class Curried
+{
+  private P2KFun f;                                     // [1]
+  private Object args[];                                // [2]
+  private int depth;                                    // [3]
+
+  public Object curried(P2KFun f, Object x, int depth)  // [4]
+  { this.f = f;                                         // [5]
+    this.depth = depth;                                 // [6]
+    this.args = new Object[1];                          // [7]
+    args[0]   = x;                                      // [8]
+  }
+
+  public Object curried
+        (P2KFun f, Object[] args, Object x, int depth)  // [9]
+  { this.f = f;                                         // [10]
+    this.depth = depth;                                 // [11]
+    this.args = new Object[args.length+1];              // [12]
+    for(int i=0; i<args.length; i++)                    // [13]
+        {this.args[i]=args[i]}                          // [14]
+    this.args[args.length]   = x;                       // [15]
+  }
+
+  public Object apply(Object x)                         // [16]
+  {
+    if    (depth == args.length)                        // [17]
+          f.doit(args)                                  // [18]
+    else  return new Curried(f, args, x, depth)         // [19]
+  }
+}
+</pre>
+
+Incidentally - we need not regard these two methods of implementing
+currying as mutually exclusive - they are not. The first would prove
+more efficient for binary functions, while the second would be used for
+greater arities.
+
+<p> The <b>K</b> combinator can easily be implemented in this framework.
+
+<pre>
+class K_combinator extends P2KFun               // [1]
+{
+  public Object apply (Object x)                // [2]
+  {
+    return new Curried2(this, x);               // [3]
+  }
+  public Object apply2 (Object x, Object y)     // [4]
+    {
+     return x;                                  // [5]
+    }
+}
+</pre>
+
+
+<p> The <b>S</b> combinator is also easy.
+
+
+
+<pre>
+class S_combinator extends P2KFun
+{
+
+  public Object apply (Object f)                   // [1]
+  {
+    return new Curried(this, f, 3);                // [2]
+  }
+
+  public Object doit(Object [] args)               // [3]
+  {  if (args.length != 3) throw new Exception...  // [4]
+       {  P2KNumber f = (P2KFunction)args[0],      // [5]
+                    g = (P2KFunction)args[1];      // [6]
+                    x = args[2]                    // [7]
+          return (f.apply(x)).apply(g.apply(x)))   // [8]
+       }
+
+
+  }
+}
+</pre>

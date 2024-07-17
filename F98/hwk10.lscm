@@ -1,0 +1,70 @@
+
+
+                              Homework 10
+                          CMPSCI 287 FALL 98
+                      Due Tue 15DEC at 11:59 PM.
+
+         Put  your answers in your cs287 directory as hwk10.lscm
+
+-----------------------------------------------------------------------------
+
+This assignment calls for you to do some elementary symbolic program
+verification.
+
+By "symbolic argument" I mean an argument to a function which is a
+non-constant Scheme expression.
+
+By "symbolic evaluation" I mean that if a function which in Scheme
+expects a non-symbolic argument is given a symbolic argument it returns a
+symbolic result. Thus
+
+    (eval_env '(+ x y) the-global-environment)
+
+evaluates to  (+ x y), rather than giving an error message.
+
+The  file  $cs287/public_html/eval_env.lscm  contains  the  code  for  an
+interpreter for a  Scheme-like language, in  a literate-Scheme  convention,
+which means that UMASS Scheme can compile it directly (if verbosely).
+
+The file $cs287/public_html/multi_subst.lscm contains the code for
+multiple-substitution as used in the substitution model of evaluation.
+
+(1) Currently the evaluation of the arithmetic operators +, -, *, /  using
+eval_env! will cause an error. Make a new global environment in which the
+arithmetic operators (assumed to be binary) will, if presented with
+argument at least one of which is symbolic, will return a symbolic result
+obtained by substituting values for any variables that are bound in the
+non-global part of the evaluation environment.
+
+(2) Write a function  -_poly to subtract two polynomials.
+
+(3) The "=" predicate in Scheme is defined to operate over numbers. Add
+"=" to the-global-environment with the property that if it is given two
+arguments E1 and E2 at least one of which is symbolic (= E1 E2) is
+interpreted by converting E1 and E2 to polynomial form, subtracting
+them as polynomials, and returning #t if and only if the result is the zero
+polynomial.
+
+(3) The line joining two points P1 = (x1,y1) and P2 = (x2,y2) in
+2-dimensional Cartesian geometry is given by
+
+    (y2 - y1) x + (x1 - x2) y + (x2 y1 - x1 y2) = 0
+
+If you represent the point (x1 y1) by the list '(x1 y1), and the line
+
+    ax + by + c = 0
+
+by the list  '(a b c),
+
+(a) Load into the-global-environment (using define for eval_env!) the
+function  on_pt_ln for which the call (on_pt_ln p l) returns #t if the
+point p is on the line l.
+
+(b) Load into the-global-environment the function ln_pt_pt for which the
+call (ln_pt_pt p1 p2) is the line joining the two points.
+
+(c) Use eval_env! to verify that
+
+    (on_pt_ln '(x1 y1) (ln_pt_pt '(x1 y1) '(x2 y2)))
+
+evaluates to #t.

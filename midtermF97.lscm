@@ -1,0 +1,343 @@
+
+
+
+                            CMPSCI 287 FALL 97
+                            Midterm Examination
+                           Answer Four Questions
+------------------------------------------------------------------------------
+
+(1)  Evaluate the following Scheme expressions, or expression sequences.
+In the case of an expression sequence, give the value of the last
+expression in the sequence
+
+    (a)
+        (+ 4 (* 3 5))
+
+
+------------------------------------------------------------------------------
+  Answer 19
+------------------------------------------------------------------------------
+    (b)
+        (car (cdr (list (+ 3 4) (* 7 8) 9)))
+
+------------------------------------------------------------------------------
+  Answer 56
+------------------------------------------------------------------------------
+    (c)
+        (define a 100)
+
+        (let (
+            (a (+ 5 6))
+            (b (* a 7)))
+            (+ a b))
+
+------------------------------------------------------------------------------
+Answer 711
+[the value of "a" used in the let-binding is that it had OUTSIDE. This
+is quite obvious if you remember that (let...) expression is equivalent to
+the application of a (lambda...) expression to arguments.
+
+------------------------------------------------------------------------------
+    (d)  ((lambda (x) (+ x 10)) (+ 4 5))
+
+------------------------------------------------------------------------------
+
+Answer 19
+
+------------------------------------------------------------------------------
+    (e)
+        (map_list car '((a 34) (b 56) (c 92)))
+
+------------------------------------------------------------------------------
+Answer:
+
+'(a b c)
+
+EndAnswer
+
+[I'll not be picky about the quote, since the question could be interpreted
+either way]
+
+------------------------------------------------------------------------------
+(2) Write a Scheme function to recognise whether a list of numbers is a
+palindrome, that is whether the sequence of elements taken in the forward
+direction is the same as that taken in the reverse direction. Thus
+
+    '(1 2 3 2 1)
+
+is a palindrome, while
+
+    '(1 2 3 4)
+
+is not.
+------------------------------------------------------------------------------
+
+Answer:
+
+(define (palindrome? l)
+        (equal? l (reverse l)))
+
+EndAnswer
+
+[Just to test out my code:
+
+(example   '(palindrome? '(1 2 3 2 1)) #t)
+(example   '(palindrome? '(1 2 3 4)) #f)
+
+This is the most compact expression of the solution - solutions which are
+correct but less economical will be (moderately) penalised on the basis
+that computer scientists should consider achieving economy of computational
+resources as an important aspect of their work]
+
+
+------------------------------------------------------------------------------
+
+(3) Consider the following Scheme function:
+
+(define (mystery list1)
+    (if (null? list1)
+        '(())
+        (let ((list2 (mystery (cdr list1))))
+            (append
+                (map_list
+                    (lambda (list3) (cons (car list1) list3))
+                    list2 )
+                list2
+                )
+            )
+        )
+    )
+
+
+------------------------------------------------------------------------------
+[This is not a required part of the answer, but it makes this text
+self-contained]
+
+(define map_list
+    (lambda (f l)
+        (if (null? l)
+            '()
+            (cons
+                (f (car l))
+                (map_list f (cdr l))
+                )
+            ); end if
+        )    ; end lambda
+    )        ; end define
+
+
+
+------------------------------------------------------------------------------
+
+
+(a) Evaluate
+
+    (mystery '())        Answer '(())               EndAnswer
+
+(b) Evaluate
+
+    (mystery '(1))       Answer '((1) ())           EndAnswer
+
+Other answers are similar.
+
+(e) Explain, in one English sentence, what mystery does. [I don't want a
+paraphrase of how the Scheme function works.]
+
+Answer
+
+The function mystery computes, in list form, the set of subsets of its
+argument.
+
+EndAnswer
+
+
+------------------------------------------------------------------------------
+
+
+
+4 Consider the definition of the parser-generation functions in the notes:
+
+(define class_parse (record-class 'parse '(full full)))
+
+(define cons_parse   (car class_parse))
+(define sel_parse    (caddr class_parse))
+(define tree_parse   (car sel_parse))
+(define rest_parse   (cadr sel_parse))
+
+
+(define mk_parser_singleton
+    (lambda (class_of_tokens)
+        (lambda (list_of_tokens)
+            (cond
+                (( null? list_of_tokens) #f)
+                ((member? (car list_of_tokens) class_of_tokens)
+                 (cons_parse
+                     (car list_of_tokens)
+                     (cdr list_of_tokens))
+                 )
+                (else #f ) ))
+        ))
+
+
+
+(define mk_parser_seq
+    (lambda (parser_1 parser_2 build_parse)
+        (lambda (list_of_tokens)
+            (let ((p1 (parser_1 list_of_tokens)))
+                (if p1
+                    (let ((p2 (parser_2
+                                 (rest_parse p1))))
+                        (if p2
+                            (cons_parse
+                                (build_parse
+                                    (tree_parse p1)
+                                    (tree_parse p2))
+                                (rest_parse p2)
+                                )
+                            #f)
+                        ) ;end let
+                    #f)
+                );end let
+            ); end lambda
+        ); end lambda
+    ); end def. mk_parser_seq
+
+============================================================================
+
+You are asked to rewrite this code to support better error reporting.
+
+(a) Modify the parse-record definition to allow for the creation of a
+parse-record with 4 fields
+
+    1   The parse-tree
+    2   A status-report - #t or #f
+    3   The list of tokens that remains unparsed
+    4   A list of tokens each of which could have been a legal
+        continuation of the input token list.
+
+
+(b) Modify mk_parser_singleton to return one of the new parse-records.
+
+(c) Modify mk_parser_seq to return one of the new parse-records.
+
+
+------------------------------------------------------------------------------
+Answer: (a)
+
+
+(define class_parse (record-class 'parse '(full full full full)))
+
+(define cons_parse   (car class_parse))
+(define sel_parse    (caddr class_parse))
+(define tree_parse   (car sel_parse))
+(define status_parse (cadr sel_parse))
+(define rest_parse   (caddr sel_parse))
+(define continue_parse (cadddr sel_parse))
+
+EndAnswer
+
+Answer: (b)
+
+
+(define mk_parser_singleton
+    (lambda (class_of_tokens)
+        (lambda (list_of_tokens)
+            (cond
+                (( null? list_of_tokens)
+                   (cons_parse
+                        #f               ; This is irrelevant
+                        #f               ; parse failed
+                        list_of_tokens   ; what's unparsed
+                        class_of_tokens) ; would have succeeded
+                )
+                ((member? (car list_of_tokens) class_of_tokens)
+                 (cons_parse
+                     (car list_of_tokens)  ; the parse-tree
+                     #t                    ; parse succeeded
+                     (cdr list_of_tokens) ; what's unparseed
+                     class_of_tokens)       ; would have succeeded**
+                 )
+                (else
+
+                   (cons_parse
+                        #f               ; This is irrelevant
+                        #f               ; parse failed
+                        list_of_tokens   ; what's unparsed
+                        class_of_tokens) ; would have succeeded
+
+                ) ))
+        ))
+
+EndAnswer
+
+Remark - The line I have marked ** is probably the most accurate
+interpretation of the spec, though what you return here would
+not really matter because the parse has succeeded.
+
+(define noun (mk_parser_singleton '(cat dog canary)))
+
+
+
+(define (member? x list)
+     (if (null? list) #f
+         (if (equal? x (car list)) #t
+              (member? x (cdr list)))))
+
+(noun '(the cat eat the canary))
+
+<parse  <false> <false> (the cat eat the canary) (cat dog canary)>
+
+(noun '(cat eat the canary))
+
+<parse  cat  <true> (eat the canary) (cat dog canary)>
+
+Answer(c)
+
+
+
+
+(define mk_parser_seq
+    (lambda (parser_1 parser_2 build_parse)
+        (lambda (list_of_tokens)
+            (let ((p1 (parser_1 list_of_tokens)))
+                (if (status_parse p1)
+                    (let ((p2 (parser_2
+                                 (rest_parse p1))))
+                        (if (status_parse p2)
+                            (cons_parse
+                                (build_parse
+                                    (tree_parse p1)
+                                    (tree_parse p2))
+                                #t
+                                (rest_parse p2)
+                                (continue_parse p2)
+                                )
+                                p2
+                            )
+                        ) ;end let
+                     p1
+                     )
+                );end let
+            ); end lambda
+        ); end lambda
+    ); end def. mk_parser_seq
+
+EndAnswer
+
+(define det (mk_parser_singleton '(a the)))
+
+(define np (mk_parser_seq det noun list))
+
+
+(np '(the cat eat the canary))
+
+<parse  (the cat) <true> (eat the canary) (cat dog canary)>
+
+
+(np '( cat eat the canary))
+
+<parse  <false> <false> (cat eat the canary) (a the)>
+
+(np '(the fat cat eat the canary))
+
+<parse  <false> <false> (fat cat eat the canary) (cat dog canary)>

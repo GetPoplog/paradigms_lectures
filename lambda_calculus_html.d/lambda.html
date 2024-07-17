@@ -1,0 +1,890 @@
+
+
+<html><head><title>
+
+        Functional Programming Languages
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+       Theoretical Foundations of Programming Languages</br>
+                     and their Practical Realisation.
+
+
+
+</center>
+
+</h1>
+
+<hr>
+
+
+<a href="#lambda"> The Lambda Calculus Provides our Basic
+Formalism</a><br>
+
+<a href = "#expressions">
+The Syntax of the  <img src=lambda.gif>-calculus is simple </a><br>
+
+<a href="#lisp">
+Functional languages don't have to look like LISP </a><br>
+
+<a href = "#beta">
+<img src=beta.gif>-reduction is our basic computation mechanism</a><br>
+
+<a href = "#pure">
+ The Pure Lambda Calculus is <em>Theoretically</em> Adequate for
+any Computation</a><br>
+
+<a href = "#java">
+Translating from the <img src=lambda.gif>-calculus to the Java
+Virtual Machine</a><br>
+
+<a href = "#proof">
+Proving that Programs are correct</a><br>
+
+<p>Computer
+Systems  generally inhabit  a  less challenging  environment  than
+bridges do, so one might reasonably  expect that they would fall down  less
+often. The central challenge  of Computer Science is  that the contrary  is
+the case. Experience  in other engineering  disciplines would suggest  that
+what is required  is the  specification and  construction of  computational
+systems within a framework that supports analysis.
+
+<p>Given
+the need  for computational  systems to be  analysable, the  question
+arises "how to  strike a  balance between what  is analysable  and what  is
+practicable". For example, a  vast corpus of material  is written in  the C
+language which supports  analysis very  poorly indeed; however C has proved
+to be a practical basis for the construction of systems at an early stage
+in the development of our discipline.
+
+<p>In this  seminar,  by contrast  with  C, we  will  look at  one
+particular
+approach to creating software which makes analysability central, namely the
+Functional approach to Programming Language Design. This approach is based
+on desigining languages which have a close formal relation to the <img
+src=lambda.gif>-calculus.
+
+
+
+<p> So, to elaborate, we will:
+
+<ul>
+<li> Study the theory of functional languages, including the concept of
+     data-type. Consider the application of this theory in the realm
+     of object-oriented languages.
+<li> Develop the design of a simple but powerful functional language.
+<li> Design an implementation of this language using as target-architecture
+     the Java Virtual Machine.
+<li> Study and implement proof-methods which will allow us to verify the
+     correctness of programs.
+</ul>
+
+
+
+<p> Generally the application of computers to engineering design is
+somewhat ahead of their application to software design. In particular it is
+common for engineers to use a tool such as Mathematica or Maple to
+assist in
+performing an analysis of the behaviour of a system before it is
+implemented. In this seminar we'd like to explore how functional languages
+can be used to address this gap by supporting detailed mathematical
+analysis of program behaviour.
+
+<p> In implementing programs it is common enough to employ what might be
+called "macroscopic" tools to analyse the behaviour of a program at a
+rather coarse level of detail. The most widely used such tool is the
+concept of <em>data type</em> which is built into most programming
+languages. Type-analysis will tell you that <tt> x+"fred" </tt> is an
+illegal expression (in most languages) because you can't add a number to a
+string. It won't tell you that you have made an error if you have
+written <tt>x+1</tt> when you  meant <tt>x-1</tt>.
+
+<p> On the other hand, Mathematica can tell you precisely that - for
+example if you want a solution of the equation <em>x<sup>2</sup>+2x+1</em>,
+Mathematica can determine that <em>x=1</em> is not a solution of that
+equation (or of course it can solve the equation for you).
+
+<p>But computer programs in general are opaque to the sort of analysis that
+Mathematica and Maple can perform.
+Before we can even begin to prove that a program is correct, we have to
+characterise the behaviour of the programming language in which the program
+is written. Functional programming languages are characterised in a
+particularly simple way: every component of a program is treated as a
+<em>mathematical function</em> whose meaning follows the simple
+rule that <em>within a given context</em> identical expressions have
+identical values.
+
+<p>To give an example of what we mean, in a pure functional language a
+mathematical identity like:
+
+<pre>
+         fred(x) + fred(x) = 2*fred(x)
+</pre>
+
+should hold.  This  is  not  necessarily  the  case  for  a  non-functional
+language, for example  in Pascal or  C <tt>fred</tt> might  be a  procedure
+which had a side-effect,  so that calling it  twice has a different  effect
+from  calling  it  once.  For  example  <tt>fred</tt>  might  contain   the
+assignment <tt>g:=g+1</tt>  where  <tt>g</tt>  is a  global  variable. Thus
+the value of <tt>fred(x)</tt> varies with the number of times it has been
+evaluated.
+
+
+<a name="lambda"></a>
+<h2>The Lambda Calculus Provides our Basic Formalism</h2>
+
+<p>If  you  ask   a  mathematician   "what,  fundamentally,   <em>is</em> a
+function", he is likely  to talk about  a set of  <em>(argument,value)</em>
+pairs. He  may well  characterise the  relationship between  arguments  and
+values in some way that he regards as adequate, without any guarantee  that
+there is any way, given an argument, of computing the corresponding  value.
+For example, mathematicians  can (and  do) speak of  a function  <em>f</em>
+defined on the real  numbers for which  <em>f(x)=0</em> when <em>x</em>  is
+rational, and <em>f(x)=1</em> when <em>x</em> is irrational. But any
+attempt to implement such a function computationally would require us to
+solve undecidable problems.
+
+<p><small>[Note
+that, while some programming languages
+refer to floating-point numbers as "real" numbers, they are in fact only
+crude approximations, quite inadequate for representing this particular
+function <em>f</em>.
+
+<p>An accurate representation of reals would require a given real to
+be represented as an infinite sequence of rationals. One can only
+implement such a thing computationally as a program, so that deciding
+if a particular real, so represented, is equivalent to a rational, is
+about proving whether the program that represents the real produces the
+same output as a program that produces a constant rational. This is an
+instance of a class of problems known to be undecidable.
+]</small>
+
+<p>This kind of approach  is fine for mathematicians,  who are usually  not
+too concerned  about  whether  they  can  actually  <em>construct</em>  the
+entities  of  which  they  speak.  As  computer  scientists  we  need  some
+mathematical way of characterising functions which, as a formalism,  guides
+us exactly into something we can realise as a computation.
+
+
+<p>The generally agreed solution to this requirement of constructability of
+functions   is    to    use   as    our    basic   formalism    the    <img
+src=lambda.gif>-calculus, invented  by Church,  the American  logician,
+<em>circa</em>
+1940. It  was  developed as  a  branch  of mathematics,  rather  than  as a
+programming language (antedating all  programming languages), and was  thus
+defined essentially as marks on a piece of paper. However it is very easily
+represented in a computer. The <img src=lambda.gif>-calculus is capable  of
+expressing any computation,  like a  Turing machine, but,  unlike a  Turing
+machine, it  can  be  made  the basis  of  elegant  and  powerful  computer
+languages.
+
+
+<p>
+One of the conceptual problems that beginners in formal logic, and
+the <img src=lambda.gif>-calculus is a formal logic, face is the `bootstrapping conundrum', namely
+that we are trying to build a very formal system using our less formal
+ideas of ordinary mathematics, which were, in our teens, build using the
+even less formal ideas expressible in natural language. There is probably
+little that can be said except to point out that there is a computational
+analogy - if for example we want to build a super-secure computer system,
+it will depend on using less-secure tools, and ultimately on hand-crafted
+machine code which is not secure at all. Nevertheless, by careful checking
+and cross checking, and incorporating tests for consistency, we can build
+systems in which we trust.
+
+<a name = "expressions"></a>
+<h3>Expressions in the <img src=lambda.gif>-calculus </h3>
+
+<p> Most programming languages have a quite complex syntax that can take
+days or even weeks to learn. The <img src=lambda.gif>-calculus has an
+exceedingly simple syntax.  The syntactic definition given below is
+intended to emphasise the role of the  <img src=lambda.gif>-calculus as a
+basis for programming languages. We use a bold font for non-terminal
+symbols of the syntax (for example <b>E<sub>1</sub></b>).
+
+<p>
+The <img src=lambda.gif>-calculus consists of a set of
+<em>expressions</em>.
+<ul>
+
+<li>
+    <p>A countably infinite set of variables. We shall use as variables
+    any sequence of letters, digits or the "_" character which begins
+    with a letter, or any sequence of the "sign" characters,
+
+<ul> + - * / < > = ~ # $ % ^ & ~ ? |
+</ul>
+    However certain sequences which would be variables
+    are <em>reserved</em>. For our purposes these are:
+    <ul> true  false System
+    </ul> </p>
+
+<li> <p>A set of constants.  In our case these will be
+    <ul>
+    <li> The natural numbers, <b>NatNum</b>, namely<br>
+        0 1 2 3 4 5 6 7 8 9 10 11...
+    <li> The boolean constants <em>true</em> and <em>false</em>
+    <li> If  <b>E</b> is an expression, then it can be quoted
+         to give a constant  '<b>E</b>'.
+    <li> The constant <em>System</em>.
+    </ul>
+    </p>
+
+<li><p> If <b>E<sub>1</sub></b> and <b>E<sub>2</sub></b> are expressions of
+the  <img  src=lambda.gif>-calculus,   then  the  <em>application</em>   of
+<b>E<sub>1</sub></b>      to      <b>E<sub>2</sub></b>      is      written
+(<b>E<sub>1</sub>E<sub>2</sub></b>), and is an expression.</p>
+
+<li>  <p><img src=lambda.gif>-abstraction:
+If <b>v</b> is a variable, and <b>E</b> is an expression
+of the <img src=lambda.gif>-calculus, then the </em>abstraction</em>
+<b><img src=lambda.gif> v. E</b> is an expression of the <img src=lambda.gif>-calculus.
+The expression <b>E</b> is referred to as the <em>body</em> of the
+abstraction <b><img src=lambda.gif> v.E</b>
+</p>
+</ul>
+
+<p>Basically, that's it! We can begin to give some <em>meaning</em> to this
+syntax, providing some explanation of what a given expression
+<em>denotes</em>. Doing this systematically will take quite a bit of work,
+but roughly we can say:
+
+<ul>
+
+<li><p>A variable <em>v</em> is a <em>symbol</em> which (eventually) has an
+associated <em>value</em>. Variables in the  <img src=lambda.gif>-calculus
+play much the same role as identifiers in a programming language. We'll see
+exactly how quite shortly, when we talk about <img src=beta.gif>-reduction.
+</p>
+
+<li> <p>Among the constants, the natural numbers are self-explanatory -
+a given sequence of  characters such as <em>123</em>  denote a  natural
+number,   using    the   base-10    convention.   Note    however    that a
+maximally-faithful    computational    representation    of    the     <img
+src=lambda.gif>-calculus will require us to use <em>arbitrary precision
+arithmetic</em> so that the only limit on the size of a natural number will
+be the storage capacity of the machine.</p>
+
+<p>The boolean constants should also be self-explanatory.</p>
+
+<p>The <em>System</em> constant serves to provide an interface to the
+built-in capabilities of the computer and its software. For example,
+the expression <em>(System '+')</em> evaluates to a function which performs
+addition. Don't be alarmed about the cumbersome nature of this - normally
+we make sure that the value of the variable <em>+</em> is bound to
+<em>(System '+')</em>.
+</p>
+
+<p>The purpose of quoted expressions is to support the ability to mechanise
+reasoning about the  <img src=lambda.gif>-calculus within the  <img
+src=lambda.gif> calculus itself.</p>
+
+<li><p>An application (<em>E<sub>1</sub>E<sub>2</sub></em>) can be  thought
+of as meaning  "apply the function  <em>E<sub>1</sub></em> to the  argument
+<em>E<sub>2</sub></em>",  as,  for  example,  we  may  apply  the  function
+<b>sin</b>  to  the  argument  <em>0</em>  when  we  write  the  expression
+<b>sin</b><em> 0</em> in mathematics.  Likewise, in the  <img
+src=lambda.gif>-calculus, if the variable
+<em>abs</em> has as its value the absolute-value-function, then
+<em>(abs x)</em> denotes the absolute value of the value denoted by the
+variable <em>x</em>. </p>
+
+<p> But, you may say, most people want to have functions that take more
+than one argument - how is this accomplished? Let's consider addition, and
+in a context in which the variable <em>+</em> denotes addition.
+The sum of two natural numbers <em>5</em> and <em>3</em> can be expressed
+as <em>((+ 5) 3)</em> - we understand this as meaning that the expression
+<em>(+ 5)</em> evaluates to a <em>function</em> we can call "add 5". This
+function is then applied to <em>3</em>, obtaining <em>8</em>.
+</p>
+
+
+<a name = "eta">
+<li><p>An abstraction <em><img src=lambda.gif> v.E</em> can be thought of
+as meaning "that function which maps the variable <em>v</em> to the
+expression <em>E</em>. Remember that <em>E</em> is an expression, in which
+<em>v</em> may, and usually will, occur.
+For example, <em><img src=lambda.gif> v.v</em> means "that function which
+maps <em>v</em> to itself", that is to say, the identity function.
+Likewise, in a context in which <em>+</em> denotes addition, the expression
+<br><em>
+<img src=lambda.gif>x.((+ 5) x) </em> means "that function which maps
+<em>x</em> to <em>5+x</em>", that is the function "add 5".  Note that we
+have  already encountered this "add 5" function in a different form above.
+We shall address  the issue of what it means for these two expressions to
+denote the same function when we consider the <em><img
+src="eta.gif">-equivalence</em>
+rule below.
+
+</ul>
+
+
+<p>As defined above, complex expressions in the  <img
+src=lambda.gif>-calculus would have a great many parentheses. To avoid
+the confusion to the human reader that all these parentheses create,
+it is  conventional to  write an expression of the form
+
+<ul>
+(...(((<b>E<sub>1</sub> E<sub>2</sub></b>)
+<b>E<sub>3</sub></b>)... <b>E<sub>n</sub></b>)
+</ul>
+as <em>(<b>E<sub>1</sub> E<sub>2</sub> E<sub>3</sub>...
+E<sub>n</sub></b>)</em>
+
+and to write <em>(<img src=lambda.gif>
+v.(<b>E<sub>1</sub>E<sub>2</sub>...E<sub>n</sub></b>))</em>
+as <em>(<img src=lambda.gif> v.<b>E<sub>1</sub>
+E<sub>2</sub>...E<sub>n</sub></b></em>),
+or even to
+omit the outer parentheses if that can be done without ambiguity.
+The
+convention about the syntactic scope of a <img src=lambda.gif>-abstraction
+is that it extends as far to the right as possible. Thus
+
+ <ul><img src=lambda.gif> v.E<sub>1</sub>
+E<sub>2</sub>...E<sub>n</sub></ul>
+
+means
+
+ <ul>(<img src=lambda.gif> v.E<sub>1</sub>
+E<sub>2</sub>...E<sub>n</sub>)</ul>
+
+and not
+
+ <ul>(<img src=lambda.gif> v.E<sub>1</sub>)
+E<sub>2</sub>...E<sub>n</sub></ul>
+
+<p>Note that application is <em> not</em> an associative operation, so that
+ <b>E<sub>1</sub></b> (<b>E<sub>2</sub> E<sub>3</sub></b>)  is not the
+same as
+ <br> (<b>E<sub>1</sub> E<sub>2</sub></b>)<b> E<sub>3</sub></b>. Note also
+that in the <img src=lambda.gif>-calculus every function takes exactly  one
+argument, which  is why  the  basic form  of  the abstraction  is  <em><img
+src=lambda.gif> v.E</em>,  with  just  one  variable  <em>v</em>.  However,
+provided we remember this fact, it is syntactically convenient to write
+
+<ul><img src=lambda.gif> v<sub>1</sub> v<sub>2</sub> . E
+</ul>
+
+to mean
+
+<ul><img   src=lambda.gif>    v<sub>1</sub>   .    <img    src=lambda.gif>
+v<sub>2</sub> . E
+</ul>
+
+and similarly for more variables.
+
+<a name="lisp"></a>
+<h3>LISP and the <img src=lambda.gif>-calculus</h3>
+
+<p> A word of warning is needed  here to readers who are familiar with  the
+LISP language, or any derivative such as Scheme: It would appear that  LISP
+was inspired by the <img src=lambda.gif>-calculus, but is certainly not  an
+exact implementation of  it, despite the  significant syntactic
+similarity. Thus  the  LISP  S-expression  <em>(u  v  w)</em>  does  not
+mean  ``apply <em>u</em> to <em>v</em>  and then apply  the result to
+<em>w</em>, as  it would in the <img src=lambda.gif>-calculus.
+
+
+<p>However more modern functional languages which on the surface appear
+more remote from the  <img src=lambda.gif>-calculus, are in fact much
+closer. For example the SML expression:
+
+<pre>
+    fn x=> x*x;
+</pre>
+
+is quite a faithful representation of the  <img src=lambda.gif>-calculus
+expression  <em><img src=lambda.gif> x. (* x x)</em>.
+
+<a name = "beta">
+<h3><img src=beta.gif>-reduction: Our Basic Computation Mechanism</h3></a>
+
+<p>Above we stated that the abstraction
+<em><img src=lambda.gif> v.<b>E</b></em>
+could be understood as meaning "that function which maps the variable
+<em>v</em> to the expression <em>E</em>".
+We can give a practical meaning to this statement by defining exactly what
+it means to apply a <img src=lambda.gif>-expression to an argument.
+Consider the application
+<p><ul>((<img    src=lambda.gif> x. (+ 5 x)) 22)</ul>
+
+<p>We've said that
+<em><img src=lambda.gif> x. (+ 5 x) </em> means "that function which maps
+x to (+ 5 x)". So, if we give it an argument <em>22</em> we should expect
+to get <em>(+ 5 22)</em> as the result. That is to say, we have
+substituted <em>22</em> for <em>x</em> in the body of the <img
+src=lambda.gif> expression. </p>
+
+<p> To make this precise we have to define what we mean by
+<em>substitution</em>. We need a little notation first. We'll say that
+
+<ul>
+<b>E<sub>1</sub></b>[<b>x</b>:=E<sub>2</sub></b>]
+</ul>
+
+means "the expression <b>E<sub>1</sub></b> with <b>E<sub>2</sub></b>
+substituted for <b>x</b>". Roughly what this means is "go through the
+expression <b>E<sub>1</sub></b> and replace every occurrence of <b>x</b>
+by <b>E<sub>2</sub></b>".  However substitution is not quite as simple as
+that. For example the variable <b>x</b> might be used (or as
+we say <em>rebound</em>) in a <img    src=lambda.gif>-abstraction occurring
+inside <b>E<sub>1</sub></b>; this isn't the only complication. We'll defer
+the full definition of substitution until later.
+
+<p> The process of converting the application of a <img src=lambda.gif>
+-abstraction to an argument by substituting the argument for the variable
+of the abstraction in the body of the abstraction is called "<img
+src=beta.gif>-reduction".  We write
+<ul>
+    (<img src=lambda.gif> <b>x.E<sub>1</sub></b>)<b>E<sub>2</sub></b>
+    <img src=longrightarrow.gif><sub><img src=beta.gif></sub>&#160
+    <b>E<sub>1</sub></b>[<b>x</b>:=E<sub>2</sub></b>]
+</ul>
+
+
+
+<p>
+For example, <em>(<img src=lambda.gif> x. (+ 5 x)) (+ 2 3)
+    <img src=longrightarrow.gif><sub><img src=beta.gif></sub>&#160
+(+ 5 (+ 2 3))</em>
+
+<p>
+There is no requirement that the <em>argument</em> of the application
+should be "worked out" before a <img src=beta.gif>-reduction is done. So,
+in the above example, we don't work-out that <em>(+ 2 3)</em> is <em>5</em>
+before doing the <img src=beta.gif>-reduction - indeed such "working out"
+is treated by another mechanism, <img src=delta.gif>-reduction, discussed
+later.
+
+
+<a name = "pure"></a>
+<h3> The Pure Lambda Calculus </h3>
+
+
+<p> If we take the  <img src=lambda.gif>-calculus as specified above and
+throw out the constants, we obtain the <em>pure</em>
+<img src=lambda.gif>-calculus</em>. It turns out that the pure calculus is
+theoretically adequate to specify any computation in much the same sense
+that a Turing machine is adequate. This is achieved by using <img
+src=beta.gif>-reduction successively to transform a computation expressed
+as an expression of the <img src=lambda.gif>-calculus into another
+expression which is the result of the computation.
+
+<p>
+Mathematicians, who as a class have swallowed Occam's razor hook  line
+and sinker, may be  satisfied with  the pure  calculus. [<small>The  author
+trusts   that   his   mixed   metaphors   will   not   give   his   readers
+indigestion.</small>]
+However, as a model  for practical computation, it  is
+inadequate. In the pure calculus, for example, one can represent the number
+3 as a <img src=lambda.gif>-abstraction
+<em><img src=lambda.gif> f x. f(f(f(x)))</em>.
+
+
+This is  similar  to the  use  of the  Peano  postulates in  your  Discrete
+Mathematics course  to do  arithmetic.  You'll remember  that  2+1 =  3  is
+rendered as:
+<ul>
+    succ(succ(0)) + succ(0) = succ(succ(succ(0)))
+</ul>
+
+Neither is much help if we want to calculate our income tax! However, since
+the pure calculus is nice and simple, we'll make some use of it in our
+theoretical discussions.
+
+
+
+
+
+<a name = "functional"></a>
+<h2>Functional languages and the <img src=lambda.gif>-calculus</h2>
+
+<p>The
+<img src=lambda.gif>-calculus serves as a mathematical specification
+for the design of functional programming languages. However, design of an
+actual language gives rise to complications, syntactic and semantic. The
+syntactic complications serve one main purpose, namely to assist human
+comprehension of a program written in a language. We have already seen two
+such concessions to human frailty in the suppression of unnecessary
+parentheses and <img src=lambda.gif>'s.
+
+<p> Another feature of programming languages that is something of a
+historical accident is that a program is usually composed using only ASCII
+characters.
+
+<p>Within the constraint of using ASCII, most functional languages make
+further concessions to perceived human need by adopting syntactic
+conventions that approximate to normal mathematical usage. For example
+most functional languages will allow the user to render:
+
+<pre>
+    (+ u (* v w))
+</pre>
+as
+<pre>
+    u + v*w
+</pre>
+
+<p>Provided that it is a translation of such syntax back to the <img
+src=lambda.gif>-calculus
+is rigorously defined, there is no objection to its use.
+
+<p>There are a number of conventions for rendering <img
+src=lambda.gif>-abstractions in ASCII. The one we will prefer is that used
+in Haskell. The abstraction <em><img src=lambda.gif><b>v.E</b></em>
+is rendered
+in ASCII as <tt> \v.<b>E</b> </tt> where <tt><b>E</b></tt>
+is the rendering of
+<em><b>E</b></em>.
+For example our old friend <em><img src=lambda.gif> x. (+ 5
+x)</em> is rendered as
+
+<pre>      \x. 5+x</pre>
+
+
+<h4> How do we do "permanent" definitions? </h4>
+One feature of the <img src=lambda.gif>-calculus that might seem to be an
+occasion of distress is that there is no apparent way of creating named
+procedures as we can in most programming languages. For example in C
+we can write:
+
+<pre>
+int f(int i) {return(5+i);}
+</pre>
+
+creating a procedure named "f" that we can use elsewhere in our progam.
+Actually, we <em>can</em> do this kind of thing in the <img src=lambda.gif>
+calculus, but in a rather inside-out kind of way. Suppose we wanted to use
+the C function defined above to compute  <tt>f(3)+f(4)</tt>, which we'd
+do as.
+
+<pre>
+void main(); {printf("answer %p\n",f(3) + f(4);}
+</pre>
+
+This
+can be rendered in the <img src=lambda.gif>-calculus as
+
+<ul>
+(<img src=lambda.gif>f. (+ (f 3) (f 4))
+(<img src=lambda.gif>i. (+ 5 i))
+</ul>
+
+Leaving aside the fact that we print the answer in C - how you
+do input/output in a functional way is a subject to be discussed later,
+this works fine, but has an unfortunate form in which the use of
+<em>f</em> is placed between the introduction of the variable <em>f</em>
+and the <img src=lambda.gif>-abstraction that is its value. Practical
+functional languages provide at least one syntactic form that addresses
+this problem. In our case we'll write:
+
+<pre>
+    let f = \i. 5+i in (f 3) + (f 4) end let
+</pre>
+
+<a name = "java"></a>
+<h2> Translating from the <img src=lambda.gif>-calculus to the
+JVM</h2>
+
+<p>The Java Virtual Machine, while intended primarily to support the Java
+language, provides something of a generic target architecture for
+compilers. In this seminar we will aim to create an implementation of a
+simple functional language which runs on the JVM. While we will create Java
+classes directly, without using the Java compiler, we can readily specify
+what these are by making use of Java syntax itself.
+
+<p>Our language will have
+the basic data-types of the Scheme language together with certain types
+which are designed to support proof of correctness of programs written in
+the language. However, while we will support Scheme data-types, the
+language itself will be a more rigorous implementation of the
+<img src=lambda.gif>-calculus than Scheme is. The main data-types will each
+be a Java class.
+
+<p> The following is an interim specification of some of the types. It
+is to be understood that these will be suitably located in the Java
+class hierarchy.
+
+<ul>
+<li> Numbers: We will define a Java class Number which implements numbers
+as defined in the Scheme standard. These will include big-integers and
+rationals. There is good reason to use the Object-Oriented capabilities of
+Java here, dynamically to choose the appropriate method for operating on
+the various kinds of number supported.
+
+<pre>
+    n1.add(n2)    adds the numbers n1 and n2
+    n1.sub(n2)    subtracts n2 from n1
+    n1.mult(n2)   multiplies n1 by n2
+    n1.quot(n2)   divides n1 by n2, raising an exception
+                  if n2=0
+    n1.div(n2)    divides the integer n1 by the integer n2,
+                  raising an exception if either is not an
+                  integer.
+    n.from_int(i) Converts a member of the Java <tt>int</tt> type into a
+                  Number
+</pre>
+
+<li> Pairs: We will define a Java class Pair. Each p in Pair has two
+fields, known as front and back respectively.
+
+<pre>
+    Pair.cons(x,y)  This constructs a new pair with fields x and y
+    x.front         If x is a pair, this selects the contents
+                    of the first field the pair contains.
+    x.back          If x is a pair, this selects the contents
+                    of the second field the pair contains.
+
+</pre>
+
+<li> Symbols: A symbol is an object that, essentially, is a string. We'll
+probably adopt the Scheme convention that symbols with identical sequences
+of characters are identical objects, though this fact has to be transparent
+to a rigorous implementation of the <img src=lambda.gif>-calculus.
+
+<li> Procedures: Every <img src=lambda.gif>-expression is translated into a
+<em>procedure</em> object which is the unique member of a class created
+as part of the compilation of the <img src=lambda.gif>-expression.
+
+<p>Procedure objects have <em>apply</em>methods. For example, the most
+direct translation of <em>(add 5 x)</em> in the <img
+src=lambda.gif>-calculus would be
+
+<pre>
+    (add.apply(Number.from_int(5))).apply(x)
+</pre>
+where <em>add</em> is a procedure-object. However, a somewhat more
+optimised version of this would use a binary-apply-method <tt>apply_2</tt>
+
+<pre>
+    add.apply_2(Number.from_int(5),x)
+</pre>
+<p>Further optimisation is possible, e.g. to
+<tt>Number.from_int(5).add(x)</tt>,
+or even <tt>5+x</tt> (if our compiler were convinced that <em>x</em> was
+adequately represented by one of the basic types of Java). In fact, the
+method-definition for <tt>add</tt> will enshrine the fact that
+
+<pre>
+    add.apply_2(x,y) = x.add(y)
+</pre>
+
+In particular, we'll create a particular procedure-object <tt>System</tt>
+with the property that for any symbol <tt>s</tt>, <tt>System.apply(s)</tt>
+is a built-in system capability. For example
+
+<pre>
+    System.apply(Symbol.from_string("+"))
+</pre>
+
+evaluates to the addition procedure object discussed above.
+</ul>
+
+<hr>
+
+<a name = proof></a>
+<h2> Proving that Programs are Correct </h2>
+
+<p>The <img src=lambda.gif>-calculus was intended as a kind of Mathematical
+Logic, and we shall use it as such to construct proofs <em>about</em>
+programs in our language <em>within</em> our language. Essentially the idea
+is that since the  <img src=lambda.gif>-calculus provides the definition of
+our language, we can require that any implementation obeys the laws of the
+calculus, together with additional laws which characterise the behaviour of
+the built-in <em>System</em> capabilities.
+
+<p>For example, suppose we  want to prove that  a sorting function that  we
+have written, say <tt>merge_sort</tt>,
+is correct. Then since we are operating within
+the functional paradigm, <tt>merge_sort</tt>
+should be exactly equivalent to an
+expression of the <img src=lambda.gif>-calculus.  What does it mean to  say
+that <tt>merge_sort</tt> is correct? There are two criteria:
+
+<ul>
+
+<li>For any  list  <tt>l</tt> of  data  (possibly a  list  satisfying  some
+criterion that is  part of  the specification  of <tt>merge_sort</tt>)  the
+result of evaluating
+
+<pre>
+        (merge_sort l) </pre>
+
+is sorted. How  do we render  this English requirement  into a  formalism?
+Well it's fairly easy to  write a function <tt>sorted</tt> that  determines
+if a list <em>is</em> sorted - a list is sorted if it is empty, or contains
+one element, or if the first two elements are in order and tail of the list
+(everything but the first element) is sorted. So our requirement can be
+expressed as</p>
+
+<ul>
+     <img src="lambda.gif"> l .(sorted (merge_sort l)) =
+     <img src="lambda.gif"> l . true
+</ul>
+
+<p>
+<li> The other requirement is that <tt>(merge_sort l)</tt> contain
+exactly the same elements as <tt>l</tt> itself.
+</ul>
+
+<h4>This is a hard problem</h4>
+<p>Proving that programs  are correct at  the level of  detail to which  we
+aspire is an  undecidable problem, for  our approach is  in effect to  show
+that two different programs always produce  the same result when given  the
+same data, which is  known to be  undecidable if taken  over a wide  enough
+class of programs.
+
+<p>However, there is nothing in the undecidability result which says that
+it is impossible to prove that a particular program is correct. So, it is
+reasonable to attack the problem of proof with a combination of human
+ingenuity controlling a collection of <em>inference rules</em> provided
+as functions in the language itself.
+
+
+<h4> The Abstract Data-type "Theorem"</h4>
+<p> Practically, this can be realised by using an abstract data-type
+<tt>Theorem</tt> with the property that the only ways a language-user can
+get hold of a theorem are guaranteed to ensure the validity of the theorem.
+
+<p> A theorem has two essential components, its <em>premises</em> and its
+<em>conclusion</em>. Our theorems will also carry a history with them.
+A theorem prints as
+<pre>
+    premises |- conclusion
+</pre>
+
+For example, we might have
+
+<pre>
+    Integer.? x, Integer.?y |- x+y = y+x
+</pre>
+
+Which states that it doesn't matter whether you add <tt>x</tt> to
+<tt>y</tt> or <tt>y</tt> to <tt>x</tt>.
+
+
+If there are no premises, then we write simply
+
+<pre>
+    |-  conclusion
+</pre>
+
+For example we require:
+<pre>
+    |-  x = x
+</pre>
+
+<p>The <em>meaning</em> of theorems is a bit tricky to define. Essentially,
+the premises are a sequence of things that look like terms of the
+<img src="lambda.gif">-calculus, while the conclusion is one of these
+term-like things. Notionally, the premises and conclusion "evaluate" to one
+of the values "true" or "false", and we require of our theorems  that if
+all the premises "evaluate" to true, so does the conclusion.
+
+<p>The tricky bit is that such evaluation is not constructive. This has to
+be so because we are interested in proving theorems about <em>equality of
+functions</em>.  We'd like, for example to be able to prove that
+
+<pre>
+    |-  \x. x+3 = \x. 3+x
+</pre>
+
+<p>The conclusion <tt>\x. x+3 = \x. 3+x</tt> looks like a term of the <img
+src="lambda.gif">-calculus, but we can't evaluate it in the ordinary way
+we'd evaluate a program. Instead, we have to employ a mathematical concept
+of evaluation. In this particular case, the meaning of the equality can be
+taken to be that if each of these  <img src=lambda.gif>-abstractions is
+given any of a countably infinite universe of objects of <em>values</em>,
+the results are computably identical.
+
+<p>Theorems provide <em>arbitration</em> between users and implementors.
+If a user can exhibit a theorem which says that his program <em>ought</em>
+to work, and it doesn't, then he has a cast-iron case for complaining to
+the implementor of the language that his implementation is broken.
+
+
+<h4> Obtaining Theorems </h4>
+There are 3 ways that a user can obtain a theorem.
+<ul>
+<li>A user can access built-in <em>axioms</em> which characterise, as
+theorems, the behaviour of the system. The built-in <em>System</em>
+function provides access to these axioms.
+
+For example the expression
+<pre>
+    (System 'Theorem' 'Axiom' 'Integers' 'C_plus')
+</pre>
+will evaluate to the theorem
+<pre>
+    (Integer.? x), (Integer.? y) |-
+        ((Integer. +) x y) = ((Integer. +) y x)
+</pre>
+which states that the built-in addition operation is commutative over the
+integers.</p>
+
+<li> A user can create theorems by using <em>rules of inference</em> which
+are in effect the abstract constructors of the Theorem data-type. For
+example:
+
+<pre>
+    (BETA '((\x. 5+x) 20)')
+</pre>
+evaluates to
+<pre>
+    |- '((\x. 5+x) 20)' = 5+20
+</pre>
+The <tt>BETA</tt> function thus creates a theorem which says that an
+expression is unchanged in "meaning" by <img src=beta.gif>-reduction.</p>
+
+<p>Incidentally, the <em>functional</em> nature of our work is built-in to
+rules-of-inference. For the reflexive law of equality is one of the
+primitive rules-of-inference:
+
+(REFL 'fred x')
+
+evaluates to the theorem
+
+<pre>
+    |-  (fred x)  = (fred x)
+</pre>
+
+But it is <em>simply not true</em> that, in an imperative language such as
+C, that <tt>fred(x) = fred(x)</tt> for a call of an arbitrary function <tt>
+fred</tt> -  fred might side-effect a global variable, so evaluations of
+<tt>fred</tt> in apparently identical circumstances can yield different
+results.</p>
+
+<li> A user can dignify certain variable-bindings with the status of being
+<em>definitions</em>. These take place in a "global" context (one from
+which the user can never exit during a session). These are tricky to handle
+because we have to make sure that the global variables defined therein
+don't get confused with other locals. Suppose we made the simple
+definition:
+
+<pre>
+Definition double = \x. 2*x
+End;
+</pre>
+
+As a result, the system creates an object with the status of a theorem:
+<pre>
+    |- double = \x. 2*x
+</pre>
+
+
+<p>However
+we have no control over the scope of such a theorem - we certainly
+don't want to get the "double" confused with any one we might want to
+define locally.  This is an issue currently unresolved in the design of
+POP2000 - it would not however be problematic to ensure in some way that
+local and global variables have distinct names, when used in theorems
+derived from definitions.
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+
+<HTML>
+<HEAD>
+   <TITLE> Type Inference </TITLE>
+
+</HEAD>
+<BODY bgcolor = "white">
+
+<H1><center> Type Inference</center></H1>
+
+
+<p> Type systems provide a kind of weak logic.
+
+<h4>Binding Right</h4>
+
+
+<h4>Type-Abstraction</h4>
+
+<center><pre>
+
+
+Env + x:alpha |-  E : beta
+____________________________________________
+
+     Env |-  (\x. E) : beta
+
+
+</pre></center>
+
+
+<h2> The Type System Used by POP2000</h2>
+
+For POP2000 we have to adapt the above system to support type-inclusion.
+
+<p>The main idea is that we ascribe types to
+
+
+
+
+<h4>Type-Application</h4>
+
+<center><pre>
+
+
+Env  |-  F: alpha->beta      Env |- E:alpha
+____________________________________________
+
+     Env |-  (F E) : beta
+
+
+</pre></center>
+
+
+
+
+
+
+
+<h4>Type-Abstraction</h4>
+
+<center><pre>
+
+
+(rho + x:alpha,C) |-  E : beta
+____________________________________________
+
+(rho, C)     Env |-  (\x. E) : beta
+
+
+</pre></center>
+
+<h4>Type-Application</h4>
+
+<center><pre>
+
+
+Env  |-  F: alpha->beta      Env |- E:alpha
+____________________________________________
+
+     Env |-  (F E) : beta
+
+
+</pre></center>
+
+
+
+
+
+
+
+<center>
+<img src="type_lattice.gif">
+</center>

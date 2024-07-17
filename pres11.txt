@@ -1,0 +1,226 @@
+
+
+
+-----------------------------------------------------------------------
+1  State and the Imperative Paradigm
+-----------------------------------------------------------------------
+
+Many   computations   in   real    world
+applications of  computing require  that
+we need a concept of state.
+
+    Travel reservations
+
+    Banking
+
+    Status of students in University
+    records.
+
+
+
+
+
+Scheme provides a special form
+
+    (set! var expr)
+
+Equivalent  to  the  Pascal   assignment
+statement
+
+    var := expr
+
+or in C
+
+    var = expr
+
+
+
+The interpretation of
+
+    (set! var expr)
+
+the expression expr is evaluated
+
+the variable var is rebound to have  the
+resulting value.
+
+
+
+When it  occurs at  the top  level,  the
+special form
+
+(define var expr)
+
+creates a new variable  var
+if it does not  already exist
+
+then does in   effect
+
+    (set! var expr)
+
+
+
+Assignment can  be  used to  record  the
+amount of money  held in  a single  bank
+account
+
+[equivalent to a very elementary  Pascal
+or C program]
+
+
+(define balance 100)
+
+(define withdraw!
+    (lambda (amount)
+        (if (>= balance amount)
+            (begin
+                (set! balance
+                    (- balance amount))
+                (list 'balance balance)
+                )
+            "Insufficient funds"
+            )
+        )
+    )
+
+
+
+
+There is  a convention  that  procedures
+which act imperatively have names ending
+in a shriek, as in _________withdraw!.
+
+
+(example '(withdraw! 34) '(balance 66))
+
+(example '(withdraw! 60) '(balance 6))
+
+(example '(withdraw! 8)  "Insufficient funds")
+
+
+
+When  combined  with   the  concept   of
+<em>higher order  functions</em> we  get
+some interesting behaviour.
+
+We  can  make  _______balance  be  a   variable
+associated with an  arbitrary number  of
+individual accounts
+
+How? Wrap the  ________withdraw! function  above
+in an outer function.
+
+
+(define (make_account balance)
+    (lambda (amount)
+        (if (>= balance amount)
+            (begin
+                (set! balance
+                    (- balance amount))
+                (list 'balance balance)
+                )
+            "Insufficient funds"
+            )
+        )
+    )
+
+(define jane (make_account 200))
+(define andrew (make_account 100))
+
+(example
+   '(jane 40)
+   '(balance 160))
+
+(example
+   '(andrew 45)
+   '(balance 55))
+
+(example
+   '(andrew 65)
+   "Insufficient funds")
+
+(example
+    '(jane 5)
+    '(balance 155))
+
+In introducing  ___set! we  have  destroyed
+our ability to explain Scheme purely  in
+terms of substitution.
+
+Consider _____________(make_account ____100) Substituting
+100 for _______balance in the body:
+
+    (lambda (amount)
+        (if (>= balance amount)
+            (begin
+                (set! balance
+                    (- balance amount))
+                (list 'balance balance)
+                )
+            "Insufficient funds"
+            )
+        )
+
+we obtain
+
+    (lambda (amount)
+        (if (>= 100 amount)
+            (begin
+                (set! 100
+                    (- 100 amount))
+                (list 'balance 100)
+                )
+            "Insufficient funds"
+            )
+        )
+
+
+When we construct a model evaluators for
+Scheme in subsequent lectures, we  shall
+see  how   the   conceptually   simplest
+evaluator fails  to give  an account  of
+_____set!.
+
+
+-----------------------------------------------------------------------
+1  Creating extra slots with let
+-----------------------------------------------------------------------
+
+Suppose we want to make a record of  the
+number of transactions made into a given
+account.
+
+
+(define (make_account balance)
+    (let ((n_trans 0))
+        (lambda (amount)
+            (if (>= balance amount)
+                (begin
+                  (set! balance
+                    (- balance amount))
+                  (set! n_trans
+                    (+ n_trans 1))
+                  (list
+                   'transaction n_trans
+                   'balance balance)
+                  )
+              "Insufficient funds"
+              ) ;end if
+            )     ;end lambda
+        )         ;end let
+    )             ;end define
+
+
+
+
+
+(define jane (make_account 200))
+(define andrew (make_account 100))
+
+(example
+   '(jane 40)
+   '(transaction 1 balance 160))
+
+(example
+   '(jane 20)
+   '(transaction 2 balance 140))

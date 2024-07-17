@@ -1,0 +1,1002 @@
+
+<html><head><title>
+
+POP2000 Model
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+
+<h1> Computational Universes </h1>
+
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+
+<h2> Discussion </h2>
+If we want to regard computation as being <em>algebraic</em> in nature,
+then it is natural to think of Shonfinkel's combinators as providing a
+basis. Thus, we would think of having an algebra U, called a
+<em>computational universe</em> in which the laws
+
+<ul>
+        <b>S</b> f g x = (f x) (g x)  <br>
+        <b>K</b> k x   = k
+</ul>
+
+hold. </p>
+
+We would like such a universe to be countably infinite, but will clearly
+have to accept that many problems, such as the equality of its members,
+will be undecidable.
+
+
+
+<p>We do not want to be prescriptive about a particular universe. For a  start
+we are not taking a <em> reductionist  </em> approach, in which a universe  is
+constructed from an ultra-simple base.  For, while a reductionist approach  is
+intellectually satisfying, it  fails to address  the engineering realities  of
+the construction  of any  programming language,  namely that  any  programming
+language is implemented on  an existing computer which  will offer a range  of
+quite complex capabilities. Moreover, since it is desirable for a language  to
+be implementable on a range of computers, it is better that it be specified in
+terms of  a relatively  high-level universe,  which can  then be  mapped  to a
+specific computer.
+
+<p>
+Given that we expect to incorporate some quite high-level operations in our
+universes, it is useful to avoid prescribing exactly what they are, beyond
+the minimum required to achieve a computational capability. For different
+programming languages can be considered as defined on different basis of
+primitive operations.
+
+<p>[Note for the html form of the document - we shall write <= for set
+inclusion, \/ for set-union and /\ for set intersection. We shall also
+use == to denote an equivalence operation]
+
+<h4>Definition of Universe</h4>
+A computational universe is an algebra U with a single non-associative
+operator (called "application") subject to the  axioms below. We write
+application as juxtaposition, so that  u<sub>1</sub> u<sub>2</sub> denotes
+the application of the element u<sub>1</sub> of U to the element
+u<sub>2</sub> of U.
+
+<ul>
+<li>  U1  There is an element <b>K</b> in U with the property that (<b>K</b> k) x = k
+          for all k, x in U, x not in E.
+<li>  U2  There is a subset  Str <=U of <em>strict operations</em>
+<li>  U3  There is a subset  E <= U, with the property that  e x = e,
+          x e = e for all e in E, x in Str. The members of E are called
+          <em>exceptions</em>.
+<li>  U4  There is an element <b>S</b> in U with the property that for all
+          f, g, x in U  for which one of the two following conditions
+holds:
+<ul>
+<li> <i><b>S</b> f g x = (f x) (g x)</i>
+<li>    <i> <b>S</b> f g x</i> in </i>E</i>
+</ul>
+<li>   U4  U is finitely generated from a base-set B <= U.
+
+</ul>
+
+<p>If the set E is empty, we say that U is a universe without exceptions.
+
+<p>Remark: the above axioms are characteristic of an eager language. For
+under lazy evaluation, the argument of (<b>K</b> k) x would not be evaluated, so
+there would be no way of discovering if it were an exception.
+
+
+<h3>Free Universes.</h3>
+
+Let B be a set of base elements. We define a term in B as follows
+
+<ul>
+<li>  b in B is a term.
+<li>  if t<sub>1</sub> and t<sub>2</sub> are terms then the formal product
+      (t<sub>1</sub> t<sub>2</sub>) is a term.
+<li>  there is a distinct term <b>S</b>
+<li>  there is a distinct term <b>K</b>
+</ul>
+
+Then the <em> free computational universe </em>  Free(B) is the set of
+equivalence classes of terms of B under the laws:
+
+<ul>
+<li> F1: <b>K</b> k x == k
+<li>  F2: <b>S</b> f g x == (f x) (g x)
+</ul>
+
+<p>
+That is, the equivalence relation is the symmetric and transitive closure
+of  t<sub>1</sub>->t<sub>2</sub>  iff t<sub>1</sub> can be converted into t<sub>2</sub> by substituting an instance of
+the left-hand-side of F1 or F2 by the corresponding instance of its RHS.
+
+<p> Let us denote by <i>t'</i> the equivalence class to which a given term
+<i>t</i> belongs.
+
+<hr>
+
+<h4> Theorem </h4>
+For any finite set B, Free(B) is a non-strict computational universe
+which is exception free.
+
+<h4>Proof</h4>
+Firstly, we need the following lemmas, the first of which shows that
+application is well-defined,
+
+<ul>
+
+<h4>Lemma</h4>
+if t<sub>11</sub>==t<sub>21</sub>
+and t<sub>12</sub>==t<sub>22</sub>
+then (t<sub>11</sub> t<sub>12</sub>) == (t<sub>21</sub> t<sub>22</sub>)
+
+<h4> Proof (sketch) </h4>
+
+By the definition of equivalence, we can transform t<sub>11</sub>
+to t<sub>21</sub> by a sequence of applications of the laws F1 and
+F2. Likewise we can transform t<sub>12</sub>
+to t<sub>22</sub> by a sequence of applications of F1
+and F2. We can combine these sequences to transform (t<sub>11</sub> t<sub>12</sub>) to (t<sub>21</sub> t<sub>22</sub>).
+Hence (t<sub>11</sub> t<sub>12</sub>) == (t<sub>21</sub> t<sub>22</sub>)
+
+<h4>Lemma</h4>
+If t1 and t2 are terms, then the term (<b>K</b> t1 t2) == t1.
+
+<h4>Proof</h4>
+
+This is immediate from the definition of ==.
+
+
+<h4>Lemma</h4>
+If t1, t2 and t3 are terms, then the term (<b>S</b> t1 t2 t3) == (t1 t3) (t2 t3)
+
+<h4>Proof</h4>
+
+Again, this is immediate from the definition of ==.
+
+</ul>
+
+
+Let us denote the equivalence class of a term <i>t</i> by <i>t'</i>.
+then it is clear that for all equivalence classes k' x',
+
+<ul>
+    <b>K</b>' k' x'  = (<b>K</b> k)' x'  -----[by definition of application]<br>
+    = (<b>K</b> k x)' -----------[by definition of application]<br>
+    = k' ---------------[by definition of equivalence]
+</ul>
+
+and for all equivalence classes  f' g' x'
+
+<ul>
+<b>S</b>' f' g' x' = (<b>S</b> f)' g' x' = (<b>S</b> f g)' x' = (<b>S</b> f g x)'
+---by definition of application<br>
+
+ = ((f x) (g x))'--------------------by definition of equivalence<br>
+= (f x)' (g x)' = (f' x') (g' x') -------by definition of application<br>
+</ul>
+
+We can take the exception-set E of the universe to be the empty-set {}.
+Given that E is empty, all operations are non-strict.
+
+<hr>
+
+<p>
+So, it seems that we have a countably infinite model of a computational
+universe. It should be noted that this is not a constructive algebra in the
+sense that we can decide whether any two members are equal - the word
+problem is insoluble. However it does mean that we can go ahead with a
+clear conscience and prove a few things about computational universes
+without the agonising suspicion that we are talking about nothing.
+
+<hr>
+<h4>Lemma </h4>
+If U is a computational universe with Shonfinkel combinators <b>S</b> and <b>K</b> and
+exception set E,
+then
+for all u in U, u not in E, <b>SKK</b>u = u.
+
+<h4>
+Proof</h4>  SKKu = (Ku)(Ku) = u.
+
+<p>
+[??? this is flawed - we have to allow that S may crash on non-exception
+arguments, cos we can render the Y-combinator in SK terms. So we need some
+concept of ]
+
+<hr>
+
+<h4>Definition</h4>
+We shall call <b>SKK</b> the <b>I</b>-combinator.
+
+<hr>
+
+<h2>Types of Object</h2>
+<p> In general we are interested in being able to prove properties of
+expressions in a given computational universe. In particular, we will be
+anxious to know in what circumstances an exception can arise. While proving
+that an exception can <em>never</em> occur is a hard problem, we can quite
+easily predict circumstances in which an exception will occur.
+
+<p>Following the standard approach of computer science, we introduce the
+notion of <em>types</em> of object.
+
+
+<h4>Definition</h4>
+Let U be a computational universe. Then a type T<=U is a subset of U.
+
+<h4> Discussion</h4>
+The above definition of type is non-constructive. It will serve nevertheless
+to establish some basic attributes of types. Naturally we will have to
+find a way of constructively specifying a range of types sufficiently
+diversified as to support worthwhile discovery of erroneous code. However our
+investigation of non-constructive types will identify operations that we need
+to perform constructively.
+
+
+
+<p>
+To see the difficulty of proving that an exception can never occur,
+consider the exception raised by division by zero.
+We might think that we could elaborate our type-system to avoid the
+possibility of well-typed expressions raising an exception, but this can
+rapidly be seen to be impossible -  consider the rational function:
+
+<pre>
+                 P[x]
+    R[x]   =   --------
+                 Q[x]
+</pre>
+
+<p>
+to know whether R[x] will raise an exception, we have to know the zeros of the
+polynomial Q[x], which is a non-trivial (and indeed in a certain sense,
+insoluble) problem. Even if we relaxed our requirement to "f(a) evaluates
+without exception almost everywhere in A", we still have problems, since to
+know that this statement is true of R[x] requires knowledge, if not of
+the Fundamental Theorem of Algebra, at least of the fact that a polynomial can
+have at most n roots, which, if not exactly a profound theorem, is certainly
+beyond the scope of knowledge that it is reasonable to expect a type-system to
+possess.
+
+
+<h4>Definition</h4>
+Let U be a computational universe, with exception set E. We say that p in U is
+a procedure if for some u in U, the application (p u) is not in E.
+
+<p>
+We denote the type of procedures of U by Proc(U), and of exceptions by
+Exc(U).
+
+
+<p>
+
+
+<h4>Definition</h4>
+
+If U is a universe and D and R are types of U, then D->R is the type
+
+<ul>
+    {p | p in Proc(U) & All d. d in D implies (p d) in R }
+</ul>
+
+<p>
+Thus if <i>p</i> is a procedure, we say that <i>p</i> has the type D->R if <i>p</i> in D->R. It
+should be noted that in general, <em>no unique function-type can be
+ascribed to a procedure</em>.  For a given procedure object <i>p</i>
+it is possible that
+<i>p in  D<sub>1</sub> -> R<sub>1</sub></i>
+and also  <i>p in D<sub>2</sub> -> R<sub>2</sub></i> where there is
+way of subsuming these two relationships in the form of
+<i>p in  D<sub>3</sub> -> R<sub>3</sub></i> without losing useful
+discriminatory power. For example, the absolute value function in most
+first-generation Lisp derivative languages belongs to the following
+function-types:
+
+<ul>
+abs in Integer -> Integer <br>
+abs in Number -> Number
+</ul>
+
+But the second does not subsume the first, because the first statement
+tells us the relevant fact that if we give <i>abs</i> an integer as
+argument it returns an integer as result.
+
+<p>
+
+<hr>
+
+<h4>Lemma (contravariance of domain, covariance of range)</h4>
+
+<p>
+If D<sub>1</sub>, D<sub>2</sub>, R<sub>1</sub>, R<sub>2</sub>,
+are types for which D<sub>2</sub><=D<sub>1</sub> and
+R<sub>1</sub><=R<sub>2</sub>,
+then  D<sub>1</sub>->R<sub>1</sub>
+<= D<sub>2</sub>->R<sub>2</sub>
+
+
+<h4>Proof</h4>
+
+<p>
+Let <i>p in D<sub>1</sub>->R<sub>1</sub></i>.
+
+Then <i>(p d<sub>1</sub>)</i> in <i>R<sub>1</sub></i>
+for all <i>d<sub>1</sub> in D<sub>1</sub></i>.
+
+<p>But D<sub>2</sub><=D<sub>1</sub>. Hence
+for all d<sub>2</sub> in D<sub>2</sub>, (p d<sub>2</sub>) in R<sub>1</sub>.
+Since however <i>R<sub>1</sub> <= R<sub>2</sub></i>, we see that
+<i>(p d<sub>2</sub> in R<sub>2</sub> </i>.
+
+<p> Thus we have shown that any <i>p in D<sub>1</sub>->R<sub>1</sub></i>.
+maps D<sub>2</sub> to R<sub>2</sub>, thus establishing our lemma.
+<hr>
+
+<p>
+A consequence of the contravariance rule is that, for example, despite the
+fact that  Integer<=Number, the type Integer->Integer is not contained
+in the type Number->Number.   Thus the inteersection
+<ul>
+    (Integer->Integer) /\ (Number->Number)
+</ul>
+<p>
+is non-redundant.
+
+
+<p>
+A simple converse of these two lemmas is clearly not true of all domains.
+for consider a domain without procedure objects. Then D->R is always the
+empty-set, so that D<sub>1</sub>->R<sub>1</sub><=D<sub>2</sub>->R<sub>2</sub> is true for any domains and ranges whatever.
+So, discussion of the converse of these lemmas will have to wait until we have
+established how richly populated our Procedure type needs to be.</p>
+
+<hr>
+<hr>
+
+<h2>Finding the Type of an Expression</h2>
+
+In this section we prove some results required to be able to infer the type
+of an expression in a computational universe.
+
+
+<h3> The Type of Shonfinkel Combinators. </h3>
+
+Since the combinators are denizens of every universe, let's start with
+their type. As might be expected for such general operators, anything one
+can say about their type is universally quantified over one or more
+type-variables.</p>
+
+<hr>
+<h4>Lemma</h4>
+
+If T is a type, then <b>I</b>:T->T
+
+
+<h4>Proof</h4>
+
+<p>
+Let t in T. Then <b>I</b> t = t. Thus <b>I</b> in T->T.
+
+<hr>
+<h4>Lemma</h4>
+
+If T<sub>1</sub> and T<sub>2</sub> are types, then <b>K</b> in T<sub>1</sub>->T<sub>2</sub>->T<sub>1</sub>
+
+<h4>Proof</h4>
+
+Let t<sub>1</sub> in T<sub>1</sub>, consider (<b>K</b> t<sub>1</sub>). For all t<sub>2</sub> in T<sub>2</sub>, (<b>K</b> t<sub>1</sub>) t<sub>2</sub> = t<sub>1</sub>. Thus
+(<b>K</b> t<sub>1</sub>) in T<sub>2</sub>->T<sub>1</sub>. Hence <b>K</b> in T<sub>1</sub>->(T<sub>2</sub>->T<sub>1</sub>)
+
+<hr>
+
+<h4>Lemma</h4>
+
+If <i>T<sub>1</sub>,
+T<sub>2</sub>, T'<sub>2</sub></i> and <i>T<sub>3</sub></i> are types
+of  a  universe  <i>U</i>  without  exceptions,  where
+<i>T'<sub>2</sub> <= T<sub>2</sub></i>,
+then
+<b>S</b>   in
+<i>(T<sub>1</sub>->T<sub>2</sub> -> T<sub>3</sub>) ->
+(T<sub>1</sub>->T'<sub>2</sub>)  ->  T<sub>1</sub>   ->
+T<sub>3</sub></i>
+
+<h4>Proof</h4>
+
+<p> It is sufficient to show that if <i>f</i> in
+<i>T<sub>1</sub>->T<sub>2</sub>->T<sub>3</sub></i>
+then <i>(<b>S</b> f)</i> in
+<i>(T<sub>1</sub>->T'<sub>2</sub>)->T<sub>1</sub>->T<sub>3</sub></i>
+
+<p> Hence it suffices to show that if, in addition,  <i>g</i> in
+<i>T<sub>1</sub>->T'<sub>2</sub></i> then  <i>(<b>S</b> f g)</i>
+in <i>T<sub>1</sub> -> T<sub>3</sub></i>.
+
+<p> Hence it suffices to show that if, in addition,
+<i>x</i> in  <i>T<sub>1</sub></i> then
+<i> <b>S</b> f g x</i> in <i>T<sub>3</sub></i>.
+
+<p>  But  <i><b>S</b>  f  g  x  =  (f  x)  (g  x)</i>.  Since  <i>x</i>  in
+<i>T<sub>1</sub></i>,             and              <i>f</i>              in
+<i>T<sub>1</sub>->T<sub>2</sub>->T<sub>3</sub></i>, it follows  that (f  x)
+in T<sub>2</sub>->T<sub>3</sub>.  Likewise  (g  x)  in  T'<sub>2</sub>.
+But
+<i>T'<sub>2</sub><=T<sub>2</sub></i>,
+so that <i>((f x) (g x))</i> in <i>T<sub>3</sub></i>. Hence
+<i>(<b>S</b>  f   g   x)</i>  in   <i>T<sub>3</sub></i>,
+hence  <i>(<b>S</b>   f   g)</i>   in
+<i>T<sub>1</sub>->T<sub>3</sub></i>,
+hence        <i>(<b>S</b>       f)</i>        in
+<i>(T<sub>1</sub>->T'<sub>2</sub>)->T<sub>1</sub>->T<sub>3</sub></i>,
+hence
+<ul>
+<b>S</b>
+in
+<i>(T<sub>1</sub>->T<sub>2</sub>->T<sub>3</sub>)->(T<sub>1</sub>->T'<sub>2
+</sub>)->T<sub>1</sub>->T<sub>3</sub></i>
+</ul>.
+
+<p>
+One interpretation of the above results is that a <em>particular</em> type
+for one of the combinators is as an intersection. For example, for any two
+types T1 and T2:
+
+<ul>
+   <b>I</b>
+in (T<sub>1</sub> -> T<sub>1</sub>)/\( T<sub>2</sub> -> T<sub>2</sub>)
+</ul>
+
+<hr>
+<h3> Finding the type of an application</h3>
+
+
+<p>
+The following lemma suggests how we can ascribe a type to a
+function-application, where the function belongs to a type-intersection.
+
+<h4>Lemma</h4>
+
+Let <i>p</i> in
+<i>D<sub>1</sub>->R<sub>1</sub> /\ D<sub>2</sub>->R<sub>2</sub>
+...D<sub>n</sub>->R<sub>n</sub></i>.
+Let <i>d</i> in <i>D<sub>1</sub> /\ D<sub>2</sub>..D<sub>n</sub></i>.
+Then <i>(p d)</i> in <i>R<sub>1</sub>/\R<sub>2</sub>...R<sub>n</sub></i>.
+
+<h4>Proof</h4>
+
+<p>   For   all   i   of   1..n,    d   of   D<sub>i</sub>.   Now   p    of
+D<sub>i</sub>->R<sub>i</sub>. Hence (p d) of R<sub>i</sub> for  all i
+of 1..n.
+
+<hr>
+
+To apply this lemma, suppose we have an expression <i>(p x)</i> where
+<i>p in
+D<sub>1</sub>->R<sub>1</sub> /\ D<sub>2</sub>->R<sub>2</sub>
+...D<sub>n</sub>->R<sub>n</sub></i>, and x in X, for some type X. Then
+we choose a subsequence
+<i>D<sub>j<sub>1</sub></sub>...D<sub>j<sub>k</sub></sub></i> of the
+<i>D<sub>i</sub></i> for which
+<i>X<=D<sub>j<sub>1</sub></sub>...<=D<sub>j<sub>k</sub></sub></i>. Then we
+can infer that <i>(p x)</i> in
+<i>R<sub>j<sub>1</sub></sub>...R<sub>j<sub>k</sub></sub></i>
+
+
+<hr>
+
+<p>From the covariance-contravariance lemma, we can readily infer the
+following.
+
+
+<h4>Lemma</h4>
+
+(D<sub>1</sub>\/D<sub>2</sub>)     ->      (R<sub>1</sub>/\R<sub>2</sub>)
+<=
+(D<sub>1</sub>->R<sub>1</sub>)/\(D<sub>2</sub>->R<sub>2</sub>).
+
+
+<h2> Particular Universes </h2>
+
+A universe U is said to <em>have the integers embedded</em> if there is
+a type Integer<=U for which
+
+<ul>
+
+    <p> There is an element 0 in <b>Integer</b>
+    <p> There is an element 1 in <b>Integer</b>
+    <p> There is an element + in
+        <b>Integer</b>-><b>Integer</b>-><b>Integer</b>
+        with the property that for
+        all <i>x,y,z</i> in
+        <b>Integer</b>
+<ul>
+            (+ 0 x) = x <br>
+            (+ x y) = (+ y x)<br>
+            (+ (+ x y) z) = (+ x (+ y z))
+</ul>
+    <p>  There is an element <i>negate</i> in
+        <b>Integer</b>-><b>Integer</b> with the property that
+        (+ (negate x) x)  = 0
+    <p> There is an element * in
+        <b>Integer</b>-><b>Integer</b>-><b>Integer</b>
+        with the property that for
+        all <i>x,y,z</i> in
+        <b>Integer</b>
+<ul>
+            (* 0 x) = 0 <br>
+            (* 1 x) = x <br>
+            (* x y) = (* y x)<br>
+            (* (* x y) z) = (* x (* y z)) <br>
+            (* x (+ y z)) = (+ (* x y) (* x z))
+</ul>
+     <p> For all <i>x,y,z</i> in <b>Integer</b>,
+     <i> (* x y) = (* x z)</i> implies <i> y = z or x=0 </i>
+
+     <p><b>Integer</b> is generated by <i>0,1,+,*,negate</i>
+
+</ul>
+<hr>
+
+<p>Let us now consider the problem of embedding the rationals in a universe
+which already has embedded  integers. We could go  about this in two  ways.
+The rationals could be made disjoint from the integers (which would be  the
+way it would be done in SML), or  they can be made to include the  integers
+(as in Common Lisp, Scheme, POP-11, Mathematica).
+
+
+A universe U is said to <em>have the rationals embedded</em> if there is
+a type <b>Rational</b><=U for which
+
+<ul>
+
+    <p> There is an element 0 in <b>Rational</b>
+    <p> There is an element 1 in <b>Rational</b>
+    <p> There is an element + in
+        <b>Rational</b>-><b>Rational</b>-><b>Rational</b>
+        with the property that for
+        all <i>x,y,z</i> in
+        <b>Rational</b>
+<ul>
+            (+ 0 x) = x <br>
+            (+ x y) = (+ y x)<br>
+            (+ (+ x y) z) = (+ x (+ y z))
+</ul>
+    <p>  There is an element <i>negate</i> in
+        <b>Rational</b>-><b>Rational</b> with the property that
+        (+ (negate x) x)  = 0
+    <p> There is an element * in
+        <b>Rational</b>-><b>Rational</b>-><b>Rational</b>
+        with the property that for
+        all <i>x,y,z</i> in
+        <b>Rational</b>
+<ul>
+            (* 0 x) = x <br>
+            (* 1 x) = x <br>
+            (* x y) = (* y x)<br>
+            (* (* x y) z) = (* x (* y z)) <br>
+            (* x (+ y z)) = (+ (* x y) (* x z))
+</ul>
+
+    <p> There is an element reciprocal in
+        <b>Rational</b>-><b>Rational</b>-><b>MayFail(Rational,e_div)</b>
+        with the property that for
+        for all <i>x/=0</i> in <b>Rational</b>
+         (* (reciprocal x) x) = 1
+
+     <p><b>Rational</b> is generated by <i>0,1,+,*,negate,reciprocal</i>
+     <p>There is no sequence <i>x<sub>0</sub>...x<sub>n</sub></i> for
+        which  x<sub>0</sub> = 1 = x<sub>n</sub> and
+        x<sub>i</sub> =  (* a x<sub>i-1</sub>), a/=0
+</ul>
+<hr>
+
+
+We can regard a universe with the rationals embedded as also being a
+universe with  the integers embedded, if we restrict ourselves to the
+sub-universe generated by 0,1,+,*,negate.
+
+
+<ul>
+    + in <b>Integer</b>-><b>Integer</b>-><b>Integer</b> /\ <b>Rational</b>-><b>Rational</b>-><b>Rational</b><br>
+    * in <b>Integer</b>-><b>Integer</b>-><b>Integer</b> /\ <b>Rational</b>-><b>Rational</b>-><b>Rational</b><br>
+    negate in <b>Integer</b>-><b>Integer</b> /\ <b>Rational</b>-><b>Rational</b><br>
+</ul>
+
+
+<hr>
+
+<h2> The Hindley-Milner Type Universe </h2>
+
+<h4>Definition</h4>
+Let <b>T</b> be a finite set of entities called <em>concrete types</em>.
+Let V be a countably infinite set of <em>type variables</em>.
+Let <i>e</i> be an exception. Then a type-term is defined as
+<ul>
+<br>  If <i>T</i> in <b>T</b> then <i>T</i> is a type-term.
+<br>  If <i>v</i> in <i>V</i> then <i>v</i> is a type-term.
+<br>  e is a type-term
+<br>  If <i>t<sub>1</sub></i> and <i>t<sub>2</sub></i> are type-terms,
+      then <i>t<sub>1</sub> -> t<sub>2</sub></i> is a type-term.
+</ul>
+
+<h4>Definition</h4>
+We say that two type-terms <i>t<sub>1</sub></i> and  <i>t<sub>2</sub></i>
+are type-equivalent if the most-general-unifier
+<ul>
+<i>mgu (<i>t<sub>1</sub></i>, <i>t<sub>2</sub></i>)</i>
+</ul>is a permutation of type-variables.
+
+<p> Clearly the concept of type-equivalence defined above is an equivalence
+relation.
+
+<h4>Definition</h4>
+If <b>T</b> is a set of base-types, and <i>V</i> is a countably infinite
+set of type variables, then the Hindley-Milner Universe is the set of
+equivalence classes of type-terms under type  equivalence. As before, we
+will denote the equivalence class corresponding to a term <i>t</i> by
+<i>t'</i>.
+
+<p>
+Clearly, if we have two members u1,u2 of a Hindley-Milner Universe  U, we
+can choose two terms t1,t2 with distinct type variables such that u1 = t1'
+and u2 = t2'.
+
+<h4>Definition</h4>
+If <i>u<sub>1</sub></i> and <i>u<sub>2</sub></i> are members of
+<i>HM(<b>T</b>,V)</i> then the application
+<i>(u<sub>1</sub> u<sub>2</sub></i>)
+is defined as follows
+<ul>
+If   u<sub>1</sub> = (t<sub>D</sub> -> t<sub>R</sub>)'
+and  u<sub>2</sub> = t<sub>2</sub>'
+where the type-variables of <i>t<sub>2</sub></i> are distinct from those
+of t_D and t_R,
+and  s = mgu(t<sub>D</sub>,t<sub>2</sub>)
+then
+<i>(u<sub>1</sub> u<sub>2</sub>) = (s(t<sub>R</sub>))' </i>
+<br>
+Otherwise
+<i>(u<sub>1</sub> u<sub>2</sub>) = e </i>
+
+</ul>
+
+<h4>Lemma</h4>
+With the above definition of application, the
+Hindley-Milner Universe U=HM(<b>T</b>,V,e) is a computational universe
+with exception {e}
+
+<h4>Proof</h4>
+
+<ul>  <p>well-defined....
+
+<p>
+Consider  (v1->v2->v1)' in U, where v1,v2 are distinct type-variables.
+Let t1' t2' in U with type-variables
+distinct from v1,v2.  Then
+<ul>
+(v1->v2->v1)' t1' t2' =  ((v1->(v2->v1))' t1') t2'<br>
+
+= (v2 -> t1)' t2' ----------------------- with mgu(v1,t1) = [v1.t1]  <br>
+ = t1'------------------------------- with mgu(v2,t2) = [v2.t2].
+</ul>
+So, if we set <b>K</b> = (v1->v2->v1)', the K-axiom is satisfied.
+
+
+<p>
+Consider S = ((v1->v2->v3) -> (v1->v2) -> v1 -> v3)'
+Let  f', g' and x' be in U.
+<br>   If sf = mgu(f,(v1->v2->v3) then  (S f) = (sf((v1->v2) -> v2->v3))'
+<br>   if sg = mgu(g,sf(v1->v2)) then   (S f g) = (sg (v1->v3))'
+<br>   if sx = mgu(x,sg(v1))  then (S f g x) = (sx(v3))'
+<br>  Otherwise, if any of the most-general-unifiers does not exist,
+(S f g x) in E.
+
+
+<p>Now consider ((f' x') (g' x')).
+f = sf(v1->v2->v3), x = sx(sg((v1))
+
+
+If this does not evaluate to e, then
+there exist  t_D and t_R for which
+  (f' x') = (t_D -> t_R)'
+  s = mgu(t_D,g)
+
+
+
+</ul>
+
+<!--
+<pre>
+   (u   ->   v   ->   w)     ->   (u   ->   v)   ->   u   ->    w
+    |        |        |            |        |         |         |
+    |        |        |            |        |         |         |
+    |        |        |            |        |         |         |
+    |        |        |            |        |         |         |
+   sf(u) ->sf(v) -> sf(w)        (sf(u) -> sf(v))-> sf(u)  -> sf(w)
+                                   |        |         |         |
+    ------   f  ------             |        |         |         |
+                             -------        |         |         |
+                             |            ---         |         |
+                             |            |           |         |
+                          sg(sf(u))   sg(sf(v))    sg(sf(u))  sg(sf(w))
+                                                      |         |
+                             |            |           |         |
+                             ----  g   ----           |         |
+                                                sx(sg(sf(u)))   |
+                                                  |        |    |
+                                                  -- x -----    |
+                                                                |
+                                                           sx(sg(sf(w)))
+
+                                                           (S f g x)
+
+
+
+Consider the expression
+
+<ul>
+     S(S (K +) (K 3)) I
+</ul>
+for any x
+
+     S(S (K +) (K 3)) I x    =  (S (K +) (K 3) x) (I x)
+    =  ((K +) x)  ((K 3) x)  x
+    =   (+ 3 x)
+
+That is S(S (K +) (K 3)) I   is the function "add 3". How can we type this?
+
+     (K +) has the type   T1 -> (Z->Z->Z/\Q->Q->Q)
+     (K 3) has the type   T2 -> Z
+
+
+
+
+
+
+For any types T<sub>1</sub>,T<sub>2</sub>
+
+cons : T<sub>1</sub> -> T<sub>2</sub> -> Prod(T<sub>1</sub>,T<sub>2</sub>)
+front: Prod(T<sub>1</sub>,T<sub>2</sub>) -> T<sub>1</sub>
+back :  Prod(T<sub>1</sub>,T<sub>2</sub>) -> T<sub>2</sub>
+
+
+
+
+
+
+
+<h2> Terms and their Denotation </h2>
+
+<p>
+In this section we will show how we can characterise any computation as
+<em>evaluating</em> an expression in the Universe. An expression can consist
+of
+
+<ul>
+<li>
+    a variable    v
+<li>
+    an abstraction  \v.e
+<li>
+    an application   (e1 e2)
+</ul>
+
+<p>
+Now one question arises "what does a variable standing by itself mean?".
+Generally, we think of variables as standing for something else. It is
+reasonable therefore to require our expressions to contain only bound
+variables.
+
+<p>
+First let us consider abstractions. We would like the abstraction
+
+    \x.(+ x 3)
+
+<p>
+to "mean" the function "add 3". so that
+
+    (\x.(+ x 3) 7)   ==> 10
+
+
+<p>
+Thus we get to understanding the meaning of the application
+of a lambda-abstraction to arguments in terms of <em>substitution</em>.
+However we shall adopt a different approach here, motivated by the fact that
+the concept of a <em>variable</em> and its scope can be tricky to handle.
+
+<p>
+We define a denotation mapping from Universe->Universe as
+
+    Den[(\v.v)]   =  <b>I</b>
+    Den[(\v.u)]   =  (E `free variable`)
+    Den[(\v.c)]   =  <b>K</b> c
+    Den[(e1 e2)]  =  (<b>S</b> Den[e1] Den[e2])
+
+
+
+
+
+
+
+
+<p>
+Any object O in Universe can play the role of being a <em>term</em>.
+Let us define a <em>denotation function</em> Den:Universe->Universe as
+follows:
+
+Den(\x.x) = <b>I</b>
+Den(\x.c) = <b>K</b> c
+Den(\x. e1 e2) = <b>S</b> (Den e1) (Den e2)
+
+
+<h4>Lemma</h4>
+
+If D<sub>1</sub>, D<sub>2</sub>, R<sub>1</sub>,  R<sub>2</sub> are types,  and
+D<sub>1</sub>  is   a  recognisable   type,   with  recogniser   is_D1,   then
+D<sub>1</sub>->R<sub>1</sub>     <=      D<sub>2</sub>->R<sub>2</sub>      ==>
+D<sub>2</sub><=D<sub>1</sub> and R<sub>1</sub><=R<sub>1</sub>.
+
+<h4>Proof</h4>. Suppose D<sub>2</sub> is  not included in D<sub>1</sub>.  Then
+there is a d<sub>2</sub> in D<sub>2</sub>, d<sub>2</sub> not in D<sub>1</sub>.
+Consider f = \x. if (is_D1 x) instance(D<sub>1</sub>)
+
+
+
+
+
+
+<h2>Environments and Evaluation.</h2>
+
+
+<p>
+An environment is a representation of a finite mapping from symbols to
+objects.
+
+<pre>
+Eval (f a) e =
+    Apply((Eval f e)  (Eval a e)
+
+
+Eval (if x y z) e = if (Eval x e) then (Eval y e) else (Eval z e)
+
+Eval c  = c
+
+Eval (\x. t)  e  = (Closure x t e)
+
+Eval (Closure x t e) = (Closure x t e)
+
+Eval (quote t) e = t
+
+
+Apply p x e                   = PrimApply p x
+Apply (Closure x t<sub>1</sub> e1) t<sub>2</sub> e2 = Eval t<sub>1</sub>  e1[x|t<sub>2</sub>]
+
+</pre>
+
+
+
+
+</html></body>
+
+
+<h2> Type Universes </h2>
+
+
+NO! this screws up
+
+
+<p>
+
+
+    Universe(A,B)
+
+This universe is  created
+from a certain  set of <em>base  objects</em> by repeated  use of a  single
+function, <em>Apply</em>.
+
+
+
+The universe contains at least the following <em>base objects</em>
+
+
+<ul>
+<li>  There is a zero object 0.
+<li>  There is an object 1.
+<li>  There is a "null object", denoted by []
+<li>  There is a "false object", denoted by false
+<li>  There is a "true object", denoted by true.
+</ul>
+
+
+In particular there are the following <em>base types</em>
+
+
+<ul>
+<li> <tt>Boolean</tt>. This consists of the two objects  true and false
+
+<li> Null       This consists of the single object, [].
+
+<li> Procedure  Procedures provide the way of building our infinite universe.
+                If p is a procedure, and x is an object of the Universe, then
+                Apply p x is another object.
+
+<li> Exception  An exception is the result of a "failed" application of a
+                procedure. If e is an exception, then, for any object x
+                (x e) is an exception, as is (e x).
+
+<li> Integer
+
+<li> Ratio
+
+<li> Float
+
+<li> Pair
+
+<li> Symbol
+
+<li> CompoundTerm
+
+
+A type  T is a subset  T<=Universe.
+
+<li> LambdaAbstraction
+
+<li> Theorem
+
+</ul>
+
+In addition to the base-types, we shall refer to
+the following <em>composite types</em>.
+
+<ul>
+<li> <b>Rational</b> = Integer <b>\/</b>  Ratio
+<li> Number =  <b>Rational</b> \/ Float
+</ul>
+
+<p>
+These base-types are mutually exclusive - any object belongs to at most one
+base-type.
+
+<h4> The MayBe and CouldBe type constructors.</h4>
+Let T <= Universe be a type of which false is not a member. Then MayBe(T)
+denotes the type<br> T \/ {false}
+
+<p>
+Integer <b>><</b> Real
+
+
+
+<pre>
+    /  : <b>Rational</b>-><b>Rational</b>->CouldBe(<b>Rational</b>)
+</pre>
+
+<p>
+Let T <= Universe be a type. Then CouldBe(T)
+denotes the type T\/Exception.
+
+
+<pre>
++ : (Number->Number->Number)  /\ (Integer->Integer->Integer) /\
+    (<b>Rational</b>-><b>Rational</b>-><b>Rational</b>) /\ (Float->Float->Float)
+
+- : (Number->Number->Number)  /\ (Integer->Integer->Integer) /\
+    (<b>Rational</b>-><b>Rational</b>-><b>Rational</b>) /\ (Float->Float->Float)
+
+
+* : (Number->Number->Number)  /\ (Integer->Integer->Integer) /\
+    (<b>Rational</b>-><b>Rational</b>-><b>Rational</b>) /\ (Float->Float->Float)
+
+
+/ : (<b>Rational</b>-><b>Rational</b>-> (CouldBe <b>Rational</b>))
+        /\ (Number->Number->(CouldBe Number)
+
+</pre>

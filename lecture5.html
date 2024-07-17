@@ -1,0 +1,750 @@
+
+
+<html><head><title>
+Lecture 5: Functions on Lists, Higher Order Functions
+</title></head>
+<body bgcolor="white">
+
+
+<h1>  Course 287  Lecture 5:  Functions on Lists, Higher Order Functions
+</h1>
+
+<hr>
+
+
+
+<!-- append --><a href="lecture5.html#append">    The <tt>append</tt>&#160;
+function
+joins two lists together to make
+one.</a><br>
+
+<!-- member? --><a href="lecture5.html#member_query">
+The <tt> member? </tt>&#160; function asks whether an object belongs to a
+list</a><br>
+
+
+
+<!-- member --><a href="lecture5.html#member">
+The expression <tt>(member x list) </tt>&#160;  finds an object <tt>x</tt>
+in the <tt>list</tt>. </a><br>
+
+
+<!-- and --><a href="lecture5.html#and">
+The construct <tt> (and expr-1....expr-n) </tt> is a special form.
+</a><br>
+
+
+<!-- or --><a href="lecture5.html#or">
+The construct <tt> (or expr-1...expr-n) </tt> is a special form.
+</a><br>
+
+<!-- cond --><a href="lecture5.html#cond">
+The <tt>cond</tt>&#160; special-form is more convenient than nested
+if's</a><br>
+
+
+<!-- select_set --><a href="lecture5.html#select_set">
+The <tt>select_set</tt>&#160; function lets you choose members out of a list
+</a><br>
+
+
+<!-- trace --><a href="lecture5.html#trace">
+The <tt>trace</tt>&#160; function allows you to see what a program is
+doing.</a><br>
+
+<!-- example --><a href="lecture5.html#example">
+The <tt>example</tt>&#160; function allows you run tests on functions as you
+compile</a><br>
+
+<!-- list --><a href="lecture5.html#list">
+The <tt>list</tt>&#160; function is more convenient than <tt>cons</tt>&#160; for building longer
+lists.</a><br>
+
+<!-- lambda
+--><a href="lecture5.html#lambda"> <tt> lambda </tt>&#160; expressions which take a
+variable number of arguments
+</a><br>
+
+<!-- map_list --><a href="lecture5.html#map_list"> Some examples of the
+use of map_list</a><br>
+
+
+<!-- map --> <a href="lecture5.html#map">
+The <tt>map</tt>&#160; function is
+built-in, resembles <tt>map_list</tt>&#160;. </a><br>
+
+
+<!-- reduce --><a href="lecture5.html#reduce">  The <tt>reduce</tt>&#160;  function
+further  generalises <tt>map_list</tt>&#160;.</a><br>
+
+<hr>
+<h4>Abelson and Sussman </h4>
+
+The discussion in Abelson and Sussman section 2.2, up to the end of 2.2.1
+is parallel to this lecture (p97 ff.).
+
+You will find a discussion of <em>Procedures as Arguments</em> in section
+1.3.1 of Abelson and Sussman (pp57 ff).
+
+
+
+
+<hr>
+<!-- =============== START OF TEXT ================================ -->
+<p>
+In this  lecture  we  learn about  the  special  forms  <tt>cond</tt>&#160;,
+<tt>trace</tt>&#160;.
+We   learn also  about   the  useful   built-in   functions
+<tt>append</tt>&#160;,          <tt>member</tt>           <tt>map</tt>&#160;,
+<tt>example</tt>&#160; and <tt>list</tt>&#160;. We also write our own version
+of <tt>member</tt>, <tt> member?  </tt>&#160;. These built-in functions  will
+help us implement algorithms on finite sets. </p>
+
+
+<h2><a name="append">
+The <tt>append</tt>&#160; function joins two lists together to make one.
+</a></h2>
+
+<p>
+The <tt>append</tt>&#160; function is built into  Scheme. It concatenates two lists, that  is
+to say, given two lists  <tt>list1</tt>&#160; and <tt>list2</tt>&#160; it produces  a new list which  starts
+with the same elements as <tt>list1</tt>&#160; and finishes with those of <tt>list2</tt>&#160;.
+</p>
+
+<pre><code>
+(define (append list1 list2)
+        (if (null? list1) list2
+            (cons (car list1) (append (cdr list1) list2))))
+</code></pre>
+
+<pre>
+(append '(1 2 3) '(4 5 6))
+
+    ==>  (1 2 3 4 5 6)
+</pre>
+
+<p>
+It is <em>essential</em>  that you  distinguish between  <tt>cons</tt>&#160;
+and <tt>append</tt>&#160;. The <tt>append</tt>&#160; function always works on
+lists, and combines the  elements of the  lists at the  same level. A  call
+<tt> (cons x y) </tt> of the <tt>cons</tt>&#160; function makes <tt>x</tt>
+be the first element of the new list: </p>
+
+<pre>
+(cons '(1 2 3) '(4 5 6))
+
+    ==>  ((1 2 3) 4 5 6)
+</pre>
+
+<p>
+If we use more complicated lists we see that:
+</p>
+
+<pre>
+(append '((1 2) 3) '(4 (5 6)))
+
+
+    ==>   ((1 2) 3 4 (5 6))
+</pre>
+
+<p>
+here the first argument of <tt>append</tt>&#160; is a list whose members are, in sequence,
+the list  '(1 2) and the number   3, while the second argument of <tt>append</tt>&#160;
+is the list whose members are, in sequence, the number 4 and the list '(5 6).
+</p>
+
+
+
+<a name = "member_query"></a>
+<h2>The
+<tt> member? </tt>&#160; function asks whether an object belongs to a list
+</h2>
+
+<p>
+The <tt> member? </tt>&#160; function  determines whether  an element is  a member  of a  list.
+Again, we proceed by recursion. If the  <tt>list</tt>&#160; is empty (1), then
+<tt>(member? list)</tt>
+is false. Otherwise,  if <tt>list</tt>&#160; begins  with something equal  to x then  clearly
+<tt>(member?
+list)</tt> is <tt>#t</tt>.
+Otherwise we ask  if x is  a member of  the tail of  the
+list.
+</p>
+
+<pre><code>
+(define (member? x list)
+     (if (null? list) #f                                ;(1)
+         (if (equal? x (car list)) #t                   ;(2)
+              (member? x (cdr list)))))                 ;(3)
+
+</code></pre>
+
+
+<h2>
+<a name = "member">The
+<tt> member </tt>&#160; function </a></h2>
+
+<p>
+Note that  there is  a function  <tt>member</tt>  built into  Scheme.
+<tt>(member  x  list)</tt>
+evaluates to <tt>#f</tt> if <tt>x</tt>  is not a member of  <tt>list</tt>,
+otherwise it evaluates to  the
+that part of <tt>list</tt> which begins with the first occurrence of
+<tt>x</tt>.
+</p>
+
+<pre>
+    (member 2 '(4 5 2 6 7)) ==> '(2 6 7)
+    (member 2 '(6 7 8)) ==> #f
+</pre>
+
+
+<a name="and"></a><a name = "or"></a>
+<h2>The special forms <tt>and</tt> and <tt>or</tt></h2>
+
+The boolean functions <tt> and </tt> and <tt> or </tt> are implemented in
+Scheme as special forms:
+
+<pre>
+        (and expr-1 ... expr-n)
+        (or  expr-1 ... expr-n)
+</pre>
+
+<p>
+Evaluation of the arguments in each case starts from the left, and as soon
+as the value of the special form is manifest, evaluation stops.
+
+Note that <tt> and </tt> and <tt> or </tt> can only be used in this form.
+For example <tt> and </tt> is not a legal Scheme expression.
+</p>
+
+<h2><a name="cond">
+The <tt>cond</tt>&#160; construct is more convenient than nested
+<tt>if</tt>'s
+</a></h2>
+
+<p>
+Nested <tt>if</tt>
+statements like the one above are tedious to write. Instead the
+experienced programmer can use the <tt>cond</tt>&#160; construct:
+</p>
+
+<pre>
+     (cond <b>clause<sub>1</sub></b> <b>clause<sub>2</sub></b> ... <b>clause<sub>n</sub></b>)
+</pre>
+
+<p>
+Here each <b>clause<sub>i</sub></b> has the form
+</p>
+
+<BLOCKQUOTE><tt>
+    (<b>test<sub>i</sub></b> <b>expression<sub>i1</sub></b> ...
+<b>expression<sub>im<sub>i</sub></sub></b>)
+</tt></BLOCKQUOTE>
+
+<p>
+except that the last clause may have the form
+</p>
+
+<BLOCKQUOTE><tt>
+     (else  <b>expression<sub>n1</sub></b> ....
+        <b>expression<sub>nm<sub>n</sub></sub></b>)
+</tt></BLOCKQUOTE>
+
+<p>  The  meaning   of  the  <tt>cond</tt>&#160;   construct  is  that   the
+<b> test<sub>i</sub> </b>
+of each  <b> clause<sub>i</sub> </b> is evaluated  in
+turn,  and   in  the   first   <b>clause<sub>i</sub></b>  for   which   the
+<b> test<sub>i</sub></b>   succeeds   the
+<b>expression<sub>i1</sub> ... </b>
+<b>expression<sub>im<sub>i</sub></sub></b>
+are   evaluated,    the   value   of    the whole
+<tt>cond</tt>&#160;  expression  being  the   value  of  the   <em>last</em>
+expression evaluated in the chosen clause.</p>
+
+<p>
+An example of the use of <tt>cond</tt>&#160; is the following:
+</p>
+
+<pre><code>
+(define (member? x list)
+     (cond ((null? list) #f)
+           ((equal? x (car list)) #t)
+           (else   (member? x (cdr list)))))
+</code></pre>
+
+<pre><code>
+(member? 2 '(4 2 3))
+</code></pre>
+
+#t
+<pre><code>
+(member? 2 '(the fat cat))
+</code></pre>
+#f
+
+
+<p>
+<h4>Warning</h4> It is best  to avoid the  use of <tt>cond</tt>&#160;  until
+you are  familiar with  Scheme, since  there are  various possibilities  of
+confusion. Clauses in <tt>cond</tt>&#160;  expressions are not evaluated  as
+though they were normal expressions, since the first member is not  applied
+to  the  rest   as  arguments.   Also  the   fact  that   one  can   have a
+<em>sequence</em> of expressions  in a clause  can cause confusion  because
+the value of  the <tt>cond</tt>&#160; expression  is the value  of the  last
+member of the sequence.  All the other values  are thrown away.
+</p>
+
+<p>Within  the
+<em>functional paradigm</em> there  is no point  in evaluating  expressions
+that are not incorporated in the value of a function, so the only  possible
+reason for having more than two expressions  in a clause might be to  print
+out some monitoring information for program development. For example:
+</p>
+
+<pre><code>
+(define (member? x list)
+     (cond ((null? list) #f)
+           ((equal? x (car list)) (display "found it") #t)
+           (else   (member? x (cdr list)))))
+</code></pre>
+
+<p>
+The use  of the  tracer and  debugger built  into UMASS  Scheme should  mostly
+obviate the need to insert such extra expressions.
+</p>
+
+
+<h2><a name = "case">
+
+ (case <b>expr cases</b>) chooses a <b>case</b> depending on the value of
+<b>expr</b>  </a></h2>
+
+The case expression has the form
+ (case <b>expr cases</b>)
+where
+<pre>
+    <b>cases</b> -> <b> case cases</b>
+    <b>cases</b> -> <b> case </b>
+    <b>case</b> -> ((<b>constants</b>) <b>expr</b>)
+    <b>case</b> -> (else <b>expr</b>)
+    <b>constants</b> -> <b>constant</b> <b>constants</b>
+    <b>constants</b> -> <b>constant</b>
+</pre>
+
+To evaluate a case statement, Scheme evaluates the expression <b>expr</b>
+and then examines each case until it finds the first in which the
+value of the expression occurs among the constants of the case. The
+expression of the case is then evaluated, and is the value of the case
+expression.  If no such constant is found the value of the case
+expression is undefined. If an <tt>(else...</tt> case is found, then
+its expression is evaluated, and is the value of the case statement.
+
+
+<pre>
+
+(example
+    '(case (* 2 3)
+       ((2 3 5 7) 'prime)
+       ((1 4 6 8 9) 'composite))
+   'composite)
+
+
+
+(example
+    '(case 3
+       ((2 3 5 7) 'prime)
+       ((1 4 6 8 9) 'composite))
+    'prime)
+
+
+
+(example
+    '(case (car '(c d))
+       ((a) 'a)
+       ((b) 'b))
+    (display 'ok))
+
+
+(example
+    '(case (car '(c d))
+       ((a e i o u) 'vowel)
+       ((w y) 'semivowel)
+       (else 'consonant))
+        'consonant)
+
+(example
+    '(case 'a
+       ((a e i o u) 'vowel)
+       ((w y) 'semivowel)
+       (else 'consonant))
+        'vowel)
+
+
+(example
+    '(case 'w
+       ((a e i o u) 'vowel)
+       ((w y) 'semivowel)
+       (else 'consonant))
+        'semivowel)
+</pre>
+<!-- ----------------------------------------------------------- -->
+
+<h2><a name = "select_set">
+The <tt>select_set</tt>&#160; function allows us to choose members of a list.
+</a></h2>
+
+<p>
+The expression <tt>(select_set p l)</tt> evaluates to a list  of those
+members of  the list <tt>l</tt> which satisfy the predicate <tt>p</tt>
+</p>
+
+
+<pre><code>
+    (define (select_set p l)
+        ;selects those members of l which satisfy p
+        (cond
+            ((null? l) '())
+            ((p (car l)) (cons (car l)(select_set p (cdr l))))
+            (else (select_set p (cdr l)))
+            )
+        )
+
+</code></pre>
+
+
+<pre><code>
+    (example '(select_set (lambda (x) (&lt 5 x)) '(2 44 5 3 99)) '(44 99))
+
+</code></pre>
+
+<p>
+<b>Remark</b>
+Could we write the expression evaluated  in the <tt>example</tt>&#160; above more  succinctly
+as:
+</p>
+
+<pre>
+    (select_set  (&lt  5) '(2 44 5 3 99))
+</pre>
+
+<p>
+Unfortunately, in Scheme, the answer is "no", although this kind of  construct
+is perfectly legal in the lambda calculus. Some functional languages with good
+support of the functional paradigm, for example POP-11 and especially Haskell,
+provide this kind of construct, called, in POP-11, "partial application".
+</p>
+
+
+
+<h2><a name="trace">
+The <tt>trace</tt>&#160; function allows you to see what a program is doing.
+</a></h2>
+
+
+<p>
+You can see what your programs are doing using the <tt>trace</tt>&#160; function.
+If we make the definition:
+</p>
+
+<pre><code>
+(define (member? x list)
+     (cond ((null? list) #f)
+           ((equal? x (car list)) #t)
+           (else   (member? x (cdr list)))))
+</code></pre>
+
+
+<p>
+and then say to Scheme
+</p>
+
+<pre><code>
+    (trace member?)
+
+</code></pre>
+
+<p>
+we now find that evaluating:
+</p>
+
+<pre><code>
+    (member? 2 '(4 2 3))
+
+</code></pre>
+
+
+<p> causes  the following  trace  of the  evaluation  of the  <tt>  member?
+</tt>&#160; function to appear. </p>
+
+<pre>
+(member?  2 (4 2 3) )
+|(member?  2 (2 3)
+|member?   = #t
+member?   = #t
+</pre>
+
+
+<h2><a name="example">
+The <tt>example</tt>&#160; function allows  you run tests on  functions
+as you compile</a> </h2>
+
+
+<p> UMASS Scheme contains a built-in <tt>example</tt>&#160; function,  which
+allows you to put examples of what  your functions are supposed to do  into
+your code. These examples will be run and checked.
+
+<p>
+If you put the line
+
+<pre><code>
+    (example '(member? 2 '(4 2 3)) #t)
+</code></pre>
+
+<p>
+The print-out will be:
+</p>
+
+<pre>
+    example: (member? 2 '(4 2 3)) = #t,  ok!
+</pre>
+
+<p>
+On the other hand, if you put in:
+
+<pre><code>
+    (example '(member? 2 '(4 2 3)) #f)
+</code></pre>
+
+<p>
+You will get an error report.
+</p>
+<pre>
+    example: (member? 2 '(4 2 3)) = #f
+                 example failed, evaluating: (member? 2 '(4 2 3))
+                 value returned: #t
+                 value expected: #f
+</pre>
+
+<h2>
+<a name="list">
+The <tt>list</tt>&#160; function is more
+convenient than <tt>cons</tt>&#160;
+for building  longer lists.</a></h2>
+
+<p> It  is  rather  a  pain  to make  a  list  of  several  elements  using
+<tt>cons</tt>&#160;. So Scheme provides us with an easier construct. </p>
+
+
+     (list <b>expr<sub>1</sub></b> ..... <b>expr<sub>n</sub></b>)
+
+<p>
+This evaluates to a list of the values of
+<b>expr<sub>1</sub></b> ... <b>expr<sub>n</sub></b> For example,
+</p>
+
+      (list `the (+ 4 5) `cats)
+
+<p>
+evaluates to
+</p>
+
+      (the 9 cats)
+
+
+
+<h2><a name="lambda">
+You can pass the whole list of arguments into a <tt> lambda </tt>&#160; expr.
+</a></h2>
+
+
+<p> A permissable form for <tt> lambda </tt>&#160; expressions is
+</p>
+
+<pre>
+    (lambda <b>variable body</b>)
+</pre>
+
+
+<p>
+that is, there are <em>no parentheses</em>
+around the single argument. When such a
+lambda expression is applied to arguments, Scheme makes a list of the
+arguments and binds that list to the <b>variable</b>.
+
+
+<pre><code>
+    (define fred (lambda x (append x x)))
+</code></pre>
+
+
+<p>
+(fred 1 2 3) will produce '(1 2 3 1 2 3).  The <tt>list</tt>
+function built into Scheme
+can be defined as:
+</p>
+
+<pre><code>
+    (define list (lambda x x))
+</code></pre>
+
+
+
+<h2><a name="map_list">
+Some examples of the use of <tt>map_list</tt>&#160;
+</a></h2>
+
+
+<p>
+Recall that in  the previous  lecture we  defined the  function <tt>map_list</tt>&#160;  as a
+general kind of way of making a  systematic transformation of a list into  one
+in which elements of the first list were replaced by elements transformed by a
+function. Below are some examples of the use of <tt>map_list</tt>&#160;.
+</p>
+
+<pre><code>
+(define (succ x) (+ 1 x))
+</code></pre>
+
+<pre><code>
+(example
+    '(map_list succ '(3 4 5))
+    '(4 5 6)
+    )
+
+</code></pre>
+
+<pre><code>
+(example
+    '(map_list (lambda (x) (+ x 5)) '(7 8 9))
+    '(12 13 14))
+
+</code></pre>
+
+<pre><code>
+(example
+    '(map_list (lambda (x) (> x 5)) '(2 9 5))
+    '(#f #t #f)
+    )
+
+</code></pre>
+
+<pre><code>
+(example
+    '(map_list (lambda (x) (<tt>cons</tt>&#160; x '())))
+    '((a) (b) (c))
+    )
+
+</code></pre>
+
+<pre><code>
+(example
+    '(map_list (lambda (x) (if (> x 10) x 0)) '(2 20 5 17))
+    '(0 20 0 17)
+    )
+
+</code></pre>
+
+<pre><code>
+(example
+    '(map_list car
+    '((a b) (c d) (e f)))
+    )
+
+</code></pre>
+
+<p>
+
+<h2><a name="map">
+The <tt>map</tt>&#160; function is built-in, resembles
+<tt>map_list</tt>&#160;.
+</a></h2>
+
+There is a built-in  function <tt>map</tt>&#160; which,  when used with  two
+arguments, is identical with <tt>map_list</tt>&#160;.
+
+In general the expression
+<pre>
+    (map  <b>f  e<sub>1</sub> ... e<sub>n</sub></b>)
+</pre>
+
+will evaluate correctly if <b>f</b> is a function of <tt>n</tt> arguments,
+and all the <b>e<sub>i</sub></b> are lists of the same length. In that
+case the result is a list each of whose members is obtained by applying
+<b>f</b> successively to the members of the lists <b>e<sub>i</sub></b>.
+
+<p>For example
+
+<pre>
+    (example
+        '(map  + '(2 3 4) '(5 6 7))
+        '(7 9 11))
+</pre>
+
+</p>
+
+
+
+<h2><a name="reduce">
+The <tt>reduce</tt>&#160; function further generalises <tt>map_list</tt>&#160;.
+</a></h2>
+
+
+<p>
+Recall we defined the <tt>map_list</tt>&#160; function by generalising a function that built
+a new list out of the square-roots of an existing list.
+</p>
+
+<pre><code>
+(define (map_list f l)
+   (if (null? l)
+      '()
+       (cons (f (car l)) (map_list f (cdr l)))))
+</code></pre>
+
+
+<p> This function leaves us further scope for generalising operations  over
+a list  that  are  conducted element-by-element.  Essentially,  instead  of
+building a new list as answer, we  could arrange to create any new  answer,
+for example a number.  All we need  to do is  to replace the  list-creating
+parts of <tt>map_list</tt>&#160; by parameters. We replace the empty list by
+a  parameter   called   <tt>base</tt>  and   the   list-building   function
+<tt>cons</tt>&#160; by  a parameter  called <tt>acc</tt>  (for  accumulate).
+</p>
+
+
+<pre><code>
+(define (reduce f acc base l)
+   (if (null? l)
+       base
+       (acc (f (car l)) (reduce f acc base (cdr l)))))
+</code></pre>
+
+
+<p>
+For example, if we use  0  for the base and + for the accumulator, we
+will be adding up numbers mapped by f. Thus
+</p>
+
+<pre><code>
+    (example '(reduce (lambda (x) x) + 0 '(1 2 3)) 6)
+</code></pre>
+
+<pre><code>
+(define (or1 x y) (or x y))
+</code></pre>
+
+<pre><code>
+(define (member? x l)
+    (reduce (lambda (y) (equal? x y)) or1 #f l))
+</code></pre>
+
+<pre><code>
+(member? 3 '(3 4 5))
+(member? 44 '(3 4 5))
+(trace reduce)
+(trace or1)
+</code></pre>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+
+
+<h1> Course CMPSCI 287 </h1>
+<h2>Due 11:59 PM, 9 FEB 99 as hwk1.scm </h2>
+
+
+Write a Scheme Function <tt>cosrule</tt> which uses the <em>cosine
+rule</em>
+
+<ul>
+c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> - 2ab<b> cos</b> t
+</ul>
+
+to work out the length of one side <em>c</em> of a triangle given the
+lengths <em>a,b</em> of the other two sides and the included angle
+<em>t</em> between them. The function call should be
+
+<pre>
+    (cosrule a b t)
+</pre>
+
+and it should return the length of the side as a result.
+So  the function-call
+
+<pre>
+    (cosrule 10 10 0)
+</pre>
+should evaluate to 0.0, and if we do
+<pre>
+    (define pi 3.141593)
+</pre>
+and evaluate
+<pre>
+    (cosrule 3 4 (/ pi 2))
+</pre>
+we should get <tt>5.0</tt>. as the result. <p>Likewise  <tt>(cosrule 3
+4 0)</tt> evaluates to <tt>1.0</tt>,  while <tt>(cosrule 3 4  pi)</tt>
+evaluates to <tt>7.0</tt>.

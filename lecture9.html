@@ -1,0 +1,425 @@
+
+
+
+<html><head><title>
+
+ Deep Lists and Deep Recursion
+</title></head>
+<body bgcolor="white">
+
+
+
+<h1>
+Course 287: Lecture 9 Deep Lists and Deep Recursion
+</h1>
+
+<!--=============================================================-->
+
+
+<HR>
+
+<a href = "#deep-lists">  Deep Lists can be thought of as Trees.</a><br>
+<a href = "#accumulator"> Using An Accumulator to Make Computation More
+    Efficient. </a><br>
+<a href = "#assoc">  Association lists provide finite mappings.</a><br>
+
+
+<HR>
+<h4> Functions Defined in this Lecture.</h4>
+
+
+<!-- occurs_atom? --><a href="lecture9.html#occurs_atom">
+    <tt>(occurs_atom? a l)</tt> finds if  atom <tt>a</tt>
+occurs in list structure <tt>l</tt> </a><br>
+
+<!-- count_occurrences --><a href="lecture9.html#count_occurrences">
+    <tt>(count_occurrences a l)</tt> finds if  atom <tt>a</tt>
+occurs in list structure<tt>l</tt> </a><br>
+
+
+<!-- subst --><a href="lecture9.html#subst">
+    <tt>(subst x y expr)</tt> replaces all occurrences of atom  <tt>x</tt>
+by <tt> y </tt> in list structure<tt>expr</tt> </a><br>
+
+<!-- assoc --><a href="lecture9.html#assoc">
+    <tt>(assoc x alist)</tt>finds entry for <tt>x</tt> in <tt>alist</tt>
+</a><br>
+
+<!-- assq --><a href="lecture9.html#assq">
+    <tt>(assq x alist)</tt>finds entry for <tt>x</tt> in <tt>alist</tt>,
+using <tt>eq?</tt>
+</a><br>
+
+<!-- assv --><a href="lecture9.html#assv">
+    <tt>(assv x alist)</tt>finds entry for <tt>x</tt> in <tt>alist</tt>
+</a><br>
+
+<!-- lookup --><a href="lecture9.html#lookup">
+    <tt>(lookup x alist)</tt>finds value for <tt>x</tt> in <tt>alist</tt>
+</a><br>
+
+<!-- flatten --><a href="lecture9.html#flatten">
+    <tt>(flatten tree)</tt> makes a list of all the objects stored in nodes
+of <tt>tree</tt>. </a><br>
+
+<!-- reverse --><a href="lecture9.html#reverse">
+    <tt>(reverse l)</tt> makes a list of the objects of l in
+reverse  order</a><br>
+
+<HR>
+
+<!-- ============================================================= -->
+
+<a name = "deep-lists"> </a>
+<h2>Deep Lists can be thought of as Trees.</h2>
+
+<p>
+Given a deeply-nested list such as:
+
+<pre>
+            (a ((b c)) (d (e (f))) g)
+</pre>
+
+<p>
+it is often useful to visualise it as a tree written out as follows:
+
+<pre>
+            (a ((b c)) (d (e (f))) g)
+                      |
+     ----------------------------------------
+     |         |              |             |
+     a      ((b c))      (d (e (f)))        g
+               |              |
+               |          ----------
+               |          |        |
+             (b c)        d     (e (f))
+               |                   |
+            ------             --------
+            |    |             |      |
+            b    c             e     (f)
+                                      |
+                                      f
+
+</pre>
+
+<p>
+In order to explore this  whole tree, that is  to visit every sublist  of a
+list,  we  need  to  use  <em>deep-recursion</em>.  A  function  is  deeply
+recursive if it is called recursively on the <tt>car</tt> of a list as well
+as  on   its  <tt>cdr</tt>.
+
+<a name = "count_occurrences"> </a>
+<a name = "occurs_atom"> </a>
+<h4> <tt>occurs_atom?</tt> and <tt>count_occurrences</tt></h4>
+
+For  example,   we  may   write  a   function
+<tt>occurs_atom?</tt> to  find out  if a  given atom (non-pair) occurs
+anywhere  in a nested list:
+
+
+
+<pre><code>
+(define (occurs_atom? x expr)
+    (cond
+        ((atom? expr) (eqv? x expr))
+        (else (or
+                (occurs_atom? x (car expr))
+                (occurs_atom? x (cdr expr))
+                ))
+        )
+    )
+</code></pre>
+
+<pre><code>
+(example '(occurs_atom? 'a '(b (c d ((a))))) #t)
+</code></pre>
+
+
+Instead of merely reporting on the existence of an atomic quantity in a
+list-structure, we may want to report on how many times it occurs. The
+above function is quite easily modified to do this.
+
+
+<pre><code>
+(define (count_occurrences x expr)
+    (cond
+        ((atom? expr) (if (eqv? x expr) 1 0))
+        (else (+
+                (count_occurrences x (car expr))
+                (count_occurrences x (cdr expr))
+                ))
+        )
+    )
+</code></pre>
+
+<pre><code>
+(example '(count_occurrences 'a '((b (c)) (a) (b ((a))))) 2)
+</code></pre>
+
+<p>
+Let us use trace to see how count_occurrences works.
+
+<pre><code>
+    (trace count_occurrences)
+</code></pre>
+
+<p>
+If we now call
+
+<pre><code>
+    (count_occurrences 'a '(b (a) (b (c a))))
+</code></pre>
+
+<p>
+we obtain the following print-out <i>italics</i> were inserted
+by the author.
+
+
+<pre>
+ (count_occurrences  a  (b (a) (b (c a))) )  <i>top level call</i>
+ |(count_occurrences  a  b  )                <i>recursive call on car of list</i>
+ |count_occurrences   = 0                    a <i>does not occur in</i> b
+ |(count_occurrences  a  ((a) (b (c a))) )   <i>now do</i> cdr <i>of original list</i>
+ | (count_occurrences  a  (a) )              <i>and do its</i> car
+ | |(count_occurrences  a  a  )              <i>and the</i> car <i>of that</i>
+ | |count_occurrences   = 1                  <i>in which a occurs once.</i>
+ | |(count_occurrences  a  () )              <i>and  do the cdr of</i> '(a)
+ | |count_occurrences   = 0                  <i>in which a  does not occur</i>
+ | count_occurrences   = 1                   <i>so  a occurs once in</i> '(a)
+ | (count_occurrences  a  ((b (c a))) )
+ | |(count_occurrences  a  (b (c a)) )
+ | | (count_occurrences  a  b  )
+ | | count_occurrences   = 0
+ | | (count_occurrences  a  ((c a)) )
+ | | |(count_occurrences  a  (c a) )
+ | | | (count_occurrences  a  c  )
+ | | | count_occurrences   = 0
+ | | | (count_occurrences  a  (a) )
+ | | | |(count_occurrences  a  a  )
+ | | | |count_occurrences   = 1
+ | | | |(count_occurrences  a  () )
+ | | | |count_occurrences   = 0
+ | | | count_occurrences   = 1
+ | | |count_occurrences   = 1
+ | | |(count_occurrences  a  () )
+ | | |count_occurrences   = 0
+ | | count_occurrences   = 1
+ | |count_occurrences   = 1
+ | |(count_occurrences  a  () )
+ | |count_occurrences   = 0
+ | count_occurrences   = 1
+ |count_occurrences   = 2
+ count_occurrences   = 2
+</pre>
+
+<a name = "subst"> </a>
+<h4> The <tt>subst</tt> function.</h4>
+
+If we are mechanising any aspect of mathematics we are going to want to
+implement the <em>substitution</em> operation, in which one
+sub-expression is systematically replaced by another sub-expression
+throughout an entire large expression. Typically, we may replace a variable
+by an expression. Here is a function which substitutes for  variables.
+
+
+<pre><code>
+(define (subst x y expr)
+    (if
+        (atom? expr)
+        (if (eq? x expr) y expr)
+        (cons (subst x y (car expr))
+            (subst x y (cdr expr))
+            )
+        )
+    )
+</code></pre>
+
+<a name = "flatten"> </a>
+<a name = "accumulator"></a>
+<h2>Using An Accumulator to Make Computation More Efficient.</h2>
+<h4> The <tt>flatten</tt> function </h4>
+<p>
+Consider the  function  <tt>flatten</tt> which  takes  a tree  and  makes a
+(flat) list of all the "tips" of the tree.
+
+<pre><code>
+(define (flatten tree)
+    (cond
+       ((null? tree) '())
+       ((atom? (car tree)) (cons (car tree) (flatten (cdr tree))))
+       (else
+          (append (flatten (car tree))
+                  (flatten (cdr tree)))))
+)
+</code></pre>
+
+
+<pre><code>
+(example '(flatten '((b (c)) (a) (b ((a))))) '(b c a b a))
+</code></pre>
+
+<p>
+Notice that <tt>flatten</tt>
+has complexity <em> O(n^2)</em> - it takes <em>O(n)</em> operations
+to do an append, and this is done <em>O(n)</em> times.
+
+<p>
+We  can  make   a  more   efficient  tree-flattening   function  using   an
+<em>accumulator</em>.  In   the  following   definition,  the   accumulator
+<tt>ans</tt> can be regarded  as a kind  of basket. We  crawl all over  the
+tree, "picking cherries", that is the things  we want to find in the  tree,
+and putting them in the basket.
+
+
+<pre><code>
+(define (flatten2 tree ans)
+    (cond
+        ((null? tree) ans)
+         ((atom? tree) (cons tree ans))
+        (else
+            (flatten2 (car tree) (flatten2 (cdr tree) ans)))
+        )
+    )
+</code></pre>
+
+
+<pre><code>
+(define (flatten tree) (flatten2 tree '()))
+</code></pre>
+
+<pre><code>
+(example '(flatten '((a b (c)) (d) (e ((f))))) '(a b c d e f))
+</code></pre>
+
+<pre><code>
+(example '(subst 'a 3 '(+ (* a 7) b)) '(+ (* 3 7) b))
+</code></pre>
+
+<a name="reverse">
+<h4><tt>(reverse l></tt> makes a list of the elements of <tt>l</tt> in
+reverse order</h4></a>
+
+The simple recursive definition of <tt>reverse</tt> is this:
+
+<pre><code>
+(define (reverse l)
+    (if (null? l)
+        '()
+        (append (reverse (cdr l)) (list (car l)))
+        )
+    )
+</code></pre>
+
+<pre><code>
+(example '(reverse '(1 2 3)) '(3 2 1))
+</code></pre>
+
+But we can make a more efficient version using accumulation thus:
+
+<pre><code>
+(define (reverse l)
+   (reverse_1 l '())
+)
+</code></pre>
+
+<pre><code>
+(define (reverse_1 l acc)
+    (if (null? l)
+        acc
+        (reverse_1 (cdr l) (cons (car l) acc))
+        )
+    )
+</code></pre>
+
+
+<pre><code>
+(reverse '(2 3 4))
+(4 3 2)
+</code></pre>
+
+<a name = "assoc"> </a>
+<a name = "assq">  </a>
+<a name = "assv">  </a>
+<h2>Association lists provide finite mappings.</h2>
+
+<p>
+Often in computing we want to set up a <em>finite mapping</em>
+that relates one finite
+set to another. For example we may want to represent the fact that a  variable
+a has the value 1, b has the value 2 and c has the value 3. We can represent
+such a mapping using an <em>association list</em>  or <em>alist</em>:
+
+<pre><code>
+(define e '((a 1) (b 2) (c 3)))
+</code></pre>
+
+<p>
+In order to access and update such alists, Scheme provides 3 functions  assoc,
+assq and assv. They all take two arguments. The first of these is a "key"  and
+the second  is an  alist. The  key  is compared  successively with  the  first
+element of each sub-list of the  alist. The first sub-list whose first  member
+"matches" the key is returned  as the result of the  function. If no match  is
+found, false is returned.
+
+<pre><code>
+        (example '(assoc 'b e) '(b 2))
+</code></pre>
+
+<p>
+The difference between assoc, assq and assv lies in the equality function used
+to test for matching. assoc uses the equal function, and provides a capability
+that is generally useful, but may be  rather slow. assq and assv use eq?  eqv?
+respectively.
+
+<pre><code>
+(example '(assq 'a e) '(a 1))
+(example '(assq 'b e) '(b 2))
+(example '(assq 'd e) #f)
+(example '(assq '(a) '(((a) 4) ((b) 5) ((c) 7) )) #f)
+
+(example '(assoc (list 'a) '(((a)) ((b)) ((c)))) '((a)))
+(example '(assq 5 '((2 3) (5 7) (11 13))) '(5 7))   ; ** see note below
+(example '(assv 5 '((2 3) (5 7) (11 13))) '(5 7))
+</code></pre>
+
+<p>
+** Note - the Scheme standard does not specify what the result of using
+eq? to compare numbers is, so this example may produce different results with
+different implementations of Scheme.
+
+<p>We could define <tt>assoc</tt> as follows:
+
+<pre><code>
+(define (assoc obj alist)
+    (cond
+        ((null? alist) #f)
+        ((equal? obj (caar alist)) (car alist))
+        (else (assoc obj (cdr alist)))
+))
+</code></pre>
+
+<a name = "lookup"></a>
+<h3> The lookup function </h3>
+
+<p>
+Typically we will use <tt>assoc</tt>
+to locate the sublist in which a value resides,
+and then take the appropriate action to find the value. For example, an
+interpreter for a programming language might say something like:
+
+<pre>
+  (if (symbol? expr) (lookup expr environment) expr)
+</pre>
+
+
+<p>
+where the <tt>lookup</tt>  function is defined as:
+
+<pre><code>
+(define (lookup var env)           ;;; find the value of a variable
+  (let ((pair (assoc var env)))    ;;; find where its value is held
+      (if pair                     ;;; does an entry exist for the variable?
+          (cadr pair)              ;;; extract its value
+          (error "unbound variable" var)
+           ) ) )
+</code></pre>

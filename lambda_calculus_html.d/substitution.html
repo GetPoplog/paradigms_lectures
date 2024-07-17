@@ -1,0 +1,1099 @@
+
+
+
+<html><head><title>
+
+        Substitution, Free and Bound Variables
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+                  Substitution, Free and Bound Variables
+
+
+</center>
+
+</h1>
+
+<a href = "#FV">The function FV finds the free variables of a term</a><br>
+<a href = "#substitution">A Formal Definition of Substitution</a><br>
+<a href = "#substlemmas">Some Lemmas Relating to Substitution</a><br>
+
+
+<hr>
+
+<p>In the last lecture we  introduced the <img src=lambda.gif>-calculus  as
+providing  not only  theoretical  characterisation  of computation but as being
+the basis a rigorous characterisation of a class of programming languages called
+<em>functional programming languages</em>. It was, we alleged, the case that
+it is possible to verify programs written in such languages in a simple way
+related to ordinary mathematical proof.
+
+<p>We can make our understanding of the role of the <img
+src=lambda.gif>-calculus more precise as follows:
+
+<ul>
+<li> A <em>program</em> is an expression <em>E<sub>prg</sub></em>, say,
+of the <img src=lambda.gif>-calculus
+<li> A <em>data-set</em> is also an expression <em>E<sub>data</sub></em>
+of the <img src=lambda.gif>-calculus.
+<li> <em> Running </em> a program <em>E<sub>prg</sub></em>
+with a given data-set <em>E<sub>data</sub></em>
+corresponds to forming the application
+<em>(E<sub>prg</sub>E<sub>data</sub>)</em>
+and then using <em>reduction rules</em> to transform that application into a
+simple form that can reasonably be considered as the result of the computation.
+We gave a preliminary definition of beta-reduction, and mentioned
+delta-reduction as "working out" applications involving constants.
+</ul>
+
+Thus, from  the  <img  src=lambda.gif>-calculus perspective,  there  is  no
+essential distinction between  program and data  - it is  only a matter  of
+point of view.
+
+<p>This means  in  particular that  if  we want  to  <em>prove</em>  that a
+program is  correct,  then  we  must  prove  that  the  corresponding  <img
+src=lambda.gif>-calculus  expression  has  a  particular  property.  Such a
+"proof" does not guarantee that the program does in fact behave as required
+- but it does provide a basis  for determining whether the error is in  the
+user's program or in the language implementation.</p>
+
+In this lecture we will develop these ideas further.
+<hr>
+<ul>
+<li> We will make our definition of beta-reduction
+<a href="#substitution">precise enough to be programmed</a>.</p>
+Moreover we will prove (at considerable length) that substitution has some
+apparently simple properties. For example we will show that, for any term
+<em>E</em> of the <img src=lambda.gif>-calculus and variable <em>x</em>
+that <em>E[x:=x] = E</em>. Since we are characterising
+<em>substitution</em> with regard to being able to program it, the proofs
+we do in this section are examples of the kind of proof we would like to be
+able to do with our mechanised proof-methods for the <tt>Theorem</tt>
+datatype.</p>
+
+<li> The essential basis of our proving programs "correct" is to show that
+two apparently different expressions <em>E<sub>1</sub></em> and
+<em>E<sub>2</sub></em> of the <img src=lambda.gif>-calculus always "give
+the same result" when applied to any data-expression. In practice we have to
+qualify "always" to "always when in certain specified
+circumstances".  For example we may say that
+the abstractions
+<ul>
+ <img src=lambda.gif> x . (+ 5 x)  <br>
+ <img src=lambda.gif> x. (+ x 5)
+</ul>always give the same result when applied to an integer. </p>
+
+<li>Consequently, an issue
+we have to tackle is "what do we mean by equality
+in the  <img src=lambda.gif>-calculus?". We would like, say, to regard
+<em><img src=lambda.gif> x . (+ 5 x)</em> and
+<em><img src=lambda.gif> y . (+ 5 y)</em> as being equal - to be able to write,
+with a good conscience,</p>
+
+<ul> <img src=lambda.gif> x . (+ 5 x) =
+        <img src=lambda.gif> y . (+ 5 y)
+</ul>
+<p>is a great convenience, because it means that we can harness a whole load of
+mathematical expectations about equality to our understanding of
+program-verification. But the two expressions above are <em>manifestly
+different</em>, so developing an appropriate concept of equality is
+necessary.
+
+</ul>
+
+
+<hr>
+
+<p>For example, suppose we  want to prove that  a sorting function that  we
+have written, say <tt>merge_sort</tt>,
+is correct. Then, within the rigorous
+functional-paradigm, <tt>merge_sort</tt> should be exactly equivalent to an
+expression of the <img src=lambda.gif>-calculus.  What does it mean to  say
+that <tt>merge_sort</tt> is correct? There are two criteria:
+
+<ul>
+
+<li>For any  list  <tt>l</tt> of  data  (possibly a  list  satisfying  some
+criterion that is  part of  the specification  of <tt>merge_sort</tt>)  the
+result of evaluating
+
+<pre>
+        (merge_sort l) </pre>
+
+is sorted. How  do we render  this English requirement  into a  formalism?
+Well it's fairly easy to  write a function <tt>sorted</tt> that  determines
+if a list <em>is</em> sorted - a list is sorted if it is empty, or contains
+one element, or if the first two elements are in order and tail of the list
+(everything but the first element) is sorted. So our requirement can be
+expressed as</p>
+
+<ul>
+     <img src="lambda.gif"> l .(sorted (merge_sort l)) =
+     <img src="lambda.gif"> l . true
+</ul>
+
+<p>
+<li> The other requirement is that <tt>(merge_sort l)</tt> contain
+exactly the same elements as <tt>l</tt> itself.
+</ul>
+
+<hr>
+
+<p>In order  to understand  how  to implement  software that  can  reliably
+support proof of facts like these we need to characterise  <em>exactly</em>
+many important aspects of the <img src=lambda.gif>-calculus. Let's start by
+defining <img src="beta.gif" align=bottom>-reduction  so precisely that  we
+can write a program to implement it.
+
+
+<hr>
+<b>Until further notice, when we speak of "equality" of terms of the <img
+src=lambda.gif>-calculus we mean syntactic identity</b>
+
+<p>That is to say, for the present we are restricting ourselves to the very
+simplest, most basic, idea of equality.
+<hr>
+
+<h2>Sub-Expressions and Occurrences</h2>
+
+<p>Informally,   an   expression   <em>E<sub>1</sub></em>   is   said    to
+<em>occur</em>  in  an   expression  <em>E<sub>2</sub></em>   if  it   is a
+sub-expression of <em>E<sub>2</sub></em>.
+
+<h4>Definition of occurrence</h4>
+If <em>E</em> and <em>F</em> are terms of the <img
+src=lambda.gif>-calculus, then we say that <em>E occurs in F</em> if
+
+<ul>
+<p>OCC1   <em>E occurs in F</em> if <em>  E = F</em>
+<p>OCC2   If <em>E occurs in F</em>, and <em>G</em> is a term,
+            then <em>E occurs in FG</em>
+<p>OCC3   If <em>E occurs in F</em>, and <em>G</em> is a term,
+            then <em>E occurs in GF</em>
+<p>OCC4   If <em>E occurs in F</em>, and <em>x</em> is a variable,
+            then <em>E occurs in <img src=lambda.gif> x . F</em>
+
+</ul>
+
+<p>[Note Hindley allows that the bound variable <em>x</em> of a <img
+src=lambda.gif> abstraction <em><img src=lambda.gif> x. E</em> occurs in
+the abstraction even if <em>x</em> does not occur in <em>E</em>. Barendregt
+does not. We have followed Barendregt.]
+
+
+<p>There
+can   be   several   occurrences   of   <em>E<sub>1</sub></em>   in
+<em>E<sub>2</sub></em>. Note that if  <em>E<sub>1</sub></em> is a  variable
+<em>v</em>, say,  then  if <em>v</em>  is  the  variable bound  in  a  <img
+src=lambda.gif>-abstraction, this does  not constitute  an occurrence.  For
+example <em>v</em> does not occur in <em>(<img src=lambda.gif> v.  2)</em>,
+while <em>x</em> has two occurrences in <em>(+ x x)</em>.
+
+<p>When we defined <img src=beta.gif>-reduction,  we were not very  precise
+about what we meant by substitution. Now is the time to remedy this,
+
+<h2>Bound and Free variables</h2>
+
+<p>Now we need to define the idea of a
+<em>bound variable</em>. This is essential to giving a precise sense to the
+<em>scope</em> of a variable, and thereby being able to avoid confusing
+what are essentially two different variables which happen to have the same
+name.
+
+<hr>
+
+<h4>Bound and Free Occurences of a Variable</h4>
+
+<p> Let <em>E</em> be an  expression of the <img  src=lambda.gif>-calculus,
+and let <em>v</em> be a variable.  We say that an occurrence of  <em>v</em>
+in <em>E</em>  is <em>  bound</em>  if it  is  inside a  sub-expression  of
+<em>E</em> of the  form <em><img  src=lambda.gif> v.E<sub>2</sub></em>.  An
+occurrence is said to be  <em> free</em> otherwise.
+
+Thus <em>v</em>  occurs
+bound  in
+
+<em><img   src=lambda.gif>  v.   x   v</em>  and in
+
+<em>(y   <img src=lambda.gif> v. v)</em> but it occurs free in <em><img
+src=lambda.gif> x.
+v x</em>.
+
+<p>
+Note that we are speaking of an <em> occurrence</em> of a variable as being
+bound - a variable can occur both bound and free in a given
+expression. For example, in   <em>v <img src=lambda.gif> v. v</em>, the first occurrence of <em>v</em>
+is free, and the last is bound.
+
+<a name = "FV"> </a>
+<h4>The FV function finds the free variables of an expression</h4>
+
+In order to define substitution we will need to be able to operate on the
+<em>set of free variables of an expression</em>.
+
+<p>
+We can define a function <em>FV</em> which forms the free-variables of
+an expression as:
+<DL COMPACT>
+
+<DT>FV1    <DD><em> FV(v) = {v}</em>  for a variable <em>v</em><br>
+<DT>FV2    <DD><em> FV(c) = {}</em>    for a constant <em>c</em><br>
+<DT>FV3    <DD><em> FV(E<sub>1</sub>E<sub>2</sub>)
+                = FV(E<sub>1</sub>) </em> <img src=cup.gif> <em>
+                    FV(E<sub>2</sub>)</em> <br>
+<DT>FV4    <DD><em> FV(<img src=lambda.gif> v .E) = FV(E) - {v}</em><br>
+</ul>
+
+<p>
+Here FV1 says that the set of free variables of an expression that consists of a
+single
+variable is the set consisting of just that variable,
+while FV2 says that the set
+of free variables of a constant expression is empty. FV3 says that the free
+variables of an application <em>E<sub>1</sub>E<sub>2</sub></em> is the union of
+the free variables of the two expressions  <em>E<sub>1</sub></em>
+and <em>E<sub>2</sub></em>,
+while FV4 says that the set of free variables of a <img
+src=lambda.gif>-abstraction is the set of free variables of its body minus the
+variable bound by the abstraction.
+
+<p> For example  <em>FV (<img src=lambda.gif> x. (f x y))  = {f,y}</em>
+</p>
+
+
+
+An expression <em>E</em> is said to be <em> closed</em> if it has no free variables,
+i.e. <em>FV(E) = {}</em>.
+
+
+<h3><img src=alpha.gif>-conversion</h3>
+
+<p> It is clear that the variable used in a
+<em><img src=lambda.gif></em>-abstraction  ought to be regarded as arbitrary.
+Thus <em><img src=lambda.gif>  x.  + x 2</em> and
+<em><img  src=lambda.gif> y. + y 2</em>  are, intuitively,  the
+same function.
+
+<p> There is indeed a  rule of the <em><img src=lambda.gif></em>  calculus,
+called <em><img src=alpha.gif></em>-conversion, which allows the above  two
+expressions to be  treated as equivalent.  It is a  little tricky  however,
+since one does <em> not</em> want to convert <em><img src=lambda.gif>  x. y
+x</em> to <em><img src=lambda.gif> y.  y y</em> - the  rule is that we  may
+only     replace     the     variable      bound     in     a      <em><img
+src=lambda.gif></em>-abstraction by one  that does  not occur  free in  the
+body.
+
+The <em><img src=alpha.gif></em> conversion rule is thus:
+
+<ul><img   src=lambda.gif>    x.E   <img
+src=longrightarrow.gif>
+<img
+src=lambda.gif> y.E[x:=y]</ul>
+provided <ul>y <img src=not_in.gif> FV(E)
+</ul>
+
+<hr>
+<h3> The Height of a Term. </h3>
+We can regard a term of the <img src=lambda.gif>-calculus as being
+a tree, we define the notion of the <em>height</em> of a term as:
+<ul>
+H1: height(x) = 0 <br>
+H2: height(c) = 0                          <br>
+H3: height(E F) = max(height(E),height(F))+1 <br>
+H4: height(<img src=lambda.gif> x.E) = 1+height(E) <br>
+
+</ul>
+
+<hr>
+
+<h4>The Pitfalls of Substitution</h4>
+<p>Now let's return to the problem of defining substitution.
+
+<p>Consider for example:
+
+<ul>
+((<img src=lambda.gif> x. + x (<img src=lambda.gif> x.(+ x 5) 4) 3)
+</ul>
+
+clearly we shouldn't substitute 3 for <em>x</em> in the <em>inner</em>
+<img src=lambda.gif>-abstraction, since that is essentially a different <em>x</em> - the
+outer <em>x</em> is out-of-scope in the inner <img src=lambda.gif>-abstraction.
+So our beta-reduction is to
+
+<ul>
+((+ 3 (<img src=lambda.gif> x.(+ x 5) 4))
+</ul>
+
+On the other hand if we have an inner-<img src=lambda.gif>-abstraction whose variable
+is different
+
+<ul>
+((<img src=lambda.gif> x. + x (<img src=lambda.gif> y.(+ y x) 4) 3)
+</ul>
+
+it is correct to substitute inside the inner <img src=lambda.gif>-abstraction, obtaining:
+
+<ul>
+( + 3 (<img src=lambda.gif> y.(+ y 3) 4)
+</ul>
+
+<p> So we have to make sure that, as we explore the expression we are
+substituting inside, if we encounter an inner
+<img src=lambda.gif>-abstraction
+that has the same variable as the one we're replacing, that we don't
+continue substituting inside the expression. This is embodied in rule S5
+below.
+
+
+<p>However, there is yet another pitfall for the naive implementor
+of <img src="beta.gif">-reduction.
+Suppose we want to  <img src="beta.gif">-reduce
+<ul>
+ (<img src=lambda.gif> x. E<sub>1</sub>) E<sub>2</sub>
+</ul>
+and one of the
+<em>free variables</em> of <em>E<sub>2</sub></em> is the  bound variable of
+a <img src=lambda.gif>-abstraction inside <em>E<sub>1</sub></em>,
+then we are facing a problem called <em>variable capture</em>. The problem
+is exemplified in
+
+<ul>
+    (<img src=lambda.gif> x. (<img src=lambda.gif> y. + x y)) (+ y 3)
+</ul>
+
+which does <em>not</em> reduce to
+
+<ul>
+     (<img src=lambda.gif> y. + (+ y 3) y))     ------- <b>WRONG</b>
+</ul>
+
+Instead, we need to perform an <img src=alpha.gif>-conversion on the inner
+<img src=lambda.gif>-expression so that the bound-variable does not occur free in the
+argument of the beta-redex.
+
+<ul>
+    (<img src=lambda.gif> x. (<img src=lambda.gif> z. + x z)) (+ y 3)
+</ul>
+
+and now we can go ahead, obtaining
+
+ (<img src=lambda.gif> z. + (+ y 3) z)
+
+
+
+<a name = "substitution"> </a>
+<h4> The definition of substitution </h4>
+
+<p>To summarise our discussion above, we may say that substitution,
+forming <em>E<sub>1</sub>[v:=E<sub>2</sub>]</em>,
+`<em>E<sub>1</sub></em> with <em>E<sub>2</sub></em> substituted for <em>v</em>'
+is a straightforward matter of rewriting sub-terms except when we come to a
+<em><img src=lambda.gif></em>-abstraction which binds the variable <em>v</em> or a variable free in
+<em>E<sub>2</sub></em>.
+
+
+We can define it by cases, using <em>v,u</em> for variables,
+<em>E,E<sub>1</sub>...</em> for expressions, with <em>C</em> for the
+set of constants:<br>
+<a name ="S6"> </a>
+
+<ul>
+S1 - <em>v[v:=E] = E</em>  <br>
+<p>
+S2 - <em>u[v:=E] = u</em>, when <em>u <img src=not_eq.gif> v</em><br>
+<p>
+S3 - <em>c[v:=E] = c</em>, for any <em>c </em>in<em> C</em><br>
+<p>
+S4 - <em>(E<sub>1</sub>E<sub>2</sub>)[v:=E]
+        =(E<sub>1</sub>[v:=E]E<sub>2</sub>[v:=E])</em><br>
+<p>
+S5 - <em><img src=lambda.gif> v.
+        E [v:=E<sub>1</sub>] = <img src=lambda.gif> v. E</em><br>
+<p>
+S6 - <em>(<img src=lambda.gif> u. E<sub>1</sub>) [v:=E]
+= <img src=lambda.gif> u. (E<sub>1</sub> [v:=E])</em>,<br>
+<ul>
+        when <em>u <img src=not_eq.gif> v</em> and<br>
+        either
+        <em>u <img src=not_in.gif> FV(E)</em>
+        or
+        <em>v <img src=not_in.gif> FV(E<sub>1</sub>)</em><br>
+</ul>
+
+<p>
+S7 - <em>(<img src=lambda.gif> u. E<sub>1</sub>) [v:=E]
+    = <img src=lambda.gif> w. ((E<sub>1</sub>[u:=w]) [v:=E])</em>,<br>
+<ul>
+when <em>u <img src=not_eq.gif> v</em> and <em>u <img src=in.gif> FV(E)</em>
+and <em>v <img src=in.gif> FV(E<sub>1</sub>)</em>, where we choose
+<em>w</em> so that<br>
+<em>w <img src=not_in.gif> FV(E) <img src=cup.gif> FV(E<sub>1</sub>)
+</em><br>
+</ul>
+</ul>
+
+<h4>Comments on S1-S7</h4>
+<p> Firstly let's note that S6 does follows the definition given in
+<a href = #hindley-seldin> Hindley & Seldin </a> in incorporating the
+condition <em>v <img src=not_in.gif> FV(E<sub>1</sub>)</em>. We could
+envisate leaving out the condition <em>v <img src=not_in.gif>
+FV(E<sub>1</sub>)</em> from S6, forcing a change of variable (S7) in that
+case. This would slightly simplify the definition of substitution, though
+it does not appear to simplify the proofs given below.
+
+
+
+<p>Cases S1-S4 need no comment. Case S5 is the one we discussed earlier in
+which the variable we are substituting for  is
+rebound in a  <em><img src=lambda.gif></em>-abstraction.  Thus, inside  the
+<em><img src=lambda.gif></em>  expression it  no  longer `means'  the  same
+thing - in some sense it is actually a different variable, so we should not
+substitute     for      it.
+
+<p>In case S6,  the <em><img src=lambda.gif></em>-abstraction  introduces a
+new variable <em>u</em> different from  <em>v</em>, but,
+there is no  problem of confusing it with any  variable
+occurring in <em>E</em> either when <em>u</em> does not occur in <em>E</em>
+or when <em>v</em> does not occur in <em>E<sub>1</sub></em>.
+
+
+<p>However in case S7 there is a real problem - the new variable <em>u</em>
+introduced in the <em><img src=lambda.gif></em>-abstraction is the same  as
+a variable occurring free in <em>E</em> and <em>v</em> occurs in
+<em>E<sub>1</sub></em> (so that we will actually make a change in
+<em>E<sub>1</sub></em>.
+The solution is to perform an <img
+src=alpha.gif>-conversion,   replacing   it    throughout   the    <em><img
+src=lambda.gif></em>-abstraction by  a variable  <em>w</em> that  does  not
+occur in either <em>E</em> or in <em>E<sub>1</sub></em>.
+We can always choose a <em>w</em> for S7 because we have an infinite
+supply of variables to choose  from and any <img  src=lambda.gif>-calculus
+expression only contains finitely many.
+
+<hr>
+<a name="substlemmas">
+<h2>Lemmas Relating to Substitution</h2>
+
+<p>We now  have  our first  opportunity  to  prove a  results  relevant  to
+developing a theory of equality in the <img src=lambda.gif>-calculus. If we
+take nothing for granted we find  that some rather "obvious" properties  of
+substitution take quite a lot of effort to prove. This arises from the fact
+that there are <em>seven</em> clauses in the definition of substitution, so
+that if we are starting from the  definition we have to consider all  seven
+cases in our  proof. Later,  with a decent  repetoire of  lemmas under  our
+belt, we'll have less labour in dealing with substitution.
+
+
+<p> Our proofs are by induction on the <em>height</em> of terms, and, since
+S6 requires us to change the variable of a
+<img src=lambda.gif>-abstraction, we'll need a little lemma which says that
+height is unchanged thereby.
+
+<hr>
+
+<h3>Lemma Height</h3>
+If <em>x,y</em> are variables of the <img src=lambda.gif>-calculus,
+and <em>E</em> is a term of that calculus, then
+<ul>
+height(E[x:=y]) = height(E)
+</ul>
+
+<b>Proof</b><br>
+
+We proceed by induction on <em>height(E)</em>
+
+<h4>Base case <em>n=0</em></h4>
+<ul>
+<li> Suppose <em>E = x</em>. Then <em>height(E[x:=y]) = height(y) = 0 =
+height(E)</em>
+
+<li> Suppose  <em>E = u</em>, where <em> u <img src = not_eq.gif> x</em> is
+a variable.  Then <em>height(E[x:=y]) = height(u) = 0 = height(E)</em>.
+
+<li> Suppose  <em>E = c</em>,
+where <em> c</em> is a constant.  Then <em>height(E[x:=y]) = height(c) = 0
+= height(E)</em>.
+</ul>
+
+<p><b> Inductive Step</b>
+
+<p>Suppose for a given <em>n</em> we have for any term <em>E</em> for which
+<em>height(E) <img src=leq.gif> n</em>, for <b>all</b> <em>x',y'</em>
+<ul>
+<p>height(E) = height(E[x':=y'])
+</ul>
+
+Consider an expression <em>E</em> of height <em>n+1</em>.
+<ul>
+
+<p><li> Suppose <em> E=(E<sub>1</sub>E<sub>2</sub>) </em>. Then, from the
+definition of <em>height</em>, we have that
+<em>height(E<sub>1</sub>)<img src=leq.gif>n</em>
+<em>height(E<sub>2</sub>)<img src=leq.gif>n</em>.
+So by the inductive hypothesis,</p>
+<ul>
+height(E<sub>1</sub>[x:=y]) = height(E<sub>1</sub>) <br>
+height(E<sub>2</sub>[x:=y]) = height(E<sub>2</sub>)
+</ul>
+<p>
+Thus, using H3 and S4, we have</p>
+<ul>
+    height(E[x:=y]) = height(E<sub>1</sub>[x:=y]E<sub>2</sub>[x:=y])<br>
+    = 1+max(height(E<sub>1</sub>[x:=y]), height(E<sub>2</sub>[x:=y]))<br>
+    = 1+max(height(E<sub>1</sub>), height(E<sub>2</sub>))<br>
+    = height(E)
+</ul>
+</p>
+
+<li> Suppose <em>E = <img src=lambda.gif>x . G</em>.</p>
+Then <em>E[x:=y] = E</em> by S5. Hence <em>height(E[x:=y]) = height(E)</em>
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>u . G</em>
+where <em>u <img src=not_eq.gif> x</em> and
+either <em>u <img src=not_in.gif> FV(y)</em> or
+<em>x <img src=not_in.gif> FV(G)</em>.
+Note that by H4, <em>height(G) = n</em>.</p>
+
+<ul>
+height(E[x:=y]) = height( <img src=lambda.gif>u . G[x:=y])<br>
+= 1+height(G[x:=y]) = 1+height(G) = height(E)
+</ul>
+
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>u . G</em>
+where <em>u <img src=not_eq.gif> x</em> and
+<em>u <img src=in.gif> FV(y)</em> and
+<em>x <img src=in.gif> FV(G)</em>. Again, <em>height(G)=n</em>.
+
+<p>Let us choose a variable
+<em>w </em> for which <em> w <img src=not_in.gif> FV(G) </em> and
+<em> w <img src=not_in.gif> FV(y)</em>.</p>
+
+<ul>
+E[x:=y] = (<img src=lambda.gif>u . G)[x:=y]
+= (<img src=lambda.gif>w . G[u:=w][x:=y])  <br>
+
+
+height(E[x:=y]) =
+height(<img src=lambda.gif>w . G[u:=w][x:=y])  <br>
+= 1+height((G[u:=w])[x:=y]) = 1+height(G[u:=w]) = 1+height(G) = height(E)
+
+</ul>
+
+
+
+
+
+
+
+
+</ul>
+<hr>
+
+<h3>Lemma Sub.1</h3>
+
+<p>[A] If <em>x <img src=in.gif> FV(E) </em> then</p>
+<ul>
+FV(E[x:=F]) = (FV(E)-{x}) <img src=cup.gif> FV(F)
+</ul>
+
+<p>[B] If <em>x <img src=not_in.gif> FV(E) </em> then</p>
+<ul>
+FV(E[x:=F]) = FV(E)   <b>and</b>
+<em>E[x:=F] = E</em>
+</ul>
+
+
+<h4>Proof</h4>
+
+We proceed by induction on <em>n</em>, the height of <em>E</em>.
+
+<hr>
+
+<p><b>Base Case <em>n=0</em></b>
+
+<ul>
+<hr>
+<p><li> Suppose <em>E = x</em>.
+Then
+ <em>FV(E) = FV(x) = {x}</em> by FV1. So <em>x <img src=in.gif> FV(E)</em>,
+that is we have case [A].
+
+Now, by S1, <em>E[x:=F] = F</em>.
+
+</p>
+
+<ul>
+(FV(E)-{x}) <img src=cup.gif> FV(F) = ({x}-{x}) <img src=cup.gif> FV(F)
+= FV(F) = FV(E[x:=F])
+</ul>
+
+<p>So the result is satisfied for this case.</p>
+
+<hr>
+<p>
+<li> Suppose <em>E = u <img src=not_eq.gif> x</em>, where <em>u</em> is a
+variable. Then <em>FV(E) = FV(u) = {u}</em> by FV1.<br>
+So <em>x <img src=not_in.gif> FV(E) </em>, that is we have case [B].</p>
+
+<p>Now <em>E[x:=F] =  u[x:=F] = u </em> by S2, so we obtain:</p>
+
+<ul>
+FV(E[x:=F]) = FV(u) = FV(E)
+</ul>
+
+<p><ul>
+E[x:=F] = u = E
+</ul></p>
+
+<hr>
+
+<li><p> Suppose <em>E = c <img src=in.gif> C</em>.
+Then <em>FV(E) = FV(c) = {}</em> by FV1,
+and hence <em>x <img src=not_in.gif> FV(E) </em>, that is we have case [B].
+
+
+<p>Now <em>E[x:=F] = c[x:=F] = c </em> by S3.</p>
+
+
+<ul>
+FV(E[x:=F]) = FV(c) = FV(E) <br>
+<p>
+E[x:=F] = c = E</p>
+</ul>
+</ul>
+
+<hr>
+
+<p><b> Inductive Step</b>
+
+<p>Suppose for a given <em>n</em> we have for any term <em>E</em> for which
+<em>height(E) <img src=leq.gif> n</em>
+<ul>
+<p>[A]  If <em>x <img src=in.gif> FV(E) </em> then</p>
+<ul>
+FV(E[x:=F]) = (FV(E)-{x}) <img src=cup.gif> FV(F)
+</ul>
+
+<p>[B]  If <em>x <img src=not_in.gif> FV(E) </em> then</p>
+<ul>
+FV(E[x:=F]) = FV(E)
+</ul>
+
+<p><ul> E[x:=F] = E
+</ul>
+
+</ul>
+
+Consider an expression <em>E</em> of height <em>n+1</em> We must show our
+result holds for <em>E</em></p>.
+
+
+
+<ul>
+<hr>
+<p><li> Suppose <em> E=(E<sub>1</sub>E<sub>2</sub>) </em>.
+
+Recall that from FV3,</p>
+<ul>
+<em>FV(E) = FV(E<sub>1</sub>) <img src=cup.gif> FV(E<sub>2</sub>))</em>,
+</ul>
+<p>Note that by H3, <em> height(E<sub>1</sub>) <img src=leq.gif> n </em>,
+<em> height(E<sub>2</sub>) <img src=leq.gif> n </em>.
+
+<p> There are 4 sub-cases </p>
+
+<ul>
+<li>Sub-case 1: <em> x <img src = not_in.gif> FV(E)</em>. This is case [B]
+of the theorem.
+<p> In this sub-case, it follows that
+<em> x <img src = not_in.gif> FV(E<sub>1</sub>),
+x <img src = not_in.gif> FV(E<sub>2</sub>)</em>.
+
+Then</p>
+
+<ul>
+   E[x:=F] = (E<sub>1</sub>[x:=F] E<sub>2</sub>[x:=F])
+   = (E<sub>1</sub>E<sub>2</sub>) = E
+</ul>
+<p> by the inductive hypothesis.
+
+Also</p>
+
+<ul>
+   FV(E[x:=F]) = FV(E<sub>1</sub>[x:=F] E<sub>2</sub>[x:=F])
+   = FV(E<sub>1</sub>E<sub>2</sub>) = E
+</ul>
+<p> by the inductive hypothesis.</p>
+
+
+
+<p><li>Sub-case 2: <em> x <img src = in.gif> FV(E)</em>,
+     <em> x <img src = in.gif> FV(E<sub>1</sub></em>)</em>,
+     <em> x <img src = in.gif> FV(E<sub>2</sub></em>)</em></p>
+
+<p>In this sub-case, applying S4, we have:</p>
+
+<ul>
+FV(E[x:=F]) = FV(E<sub>1</sub>[x:=F] E<sub>2</sub>[x:=F])
+<p>
+= FV(E<sub>1</sub>[x:=F]) <img src=cup.gif> FV(E<sub>2</sub>[x:=F])
+</ul>
+<p>by FV3. And now, applying the inductive-hypothesis and the
+associativity of union</p>
+
+<ul>
+= (FV(E<sub>1</sub>)-{x}) <img src=cup.gif> FV(F)
+<img src=cup.gif>
+(FV(E<sub>2</sub>)-{x}) <img src=cup.gif>  FV(F)
+<p>
+= ((FV(E<sub>1</sub>) <img src=cup.gif> FV(E<sub>2</sub>))-{x})
+<img src=cup.gif>  FV(F)
+</ul>
+<p>by a little elementary set-theory. We now use FV3 again:</p>
+
+<ul>
+= (FV(E<sub>1</sub>E<sub>2</sub>))-{x})
+<img src=cup.gif>  FV(F) = (FV(E)-{x}) <img src=cup.gif>  FV(F)
+</ul>
+
+
+<p>
+<li>Sub-case 3: <em> x <img src = in.gif> FV(E)</em>,
+     <em> x <img src = not_in.gif> FV(E<sub>1</sub>)</em>,
+     <em> x <img src = in.gif> FV(E<sub>2</sub>)</em></p>
+
+<p>In this sub-case, applying S4, we have:</p>
+
+<ul>
+FV(E[x:=F]) = FV(E<sub>1</sub>[x:=F] E<sub>2</sub>[x:=F])
+<p>
+= FV(E<sub>1</sub>[x:=F]) <img src=cup.gif> FV(E<sub>2</sub>[x:=F])
+</ul>
+<p>by FV3. And now, applying the inductive-hypothesis, remembering
+     <em> x <img src = not_in.gif> FV(E<sub>1</sub></em>)</em>
+</p>
+
+<ul>
+= FV(E<sub>1</sub>)
+<img src=cup.gif>
+(FV(E<sub>2</sub>)-{x}) <img src=cup.gif>  FV(F))
+<p>
+= ((FV(E<sub>1</sub>) <img src=cup.gif> FV(E<sub>2</sub>))-{x})
+<img src=cup.gif>  FV(F))
+</ul>
+<p>by a little elementary set-theory, remembering again that
+<em> x <img src = not_in.gif> FV(E<sub>1</sub>)</em>.
+We now use FV3 again:</p>
+
+<ul>
+= ((FV(E<sub>1</sub>E<sub>2</sub>))-{x})
+<img src=cup.gif>  FV(F)) = (FV(E)-{x}) <img src=cup.gif>  FV(F))
+</ul>
+
+
+<p><li>Sub-case 4 <em> x <img src = in.gif> FV(E)</em>,
+     <em> x <img src = in.gif> FV(E<sub>1</sub></em>)</em>,
+     <em> x <img src = not_in.gif> FV(E<sub>2</sub></em>)</em></p>
+
+<p> This case is symmetric with case 3.</p>
+
+</ul>
+
+<hr>
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>x . G</em>.</p>
+
+<p> In this case <em>FV(E) = FV(G)-{x}</em>, so
+<em>x <img src=not_in.gif> FV(E) </em>.
+
+Using S5 we have
+</p>
+<ul>E[x:=F] = (<img src=lambda.gif>x . F)[x:=F]
+ = (<img src=lambda.gif>x . F) = E </ul>
+
+<p> Also</p>
+
+<ul>FV(E[x:=F]) = FV(E) </ul>
+
+<p>thus the lemma holds for this case.</p>
+
+<!-- \u.G case of Lemma 1 -->
+
+
+<hr>
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>u . G</em>
+where <em>u <img src=not_eq.gif> x</em> and
+either <em>u <img src=not_in.gif> FV(F)</em> or
+<em>x <img src=not_in.gif> FV(G)</em>.
+Note that by H4, <em>height(G) = n</em>.
+
+<p> We have, by S6</p>
+<ul>E[x:=F] = (<img src=lambda.gif>u . G)[x:=F]
+= (<img src=lambda.gif>u . G[x:=F])
+</ul>
+
+<p> and by FV4 </p>
+<ul>FV(E[x:=F]) = FV(<img src=lambda.gif>u . G[x:=F]) = FV(G[x:=F]) - {u}
+</ul>
+
+<p> There are 2 sub-cases</p>
+
+<p><ul><li>
+Sub-case 1: <em>x <img src=not_in.gif> FV(G) </em></p>
+
+<p>In this sub-case, by the inductive hypothesis,
+<em>FV(G[x:=F]) = FV(G)</em><br>
+and <em>G[x:=F] = G</em>
+
+<p>
+
+So,
+<ul>
+FV(E[x:=F]) = FV(G) - {u} = FV[E]
+</ul>
+<p>by FV4. Moreover <em>E[x:=F] = E</em></p>
+<p>So, since we <em>x<img src=not_in.gif>FV(E)=FV(G)-{u}</em>, the result
+holds in this case.
+
+</ul>
+
+<p><ul><li> Sub-case 2: <em>x <img src=in.gif> FV(G) </em>,
+<em>u <img src=not_in.gif> FV(F)</em>.
+
+<p>In this sub-case, by the inductive hypothesis, </p>
+
+<ul>FV(G[x:=F]) = (FV(G)-{x}) <img src=cup.gif> FV(F)</ul>
+
+<p>
+
+So,
+<ul>
+FV(E[x:=F]) = ((FV(G)-{x}) <img src=cup.gif> FV(F)) - {u}
+</ul>
+<p>by FV4. But <em>{u} <img src=not_in.gif> FV(F) </em>, so
+<em>FV(F)-{u} = FV(F)</em>. Hence</p>
+
+<ul>
+FV(E[x:=F]) = ((FV(G)-{u}-{x}) <img src=cup.gif> FV(F))
+<p>
+= ((FV(E)-{x}) <img src=cup.gif> FV(F))
+</ul>
+<p>So our result holds for this sub-case.</p>
+</ul>
+
+<hr>
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>u . G</em>
+where <em>u <img src=not_eq.gif> x</em> and
+<em>u <img src=in.gif> FV(F)</em> and
+<em>x <img src=in.gif> FV(G)</em>.
+
+<p>Let us choose a variable
+<em>w </em> for which <em> w <img src=not_in.gif> FV(G) </em> and
+<em> w <img src=not_in.gif> FV(F)</em>.  We have</p>
+
+<ul>E[x:=F] = (<img src=lambda.gif>u . G)[x:=F]
+= (<img src=lambda.gif>w . G[u:=w][x:=F]) _______________[1]
+</ul>
+
+
+<p> and by FV4 and [1] </p>
+<ul>FV(E[x:=F]) = FV(<img src=lambda.gif>w . G[u:=w][x:=F])<br>
+= FV(G[u:=w][x:=F]) - {w} ________________________________[2]
+</ul>
+
+<p>There are 2 sub-cases.</p>
+
+
+
+<p><ul><li> Sub-case 1: <em>u <img src=not_in.gif> FV(G) </em>,
+
+<p>In this sub-case, by the inductive hypothesis,
+<em>FV(G[u:=w])=FV(G)</em>. So, again by the inductive hypothesis,
+since <em>x<img src=in.gif>FV(G)</em></p>
+
+<ul>FV(G[u:=w][x:=F]) = (FV(G)[u:=w]-{x}) <img src=cup.gif> FV(F)  <p>
+ =  (FV(G)-{x}) <img src=cup.gif> FV(F)
+</ul>
+
+<p> Since  <em>u <img src=not_in.gif> FV(G) </em>. So that, substituting in
+[2] we obtain</p>
+
+<ul> FV(E[x:=F]) = ((FV(G)-{x}) <img src=cup.gif> FV(F)) -{w}
+<p>
+= (FV(G)-{x}) <img src=cup.gif> FV(F)
+</ul>
+<p> Since w has been chosen not to be in either set of free-variables.
+On the other hand,
+<em>FV(E) = FV(G)-{u} = FV(G)</em>, since in this sub-case
+<em>u <img src=not_in.gif> FV(G) </em>. So we have</p>
+
+<ul> FV(E[x:=F]) = (FV(E)-{x}) <img src=cup.gif> FV(F)
+
+</ul>
+<p>
+Proving the result for this sub-case, since
+<em>x <img src=in.gif> FV(G)</em> and
+<em>x <img src=not_eq.gif> u</em> implies
+<em>x <img src=in.gif> FV(E)</em>
+
+
+
+</ul>
+
+<!--   Sub-case 2 for S7 Lemma Sub.1     -->
+
+<ul>
+<p><li> Sub-case 2:
+<!-- <em>x <img src=in.gif> FV(G) </em>,  --->
+<em>u <img src=in.gif> FV(G) </em>,
+
+<p>In this sub-case, by the inductive hypothesis and FV1, </p>
+
+<ul>
+FV(G[u:=w]) = (FV(G)-{u}) <img src=cup.gif> {w}
+</ul>
+<p>Thus <em>x <img src=in.gif> FV(G[u:=w])</em>. Applying the inductive
+hypothesis twice again we obtain </p>
+
+<ul>FV(G[u:=w][x:=F]) = (FV(G)[u:=w]-{x}) <img src=cup.gif> FV(F)  <p>
+ =  ((FV(G)-{u})<img src=cup.gif> {w}) -{x}) <img src=cup.gif> FV(F)
+</ul>
+<p>Now <em>w <img src=not_eq.gif> x </em>, since <em>x</em> in this
+case is a free variable of <em>G</em>, while <em>w</em> is chosen not
+to be. Hence we have by [2]</p>
+
+<ul>
+FV(E[x:=F]) = ((FV(G)-{u}) -{x}) <img src=cup.gif> FV(F)
+<p>
+= (FV(E) - {x}) <img src=cup.gif> FV(F)
+</ul>
+<p>establishing the result in this sub-case.
+</ul>
+</ul>
+
+
+
+<hr>
+
+<h3> Lemma Sub.2</h3>
+If <em>E</em> is a term of the <img src=lambda.gif>-calculus,
+and <em>x</em> is a variable, then <em>E[x:=x] = E</em>
+
+
+
+<h4>Proof</h4>
+
+We proceed by induction on <em>n</em>, the height of <em>E</em>.
+
+<hr>
+
+<p><b>Base Case <em>n=0</em></b>
+
+<ul>
+
+
+<p><li> Suppose <em>E = x</em>.
+Then, by S1 <em> E[x:=x] = x = E</em>
+So the result is satisfied for this case.</p>
+
+<p>
+<li> Suppose <em>E = u <img src=not_eq.gif> x</em>, where <em>u</em> is a
+variable. Then, by S2, <em>E[x:=x] = u = E</em>.
+So the result is satisfied for this case.</p>
+
+
+<li><p> Suppose <em>E = c <img src=in.gif> C</em>. Then, by S3,
+<em>E[x:=x] = c = E</em>.
+So the result is satisfied for this case.</p>
+
+
+</ul>
+
+<hr>
+
+<p><b> Inductive Step</b>
+
+<p>Suppose for a given <em>n</em> we have for any term <em>E</em> for which
+<em>height(E) <img src=leq.gif> n</em>
+<ul>
+        E[x:=x] = E
+</ul>
+
+Consider an expression <em>E</em> of height <em>n+1</em> We must show our
+result holds for <em>E</em></p>.
+
+<ul>
+<hr>
+<p><li> Suppose <em> E=(E<sub>1</sub>E<sub>2</sub>) </em>. Then, by S4 we
+have
+    <em>E[x:=x] =(E<sub>1</sub>[x:=x]E<sub>2</sub>[x:=x]) </em>. Using
+the inductive hypothesis, we have
+    <em>E[x:=x] =(E<sub>1</sub>E<sub>2</sub>) = E </em>.
+So the result holds in this case.
+
+
+
+<li> Suppose <em>E = <img src=lambda.gif>x . G</em>.</p>
+Then <em>E[x:=x] = E</em> by S5. Hence the result holds in this case.
+
+<p>
+<li> Suppose <em>E = <img src=lambda.gif>u . G</em>
+where <em>u <img src=not_eq.gif> x</em>. Then necessarily
+ <em>u <img src=not_in.gif> FV(x)</em>. So we can use S6 and the inductive
+hypothesis,
+noting that by H4,
+<em>height(G) = n</em>.
+to obtain</p>
+
+<ul>
+E[x:=x] =  <img src=lambda.gif>u . G[x:=x] = <img src=lambda.gif>u .
+G = E
+</ul>
+<p>and we see the result holds for this case.</p>
+
+<p><li>In these circumstances we don't have occasion to apply rule S7.
+
+
+</ul>
+
+
+
+<hr>
+
+
+
+
+<h2> A Warning </h2>
+
+It is quite easy to play fast and loose with modifications and extensions
+of the <img src=lambda.gif>-calculus. However it should be stressed that
+doing this can change the mathematical properties. For example, a simple
+change in the definition of substitution (as discussed <a href="#S6"> above
+</a>with respect to S6 and S7) can invalidate all the proofs, which, you
+will observe, are quite long. In particular, it's necessary to maintain a
+firm distinction between the pure-calculus (with or without <img
+src=eta.gif>-reduction) and the calculus with <img
+src=delta.gif>-reduction.
+
+
+<h2>Bibliography</h2>
+<a name = "hindley-seldin">
+J.Roger Hindley & Jonathan P.Seldin [196]
+"Introduction to Combinators and <img src=lambda.gif>-Calculus"
+Cambridge University Press.
+
+
+</body>
+</html>

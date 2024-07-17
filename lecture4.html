@@ -1,0 +1,936 @@
+
+
+<html><head><title>
+Lecture 4: Making Lists, Printing, Let
+</title></head>
+<BODY bgcolor = "white">
+
+
+<compiler = scheme>
+
+
+<h1> Lecture 4: Building Lists, Printing, the Let Construct </h1>
+
+<hr>
+
+
+<!-- average --><a href="lecture4.html#average"> Defining the <tt> average
+</tt> function to find the average value of a list.</a><br>
+
+<!-- map_list --><a href="lecture4.html#map_list">
+The "<tt>map_list</tt>" function transforms a list in a general
+way.</a><br>
+
+<!-- display --><a href="lecture4.html#display"> <tt>(display obj)</tt>
+outputs an object to the terminal</a><br>
+
+<!-- write --><a href="lecture4.html#write"> <tt>(write obj)</tt>
+outputs an object read to be read back into Scheme</a><br>
+
+
+<!-- begin --><a href="lecture4.html#begin">
+<tt>(begin <b>expr<sub>1</sub>..expr<sub>n</sub></b>)</tt>
+evaluates the expressions in sequence</a><br>
+
+<!-- let --><a href="lecture4.html#let">
+<tt>(let (<b>binding<sub>1</sub>..binding<sub>n</sub>)body)</b></tt>
+binds local variables, evaluates expr</a><br>
+
+<!-- let* --><a href="lecture4.html#let*">
+<tt>(let* (<b>binding<sub>1</sub>..binding<sub>n</sub>)body)</b></tt>
+binds locals, evaluates</a><br>
+
+<!-- letrec --><a href="lecture4.html#letrec">
+<tt>(letrec (<b>binding<sub>1</sub>..binding<sub>n</sub>)body)</b></tt>
+defines local recursive function</a><br>
+
+
+<hr>
+
+<h2>
+<a name = "average">
+<tt>average</tt> - our first example with a non-trivial data-structure
+</a></h2>
+
+
+<p>
+Suppose we wanted to find the average of a list of numbers. In Scheme it is
+best to write a program using quite small functions. It is worth
+remembering that any loop in an imperative language translates into a
+recursive function in Scheme - so two nested loops translate into two
+functions.
+</p>
+
+
+<p>
+The average is the sum of the numbers in the list divided by how many  numbers
+there are in the list. We could define it by:
+</p>
+
+<pre><code>
+(define (average list)
+    (/ (sum list) (length list)))
+</code></pre>
+
+<p>
+When we compile this function, Scheme responds:
+</p>
+
+<pre>
+    DECLARING VAR sum
+</pre>
+
+<p>
+This indicates to you that  Scheme does <em>not</em>
+know  about the function <tt>sum</tt>  that you have called, so you will
+have to define it.
+</p>
+
+<p> It also  indicates that  Scheme <em>does</em> know  about the  function
+<tt>length</tt>.  So  you  had  better  check  if  the  built-in   function
+'<tt>length</tt>' does the right thing. You can redefine built-in functions
+in Scheme, but it is not  a good idea. (Actually <tt>length</tt> does  just
+what we want). Try it! </p>
+
+<pre><code>
+    (length '(the fat cat eats the thin canary))
+</code></pre>
+
+<p>
+evaluates to 7.
+</p>
+
+
+<p>
+If  we  try  running  <tt>average</tt>,  you  will  get  an  error-message,
+identifying '<tt>sum</tt>' as the culprit:
+</p>
+
+<pre><code>
+    (average '(1 2 3))
+</code></pre>
+
+<pre>
+Error: Cannot apply object Uninitialised variable 'sum as function
+In file: /users/users3/fac/pop/poplocal/local/Scheme/lecture4.scm
+
+Value = 1
+This error report was prepared for Robin Popplestone
+ by Jeremiah Jolt, your compile-time helper.
+</pre>
+
+<p>
+We can now mend our program.
+</p>
+
+<pre><code>
+(define (sum list)
+    (if (null? list)
+        0
+        (+ (car list) (sum (cdr list)))))
+</code></pre>
+
+<p>
+And try <tt>sum</tt>
+</p>
+
+<pre><code>
+    (sum '(1 2 3))
+</code></pre>
+
+<pre><code>
+    6
+</code></pre>
+
+<p>
+Finally evaluating
+</p>
+
+<pre><code>
+    (average '(1 2 3))
+</code></pre>
+
+<p>
+yields:
+</p>
+
+<pre><code>
+    2
+</code></pre>
+
+<p>
+while:
+</p>
+
+<pre><code>
+    (average '(1 2 3 4))
+</code></pre>
+
+<p>
+evaluates to the rational number:
+</p>
+
+<pre><code>
+    5/2
+</code></pre>
+
+<p>
+So perhaps it is better to do
+</p>
+
+<pre><code>
+    (average '(1.0 2.0 3.0 4.0))
+</code></pre>
+
+<pre><code>
+    2.5
+</code></pre>
+
+<hr>
+
+<h2><a name="building">Building structures.</a></h2>
+
+
+
+<p>
+In the last example we made a simple number from a list, using <tt>car</tt>
+and <tt>cdr</tt> to explore the list. In this example we build a new list.
+</p>
+
+<p>
+Suppose we want to take a list of numbers and replace each number in the  list
+by a number twice as big. We could do it something like this:
+</p>
+
+<pre><code>
+(define (double_list l)
+   (if (null? l)
+      '()
+       (cons (* (car l) 2) (double_list (cdr l)))))
+</code></pre>
+
+<p>
+Trying this out:
+</p>
+
+<pre><code>
+    (double_list '(22 33 44))
+</code></pre>
+
+
+<pre><code>
+    (44 66 88)
+</code></pre>
+
+
+<p>
+How could we  make this more  general? Suppose  we wanted to  multiply by
+<em>any</em>
+number? We  could  replace the  constant  2 by  a  parameter. This  is  called
+abstraction.
+</p>
+
+
+<pre><code>
+(define (multiple-list n l)
+   (if (null? l)
+      '()
+       (cons (* (car l) n) (multiple-list n (cdr l)))))
+</code></pre>
+
+(multiple-list 10 '(5 6 7))
+
+(50 60 70)
+
+
+<p>
+Suppose we then wanted to
+</p>
+
+<pre><code>
+(define (sqrt_list l)
+   (if (null? l)
+      '()
+       (cons (sqrt (car l)) (sqrt_list (cdr l)))))
+</code></pre>
+
+<pre><code>
+(sqrt_list '(4 100 16))
+</code></pre>
+
+
+<pre><code>
+(2 10 4)
+</code></pre>
+
+
+<hr>
+<h2><a name="map_list">
+The "<tt>map_list</tt>" function generalises our list operations.</a></h2>
+
+<p> Look  at  what  we  are  doing here  -  we  are  applying  a  function,
+<tt> sqrt </tt> ,
+to every member  of the list. Can  we generalise this  idea?
+This depends  on  an  important property  of  Scheme  - <em>  we  can  pass
+functions as arguments to other functions</em>. So: we can replace the call
+of <tt> sqrt </tt> &#160
+in  <tt>sqrt_list</tt> by  a  call of  <tt> f </tt> ,  where
+<tt> f </tt>
+is an argument of a new function I shall call <tt>map_list</tt>.
+</p>
+
+
+
+<pre><code>
+(define map_list
+    (lambda (f l)
+        (if (null? l)
+            '()
+            (cons
+                (f (car l))
+                (map_list f (cdr l))
+                )
+            ); end if
+        )    ; end lambda
+    )        ; end define
+</code></pre>
+
+
+<p>
+Using <tt>map_list</tt>
+we can  take the  square-root  of a  list of  functions  quite
+easily:
+</p>
+
+<pre>
+(map_list sqrt '(4 100 16)) ===> '(2 10 4)
+</pre>
+
+<p>
+But, we can  also produce a  list indicating  where a zero  occurs in  another
+list:
+</p>
+
+<pre><code>
+(map_list zero? '(0 4 7 0)) ===> '(#t #f #f #t)
+</code></pre>
+
+<p>
+And we can produce a list of the squares of values of members of a given list:
+</p>
+
+<pre><code>
+(map_list (lambda (x) (* x x)) '(2 4 7))   ==> (4 16 49)
+</code></pre>
+
+<hr>
+<h3><a name="detail">Evaluation of map_list in detail </a></h3>
+
+
+
+<p>
+It is worth  looking in  detail at  the evaluation  of one  of these
+<tt>map_list</tt>
+examples. This is written out below. If  you are on-line, it is worth  marking
+each successive form of this expression and evaluating it - they all  evaluate
+to '(4 100).
+</p>
+
+
+<pre><code>
+    (map_list
+        (lambda (x) (* x x))
+        '(2 10))
+</code></pre>
+
+==>  ; evaluate function and arguments,  using the definition of map_list
+
+<pre><code>
+(
+ (lambda (f l)
+     (if (null? l)
+         '()
+         (cons
+             (f (car l))
+             (map_list f (cdr l))
+             )
+         ); end if
+     )    ; end lambda
+ (lambda (x) (* x x))
+ '(2 10))
+</code></pre>
+
+===>  ; substitute arguments for parameters in body of 
+<tt> lambda </tt> expression.
+
+
+<pre><code>
+(if (null? '(2 10))
+    '()
+    (cons
+        ((lambda (x) (* x x)) (car '(2 10)))
+        (map_list (lambda (x) (* x x)) (cdr '(2 10)))
+        )
+    ); end if
+</code> </pre>
+
+===>  ; evaluate the first argument of the special form if, choose accordingly
+
+<pre><code>
+    (cons
+        ((lambda (x) (* x x)) (car '(2 10)))
+        (map_list (lambda (x) (* x x)) (cdr '(2 10)))
+        )
+</code></pre>
+
+===>  ; evaluate the function and arguments of the cons expression
+
+
+<pre><code>
+    (cons
+        ((lambda (x) (* x x)) 2)
+        (map_list (lambda (x) (* x x)) '( 10))
+        )
+</code></pre>
+
+===> ; which involves recursively evaluating <tt> map_list </tt> , etc
+
+<pre><code>
+    (cons
+        (* 2 2)
+        (
+             (lambda (f l)
+                 (if (null? l)
+                 '()
+                 (cons
+                     (f (car l))
+                     (map_list f (cdr l))
+                     )
+                 ); end if
+             )    ; end lambda
+         (lambda (x) (* x x))
+         '(10))
+         )
+</code></pre>
+
+===>   again, substituting in the lambda-body
+
+<pre><code>
+    (cons 4
+        (if (null? '(10))
+            '()
+            (cons
+                ((lambda (x) (* x x)) (car '(10)))
+                (map_list (lambda (x) (* x x)) (cdr '(10)))
+                )
+            ); end if
+        )
+</code></pre>
+
+===> and evaluating the if
+
+
+<pre><code>
+    (cons 4
+        (cons
+            ((lambda (x) (* x x)) (car '(10)))
+            (map_list (lambda (x) (* x x)) (cdr '(10)))
+            )
+        )
+</code></pre>
+===> evaluating the arguments of cons
+
+<pre><code>
+    (cons 4
+        (cons
+            ((lambda (x) (* x x)) 10)
+            (map_list (lambda (x) (* x x)) '() ))
+            )
+</code></pre>
+
+===> substituting in one lambda and using the definition of
+<tt> map_list </tt>
+(for the last time, happily!)
+
+
+<pre><code>
+    (cons 4
+        (cons
+            (* 10 10)
+            (
+             (lambda (f l)
+                 (if (null? l)
+                     '()
+                     (cons
+                         (f (car l))
+                         (map_list f (cdr l))
+                         )
+                     ); end if
+                 )    ; end lambda
+             (lambda (x) (* x x))
+             '()))
+        )
+</code></pre>
+
+===> substituting in body of lambda
+
+<pre><code>
+    (cons 4
+        (cons 100
+            (if (null? '())
+                '()
+                (cons
+                    ((lambda (x) (* x x)) (car '(10)))
+                    (map_list (lambda (x) (* x x)) (cdr '(10)))
+                    )
+                ); end if
+            )
+        )
+</code></pre>
+
+===> now we stop recursing because the condition is true
+
+
+<pre><code>
+    (cons 4
+        (cons 100
+                '()
+            )
+        )
+</code></pre>
+
+===>     and we are home and dry!
+
+
+<pre><code>
+    (cons 4 '(100))
+
+</code></pre>
+===>
+
+<pre><code>
+    '(4 100)
+</code></pre>
+
+
+<hr>
+<h2><a name="string">Strings</a></h2>
+
+
+<p>
+Scheme provides  strings as  a datatype.  For our  purposes, a  string can  be
+regarded as a sequence of characters enclosed in double quotes, for example
+</p>
+
+  "such bad news for the little tweetleoos - Big Bad Cat is on the loose"
+
+<p>
+is a string. Do  NOT confuse strings  and atoms. Strings  are used mostly  for
+generating output text whose  structure will be unanalysed.  There is no  case
+conversion with strings.
+</p>
+
+<hr>
+<a name="display"></a>
+<a name="write"> </a>
+
+<h2>write and display - our first imperative constructs </h2>
+
+
+<p>
+When a program changes the outside world, for example writing a message on the
+screen or a printer, it  is hard to preserve  a pure functional model.  Scheme
+provides the following procedures:
+</p>
+
+<pre>
+       (write &#160 <b>obj</b>)
+       (display &#160 <b>obj</b>)
+</pre>
+
+<p>
+which will write an object on the <tt>current-output-port</tt>.
+The difference  between
+the two is that <tt>write</tt>
+is intended to produce output that can be read back into
+Scheme, whereas <tt>display</tt>
+is intended to produce output that can easily be  read
+back. In particular display does not print strings with quotes round them.
+</p>
+
+<pre><code>
+     (display "hello")
+</code></pre>
+
+<p>outputs
+</p>
+
+<pre>
+     hello
+
+     (write "hello")
+</pre>
+
+<p>
+outputs
+</p>
+
+<pre>
+     "hello"
+</pre>
+
+<p>
+UMASS Scheme also provides:
+</p>
+
+<pre>
+       (writeln obj<sub>1</sub>....obj<sub>n</sub>)
+</pre>
+
+
+<p>
+which outputs all its arguments starting on a new line (using display).
+</p>
+
+<pre>
+        (writeln 2 3 4)
+</pre>
+
+<hr>
+<h2><a name="begin">The "begin" special form</a></h2>
+
+
+<p>
+Procedures like write,  which have  an outside effect,  are often  combined
+using the begin special form.
+</p>
+
+<pre>
+   (begin expr<sub>1</sub> expr<sub>2</sub> ... expr<sub>n</sub> )
+</pre>
+
+<p>
+Evaluate the expressions  in order. The  value of the  <tt> begin </tt>
+construct is  the
+value of the last expression, <tt>expr<sub>n</sub></tt>.
+</p>
+
+For example,
+
+<pre><code>
+(define (test x)
+    (begin
+       (display "the value of x is ")
+       (display x)
+       (newline)
+    )
+)
+</code></pre>
+
+
+<pre><code>
+(test 45)
+</code></pre>
+
+<pre>
+the value of x is 45
+</pre>
+
+<p>  Actually,  the  <tt> begin </tt>
+statement  is  not  necessary  in  the
+<tt> test  </tt>
+function above, since Scheme allows one to have a sequence of
+expressions as the  body of a  function, although the  <tt> begin </tt>
+may
+make the code clearer.  You are encouraged to use <tt>begin</tt> in
+such circumstances.</p>
+
+
+<p>
+It may sometimes  be useful  to have a  <tt>begin</tt>
+expression  in circumstances  in
+which you need to attain an outside effect and still have an expression  which
+has a definite value.
+</p>
+
+
+<pre><code>
+(define (monitor_and_add x y)
+    (+
+       (begin
+           (display "the value of x is ")
+           (display x)
+           (newline)
+           x
+           )
+       y
+       )
+    )
+</code></pre>
+
+(monitor_and_add 2 3)
+
+
+<p>
+which produces the print out "the value of  x is 2" and has the value 5.  Here
+the begin expression acts as one of the arguments of +. Since its value is  x,
+this will be added to y to obtain the result of the function.
+</p>
+
+
+<p>
+Without the <tt>begin</tt>,
+we are trying to add up the values of all the arguments  of
++, which would cause an error.
+</p>
+
+
+<pre><code>
+(define (monitor_and_add x y)
+    (+
+       (display "the value of x is ")
+       (display x)
+       (newline)
+       x
+       y
+       )
+    )
+</code></pre>
+
+If we evaluate:
+<code>
+(monitor_and_add 2 3)
+</code>
+we get:
+
+<pre>
+Error: NUMBER(S) NEEDED
+Culprits: "Undefined Value", 5,
+In file: /users/users3/fac/pop/poplocal/local/Scheme/lecture4.scm
+</pre>
+
+<hr>
+<h2><a name="equality"> Equality</a></h2>
+
+<p> There are three functions in Scheme  which can be used to test  whether
+objects  are  <em>equal</em>,  namely  <tt>eq?</tt>,  <tt>equal?</tt>   and
+<tt>=</tt> . Of these <tt>equal?</tt>  is the most generally useful.  The =
+function is intended to used for  numbers. The use of <tt>eq?</tt> will  be
+explained later. </p>
+
+
+<hr>
+<h2><a name="let">The "<tt>let</tt>" construct</a></h2>
+
+
+<p>
+Scheme has a special form which allows you to introduce local variables into a
+function.
+</p>
+
+<pre>
+      (let <b>bindings</b> <b>body</b>)
+</pre>
+
+<p>
+Here <b>body</b>&#160
+is a sequence of expressions and  <b>bindings</b>&#160 has the form:
+</p>
+
+<pre>
+       ( (<b>variable<sub>1</sub></b> <b>init<sub>1</sub></b>) ...)
+</pre>
+
+<p> The  meaning  of the  "<tt> let </tt>"
+construct can  be  understood  as
+follows. All  of  the  <b> init </b> expressions  are  evaluated,  and  the
+corresponding <b>variable</b> bound to each  of them. Each expression  of
+the <b>body</b> is  then evaluated  in sequence, using  the new  variable
+bindings. The value of the <tt>let</tt> expression is the value of the
+last expression in the body</p>
+
+<p>
+A simple example of the use of <tt>let</tt> is:
+</p>
+
+<pre><code>
+    (let ((a 2) (b 3) ) ( + a b))
+</code></pre>
+
+<p> which evaluates to <tt>5</tt>. While there is no benefit in the use  of
+<tt>let</tt> in this case (since <tt>(+ 3 5)</tt> is a simpler way to write
+this,  we  can   usefully  use   <tt>let</tt>  when  we   have  a   sizable
+common-subexpression in something we want  to evaluate. For example, if  we
+are doing geometry in our computer we will often want to </p>
+
+<pre><code>
+    (let ((d (sqrt (+ (* x x) (* y y)))))
+          (+ (/ x d) (/ y d)))
+</code></pre>
+
+<p> [We  need to  revise this  explanation  when we  come to  consider  the
+imperative constructs in Scheme] </p>
+
+
+<p> The variable bindings in the <tt>let</tt> construct are <em>local</em>,
+that is to say the  variables have the new values  only inside the body  of
+the <tt>let</tt> statement. Thus the sequence: </p>
+
+<pre><code>
+(define x 55)
+
+(begin
+    (writeln "before let x=" x)
+    (let ((x 2))
+         (writeln "in let, x=" x)
+    )
+    (writeln "after let, x=" x)
+)
+</code></pre>
+
+<p> produces the output below (the  first 55 arises from the  <tt>(define x
+55)</tt> expression, and  the <tt>"Undefined Value"</tt>  is the result  of
+the <tt>begin</tt>  statement, that  is  in fact  the  result of  the  last
+<tt>writeln</tt> expression. </p>
+
+<pre>
+55
+before let x=55
+in let, x=2
+after let, x=55
+
+"Undefined Value"
+</pre>
+
+<p>  Note   that  <em>all</em>   the  expressions   are  evaluated   before
+<em>any</em> of the variables are bound. So, </p>
+
+<pre><code>
+(define x 55)
+</code></pre>
+
+<pre><code>
+(let ((x 3) (y x)) (+ x y))
+</code></pre>
+
+<p>
+evaluates to 58, because the value of x that y is bound to is obtained
+before x is rebound to 3.
+</p>
+
+<hr>
+<h2> Let as lambda </h2>
+
+The <tt>let</tt> construct does not add any new semantic facility to
+Scheme, because every <tt>let</tt> expression can be rewritten as a
+<tt>lambda</tt> expression applied to arguments. The transformation is
+quite simple. Take the variables of the <tt> let </tt> expression as the
+variables of the <tt>lambda</tt> expression, take the body of the
+<tt>let</tt> expression as the body of the <tt>lambda</tt> expression and
+take the <b>init</b> expressions in order as the arguments of the whole
+<tt> lambda </tt> expression.
+
+
+<pre><code>
+(let ((x 3) (y (+ 2 5))) (+ x y))
+</code></pre>
+
+<pre><code>
+((lambda (x y) (+ x y)) 2 (+ 2 5))
+</code></pre>
+
+
+
+
+<hr>
+<h2><a name="let*"> <tt>let*</tt>
+allows you to use let-bound variables in later
+bindings</a></h2>
+
+<p> There is  also a special  form <tt>let</tt>  which is the  same as  let
+except that each <b>init</b> expression is evaluated and the value bound to
+the corresponding variable before the next <tt>init</tt>
+expression is  evaluated.
+So </p>
+
+
+<pre><code>
+(let* ((x 3) (y x)) (+ x y))
+</code></pre>
+
+<p>
+evaluates to 6.
+</p>
+
+<hr>
+<h2><a name="letrec"> <tt>letrec</tt> allows you to define recursive
+functions.</a></h2>
+
+
+<p>
+It is sometimes convenient to  define recursive functions locally,  especially
+if they  are acting  as  "helper" functions,  so that  there  is no  point  in
+cluttering up global  name-space with  unnecessary names. However  we
+<em> can't do this using </em> <tt>let</tt>. Consider:
+</p>
+
+<pre><code>
+    (let  ((sum1 (lambda (l)
+                (if (null? l) 0  (+ (car l) (sum1 (cdr l)))))))
+          (sum1 '(2 3 4)))
+</code></pre>
+
+
+<p> The  problem  is  that  the Scheme  compiler  will  treat  <tt>sum</tt>
+occurring in the <tt>lambda</tt>&#160
+expression as  a different variable  from the  one
+introduced in the  <tt>let</tt>&#160
+binding.  The occurence of <tt> sum </tt>&#160
+in the  <tt>lambda</tt>
+expression is <em> global </em>,
+whereas that introduced by the  <tt>let</tt>
+binding is <em>local</em>. </p>
+
+<p>
+This problem can be solved by using the <tt>letrec</tt> special form, which
+allows you to define recursive functions locally. Syntactically this is the
+same as <tt>let</tt> except that <tt>letrec</tt> replaces <tt>let</tt>. For
+example: </p>
+
+
+<pre><code>
+(letrec  ((sum (lambda (l)
+            (if (null? l) 0  (+ (car l) (sum (cdr l)))))))
+      (sum '(2 3 4)))
+</code></pre>
+
+In the above example we <em>called</em> the <tt>sum</tt> function that
+we defined using <tt>letrec</tt> to add up the members of a list.  This is
+one possible use of <tt>letrec</tt>: in effect we may keep our program tidy
+and avoid cluttering up name-space with function names that have only local
+significance by using <tt>letrec</tt>. However we can use <tt>letrec</tt>
+as a way of creating a function that we use outside the <tt>letrec</tt>
+construct. For example the expression
+
+<pre><code>
+(letrec
+    ((sum (lambda (l)
+            (if (null? l) 0
+              (+ (car l) (sum (cdr l)))))))
+      sum)
+</code></pre>
+
+<em>is</em> the <tt>sum</tt> function, and we could write:
+
+<pre><code>
+(define sum
+    (letrec
+        ((sum (lambda (l)
+                (if (null? l) 0
+                  (+ (car l) (sum (cdr l)))))))
+        sum))
+</code></pre>
+Theorists would argue that the above is the <em>correct</em> way to
+define <em>sum</em>; we'll discuss their argument later in the course.
+</body>
+</html>

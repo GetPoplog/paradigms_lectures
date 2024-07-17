@@ -1,0 +1,872 @@
+
+
+
+<html><head><title>
+Type Checking
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+
+Extending our Language to Include Types
+
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+<p>
+
+<h2>Introduction</h2>
+In this lecture we will consider how we could extend Scheme to be
+a typed language. The mechanism for type-checking is similar to the
+mechanism for evaluation. In effect, instead of type-checking an expression
+to arrive at a value, we <em>type-check</em> an expression to arrive at
+a type.
+
+
+<p>To do this in the conventional way we need to provide a way of defining
+type-constraints which say what type our variables have. Let's adopt
+the convention that we'll use the name of the function that recognises
+types. So we might say:
+
+<pre>
+    (define (integer? x) 45)
+</pre>
+
+To mean that <tt>x</tt> is a variable restricted to having values
+that satisfy the <tt>integer?</tt> predicate.
+
+<p> We'll use environments to hold the current <em>type</em> of
+variables, rather than their <em>value</em>, for example:
+
+<pre>
+    (type_check '(+ x 45) the-type-environment)
+</pre>
+
+will return the symbol <tt>integer?</tt>. Type errors will be discovered
+by the function <tt>type_check</tt>
+
+
+
+<tt>
+    (type_check '(+ x 'hello))
+</tt>
+
+
+will produce an error.
+
+<h3>Cartesian Product Types</h3>
+
+If <tt> <b>type<sub>1</sub>...type<sub>n</sub></b> </tt> are types,
+then the type <tt>(>< <b>type<sub>1</sub>...type<sub>n</sub></b>)</tt>
+denotes the set of all Scheme lists
+<tt>(x<sub>1</sub>...x<sub>n</sub>)</tt>
+where each <tt> x<sub>i</sub></tt> belongs to the type
+<b>type<sub>i</sub></b>.
+
+<p>This apparatus for describing cartesian product types
+is close to that employed by the SML language. Note that while the domains
+of these types intersect, we will provide no mechanism for viewing them
+as sharing members (just as, for example, Java integers and Java objects
+are commonly BOTH represented as 32-bit sequences, but are treated by the
+Java type system as being entirely separate).
+
+<p>Note also that we have no means of describing certain
+sets of objects that one might create in a Scheme program, for
+example the set of all lists which contain alternating strings and
+integers. <em>Sound type systems that are decidable will inevitably
+constrain the ability of the user to characterise sets of computational
+objects using the type-language</em>.
+
+
+<h3>Function Types</h3>
+We need a way to refer to the types of functions. We'll use the convention
+that:
+
+<pre>
+  (--> (>< <b>type<sub>1</sub>...type<sub>n</sub></b>) <b>type</b>)
+</pre>
+
+is the type of a function that takes <tt>n</tt> arguments of type
+<tt><b>type<sub>1</sub>...type<sub>n</sub></b></tt> and returns result of
+type  <b>type</b>. Thus, for example, the type of
+
+<pre>
+    (lambda ((integer? x)) (+ x 5))
+</pre>
+
+will be <tt> (--> (>< integer?) integer?) </tt>
+
+
+
+<h3>Environments for Type-checking</h3>
+
+Recall that  an environment  is simply  a list  of association  lists.  For
+type-checking each association list  will hold the  types of variables  for
+one function-call,  except for  the last,  which is  called the  <em>global
+environment</em>, and which  holds the  types of system  variables such  as
+<tt>car, cons, cdr</tt> and of user-defined global variables.
+
+
+<a name = "implementing"> </a>
+<h2>3  Implementing (type_check expr env) to type-check an expression</h2>
+
+<p>
+Let us now  define our  top-level function  for type-checking  expressions,
+<tt>type_check</tt>. This function takes two parameters.
+
+        (type_check expr env)
+
+<p>
+means "type-check the expression <tt>expr</tt>
+in the environment <tt>env</tt>". So, we would wish
+to support a call such as
+
+<pre>
+        (type_check '(+ x (>< 2 y))  '(((x . integer?) (y . integer?)) '()))
+</pre>
+
+<p>
+which would return <tt>integer?</tt>.
+
+<h4> The code for type_check</h4>
+
+This differs from that for eval_env! only in the case of a constant like
+<tt>1</tt>, in which case we need to ascribe a specific type to it.
+
+
+<p> If  the expression  is a  pair [1]  it means  that we  have a  function
+<em>applied</em> to  arguments, or  a special  form. We  call the  function
+<tt>type_compound</tt> [2] to handle this case.
+
+<p>
+If the expression is a symbol [3] then we look up its type in the
+environment [4]. Otherwise we call <tt>type_constant</tt> to give
+it type.[5]
+
+
+<pre><code>
+(define (type_check expr env)
+    (if (pair? expr)                                  ;[1]
+        (type_compound (car expr) (cdr expr) env)     ;[2]
+        (if (symbol? expr)                            ;[3]
+            (lookup_type_chk expr env)                         ;[4]
+            (type_constant expr) )                    ;[5]
+        )
+    )
+</code></pre>
+
+
+<pre><code>
+(define (type_constant c)
+    (cond
+        ((integer? c) 'integer?)
+        ((string? c) 'string?)
+        ((symbol? c) 'symbol?)
+        ((boolean? c) 'boolean?)
+        (else (error "constant " c "of unknown type"))
+    ) )
+</code></pre>
+
+<p>
+So, as  before,  merely  having  defined  this  function,  we  can  type-check a
+constant. We give the empty environment '() as second argument.
+
+
+<pre><code>
+(example '(type_check 34 '()) 'integer?)
+</code></pre>
+
+<h3>3.1  Implementing the environment - the lookup_type  function.</h3>
+
+<p> We'll need a slightly different version of
+the function <tt>lookup</tt>, <tt>lookup_type</tt>
+which we'll use to find the type  of a
+variable in an environment.  It uses <tt>assoc</tt>  to examine each  frame
+until it finds the required one. The main difference is that it
+requires that every variable have a type.
+
+<pre><code>
+(define (lookup_type var env)
+    (if (null? env) #f
+        (let ((pair (assoc var (car env)))) ; look it up in current frame
+            (if pair
+                (cdr pair)                  ; found a binding for var in frame
+                (lookup_type var (cdr env)))     ; no binding in this frame
+            )
+        )
+    )
+
+(define (lookup_type_chk var env)
+    (let ((t (lookup_type var env)))
+        (if t t (error "variable " var " is undeclared"))
+    ))
+
+
+
+</code></pre>
+
+<p>  Having  defined   <tt>lookup_type</tt>  it   is  now   possible  to   apply
+<tt>type_check</tt> to type-check a variable in an environment.
+
+<pre><code>
+(example '(type_check
+    'x                           ; the variable x
+     '(
+       ((a . boolean?) (b . boolean?)) ; first frame of environment
+       ((x . integer?) (y . integer?))        ; second frame
+       ((+ --> (integer? integer?) --> integer?))         ; global frame
+      ))
+    'integer?)
+</code></pre>
+
+
+<p>
+So, if we try to type-check an undeclared variable we'll get an error
+message [note that this code is in effect commented out]
+
+<pre>
+    (example '(type_check 'x '()) 'x)
+
+    Error: variable  x  is not declared
+</pre>
+
+<h3>3.2  Methods for special forms</h3>
+
+
+<p> We can keep our old definition of <tt>method</tt>, although the methods
+themselves will be different.
+
+
+<pre><code>
+(define alist_method '())
+
+(define (method f)
+    (let ((pair (assoc f alist_method)))
+        (if pair (cdr pair) pair )
+        )
+    )
+</code></pre>
+
+<p>
+For convenience, let us define a mutating procedure to add a method so that we
+can extend our repetoire of special forms on the fly.
+
+<pre><code>
+(define (add_method! name m)
+    (set! alist_method (cons (cons name m) alist_method))
+    )
+</code></pre>
+
+<h3>3.3  type_compound type-checks special forms, and any application</h3>
+
+
+<p>
+The function <tt>type_compound</tt> is modelled on <tt>eval_compound!</tt>.
+We see if  there
+is a  method  to  handle a  special  form.  If  there is,  it  will  take  the
+environment as an extra  argument. If there is  not we type the  arguments
+and type-check the application of
+the function. Again <tt>lambda</tt> expression in  the
+<tt>map</tt> to ensure that <tt>type_check</tt> has its <tt>env</tt>
+argument.
+
+<pre><code>
+(define (type_compound f args env)
+    (let ((m (method f)))               ; get method if there is one
+        (if m
+            (m args env)                 ; use method if there is one
+            (type_application f
+                (map (lambda (e)
+                        (type_check e env))
+                    args)
+                env
+                )                       ; otherwise type-check the arguments
+            ; and apply the function to them
+            )                           ; end if
+        )                               ; end let
+    )
+</code></pre>
+
+
+<h3>...  Defining the method to type-check the special form <tt>lambda</tt></h3>
+
+
+Type-checking a <tt>lambda-</tt> expression is quite complicated. What we
+do is rather like <em>applying</em> a <tt>lambda</tt>-expression when we
+were doing evaluation, that is to say, we bind the formal parameters
+to types, and type-check the body.
+
+
+Consider:
+
+<pre>
+    (lambda ((integer? x)) (+  x b))
+</pre>
+
+<p>  type-checked  with  the  environment
+
+<pre>
+    '(
+        ((b  . integer?))
+        ((+  --> (integer? integer?) integer?)
+    )
+
+</pre>.  We'll have to create an environment
+
+<pre>
+    '(
+        ((x  . integer?))
+        ((b  . integer?))
+        ((+  --> (integer? integer?) integer?)
+    )
+</pre>
+
+in which to type-check the body of the lambda-expression.
+
+<pre>
+(define (method_lambda args_n_body env)
+    (let* (
+            (args    (car args_n_body))
+            (body    (cdr args_n_body))
+            (ty_args (cons '>< (map car args)))
+            (frame   (map (lambda (a) (cons (cadr a) (car a))) args))
+            (ty_ret  (type_sequence body (cons frame env)))
+          )
+       (list '--> ty_args ty_ret)
+    ))
+</pre>
+
+Here <tt>type_check_seq</tt> is like our <tt>eval_sequence</tt>
+
+
+<pre><code>
+(define (type_sequence seq env)
+    (cond
+        ((null? seq) (error "cannot type-check null seqence"))
+        ((null? (cdr seq)) (type_check (car seq) env))
+        (else
+            (type_check (car seq) env)
+            (type_sequence (cdr seq) env)
+            )
+        )
+    )
+</code></pre>
+
+We can't type-check a very complicated lambda expression yet, but let's try
+this:
+
+<pre>
+
+
+(add_method! 'lambda method_lambda)
+
+
+(example '(type_check '(lambda ((integer? x)) x) '())
+    '(--> (>< integer?) integer?)
+         )
+</code></pre>
+
+
+<h3>...  Defining the method to type-check the special form if</h3>
+
+<p>  The  method  for  <tt>if</tt>
+Type-checking conditional expressions can be quite complicated, as you will
+see if you look at the Java language specification. What type might we
+ascribe to the expression <tt>(if (> b 0) (- acct b) "overdrawn")</tt> ?
+
+<p>There are a number of possible treatments of this. We'll adopt the
+simplest, and require that both branches of the conditional have the
+same type, thus effectively ruling out the above expression. Some
+languages, such as Java, have the idea of a <em>type-lattice</em> in which
+an expression would be given the least-upper-bound of types.
+
+
+<p> To  type-check  a conditional  expression  of the  form  <tt>(if  <b>bool
+expr<sub>1</sub> expr<sub>2</sub></b>)</tt> we  first type-check  <b>bool</b>
+[1].   If  it has type <tt>boolean</tt>
+    then    we    type-check
+<b>expr<sub>1</sub></b> [2]. If <b>bool</b>  type-checks to <tt>#f</tt>  then
+we type-check  <b>expr<sub>2</sub></b> [3].  Otherwise  we arrange  that  the
+<tt>(if...)</tt> expression type-checks  to itself. Note  that here again  we
+have a rule for evaluation that differs from standard Scheme.
+
+
+<pre><code>
+(define (method_if args env)
+    (let ((bool (type_check (car args) env)))               ;[1]
+        (cond                                             ;
+            ((eq? bool 'boolean?)
+                (unify_types
+                    (type_check (cadr args) env)    ;[2]
+                    (type_check (caddr args) env)    ;[2]
+                ))
+            (else (error
+                     "first argument of conditional must be boolean")))))
+
+(add_method! 'if method_if)
+
+</code></pre>
+
+
+
+For some applications, we will need to use our old friend <tt>unify</tt>
+to unify-types, but for the nonce we'll just require exact equality.
+
+<pre>
+(define (unify_types ty1 ty2)
+    (if (equal? ty1 ty2) ty1
+         (error "type " ty1 "is not the same as " ty2)
+    ))
+</pre>
+
+<pre><code>
+
+(example
+
+    '(type_check '(lambda ((boolean? b)) (if b 3 4)) '())
+
+    '(--> (>< boolean?) integer?)
+ )
+</code></pre>
+
+<h3>Let's Postpone Type Checking Quoted constants </h3>
+
+How to handle the type of data-structures such as lists raises
+quite a few problems. Basically, the question is "a list of what?".
+
+
+
+<h3>Type checking  set!</h3>
+
+Type-checking <tt>set!</tt> will not be a big deal in our type-system,
+for we'll require that both sides have the same type.
+
+
+(define (method_set! args env)
+    (let ((ty_left (type_check (car args) env))
+          (ty_right (type_check (cadr args) env))
+         )
+        (unify_types ty_left ty_right) ) )
+</code></pre>
+
+
+<pre><code>
+
+(add_method! 'set! method_set!)
+
+(example
+
+    '(type_check '(set! x 23) '(((x . integer?))))
+
+    'integer?
+ )
+</code></pre>
+
+
+<h3>
+3.4  Use type_application for finding the result-type </h3>
+
+We now come to  the definition of  the function <tt>type_application</tt>  which
+implements our call of <tt>(type_application f args env)</tt> back i
+
+<h4>... We put types of  primitives in the global type-environment</h4>
+
+Let's restrict ourselves to arithmetic operators and relations, because
+we are going to have some difficulty in talking about the type of
+<tt>car, cdr</tt> and <tt>cons</tt>.
+
+<pre><code>
+(define the-type-environment
+    (list(list
+      (cons '+ '( --> (>< integer? integer?) integer?))
+      (cons '- '( --> (>< integer? integer?) integer?))
+      (cons '>< '( --> (>< integer? integer?) integer?))
+      (cons '>= '( --> (>< integer? integer?) boolean?))
+      (cons '> '( --> (>< integer? integer?) boolean?))
+      (cons '< '( --> (>< integer? integer?) boolean?))
+      (cons '<= '( --> (>< integer? integer?) boolean?))
+
+     ))
+    )
+
+
+</code></pre>
+
+<p>  In  defining  <tt>type_application</tt>,  we  use  <tt>type_check</tt>   to
+to find the   <tt>ty</tt> of <tt>f</tt>
+
+<pre><code>
+(define (type_application f ty_args env)
+    (let ((ty (type_check f env)))
+        (cond
+            ((type_procedure? ty)    ; is f a procedure?
+                (begin
+                    (unify_args (type_arg_list ty) ty_args)
+                    (type_result ty)
+                ))
+            (else (error "applying non-function " f " of type " ty))
+            )
+        )
+    )
+</code></pre>
+
+<pre><code>
+(define (type_procedure? obj)
+    (and (pair? obj) (eq? (car obj) '-->)))
+
+(define type_arg_list cdadr)
+(define type_result   caddr)
+
+</code></pre>
+
+<pre><code>
+
+(define (unify_args types1 types2)
+    (if (null? types1)
+        (if (null? types2) #t
+            (error "wrong number of arguments"))
+        (if (null? types2)
+            (error "wrong number of arguments")
+      (begin (unify_types (car types1) (car types2))
+      (unify_args (cdr types1) (cdr types2)) ))
+    ))
+
+</code></pre>
+
+<p>
+We can now try applying a primitive function to arguments:
+
+<pre><code>
+(example
+    '(type_application
+        '+
+        '(integer? integer?)
+        the-type-environment)
+
+    'integer?)
+</code></pre>
+
+<p>
+Indeed, we can type-check an expression involving primitives:
+
+<pre><code>
+(example '(type_check '(+ (>< 4 5) 3) the-type-environment) 'integer?)
+
+
+(example '(type_check
+                '(lambda ((integer? x)) (+ (>< 4 5) 3))
+                the-type-environment)
+
+         '(--> (>< integer?) integer?)
+)
+
+
+</code></pre>
+But this will give an error, if you give it a chance.
+<pre>
+   (type_check
+                '(lambda ((integer? x)) (+ (> 4 5) 3))
+                the-type-environment) )
+</pre>
+
+<pre>
+Error: type  integer? is not the same as  boolean?
+</pre>
+
+</code></pre>
+
+<h3> The define special form </h3>
+
+<p>
+Since <tt>define</tt> always binds a variable to have a value, and we
+can determine the type of the value, it might seem that we don't need
+to change the format of <tt>define</tt>. However in order to type-check
+recursive functions, we have got to have a type associated with the
+function-name before we can work out the type of the body.  Consider
+
+<pre>
+    (define fact
+        (lambda ((integer? n)) (if (= n 0) 1 (>< n (fact (- n 1))))))
+</pre>
+
+We can't work out the type of the <tt>lambda</tt> expression without
+knowing the type of <tt>fact</tt>, and conversely
+we can't work out the type of the <tt>fact</tt> without
+knowing the type of the <tt>lambda</tt> expression. We can solve this
+problem, rather clumsily, by requiring that we specify the <em>type</em> of
+<tt>fact</tt> when defining it.
+
+
+<pre>
+    (define ((--> (>< integer?) integer?) fact)
+        (lambda (n) (if (= n 0) 1 (>< n (fact (- n 1))))))
+</pre>
+
+
+Again, will  not implement  the "shorthand"  form
+exemplified by: <tt>(define (fred (integer? x)) (+ x 1))</tt>.
+
+<p> Suppose we are type-checking
+
+<pre>
+      (define VAR EXPR)
+</pre>
+
+<p>
+We must first make a null entry for VAR in the global type environment, and
+then type-check the expression EXPR in the modified global environment.
+
+
+<p> In  detail, we  define the  function <tt>method_define</tt>  which  [1]
+performs an initial check that the  form of the define statement is  valid.
+Next [2] it unpacks the  specification <tt>qvar</tt> of the variable  being
+defined and the value <tt>expr</tt> to be given to that variable.
+We further unpack the specification into the type <tt>ty</tt> of the
+variable, and its name <tt>var</tt>.
+
+<p>Now  follows  [3]  a  check
+that   <tt>var</tt> is truly a variable.
+<p> Having checked  the legality of  the construct, we  proceed [4] to  add
+<tt>var</tt> as a variable  to the global type environment with its
+assigned type
+if necessary,
+which
+leaves us free [5] to update the  type of that variable with the type  of
+the expression <tt> expr</tt> type-checkd in the global environment.
+
+<p> All that is left to us [7-8] is to provide suitable error reports about
+malformed <tt>define</tt> statements.
+
+
+<pre><code>
+(define (method_define args env)
+    (if (= (length args) 2)                                         ; [1]
+        (let* ((qvar (car args)) (expr (cadr args))                 ; [2]
+               (ty   (car qvar)) (var (cadr qvar)))
+
+            (if (symbol? var)                                       ; [3]
+                (begin
+                    (set! the-type-environment                    ; [4]
+                        (add_tvariable var ty the-type-environment))
+                    ( unify_types
+                        ty
+                        (type_check expr the-type-environment)     ; [6]
+                        )
+                    )
+                (error "variable needed in define statement"        ; [7]
+                    (cons 'define args))
+                )
+            ) ; end let
+
+        (error "wrong form for define statement" (cons 'define args)) ;[8]
+        ) ; end if
+    )
+</code></pre>
+
+<p>
+The  function  <tt>add_tvariable</tt>
+makes  the  new  entry  for  a  variable  in   an
+environment if one is required.
+
+<pre><code>
+
+(define (add_tvariable var ty env)
+    (let ((ty1 (lookup_type var env)))
+        (if ty1
+            (begin (unify_types ty ty1) env)
+            (cons
+                (cons ; extend the first frame
+                (cons var ty) (car env))
+            (cdr env))
+        )
+    ))
+</code></pre>
+
+
+We can now incorporate the <tt> define</tt> special form into our
+interpreter.
+
+<pre><code>
+(add_method! 'define method_define)
+</code></pre>
+
+(type_check
+    '(define ((--> (>< integer?) integer?) add1)
+        (lambda ((integer? x)) (+ x 1)))
+    the-type-environment
+)
+
+
+<h3>4.3  Implementing the begin special form.</h3>
+
+
+<p> We also  need to  provide a method  for <tt>begin</tt>.  We simply  use
+<tt>type_sequence</tt> to type-check the sequence of expressions forming  the
+body of a <tt>begin</tt> expression.
+
+<pre><code>
+(add_method! 'begin
+    (lambda (seq env)
+        (type_sequence  seq env)
+        )
+    )
+</code></pre>
+
+<h3>4.4  Testing out the "banking" example.</h3>
+
+
+<p> For  convenience,  let  us  define a  function  <tt>  evalg</tt>  which
+type-checks an expression in  the global environment. This  will allow us  to
+implement the  equivalent of  the "read-eval"  loop of  the Scheme  system,
+whereby it continually reads  an expression, type-checks  it, and writes  out
+the type.  Without learning  more about  the input-output  aspects of  the
+Scheme language we can't make our interpreter behave <em>exactly</em>  like
+the built-in system, but we can make it tolerably convenient to use.
+
+<pre><code>
+(define (evalg expr)
+    (writeln "=:> " (type_check expr the-type-environment))
+    )
+</code></pre>
+
+<p>
+Note that we have only treated the most basic kind of definition - we have to
+have an explicit <tt>lambda</tt> if we are going to define functions. To define a
+function <tt>fred</tt> to our interpreter, we need to do:
+
+<pre><code>
+(evalg
+    '(define ((--> (>< integer?) integer?) fred)
+        (lambda ((integer? x)) (+ x 2)))
+    )
+</code></pre>
+
+<p> Now,  we can  check whether  this definition  has "taken",  by  looking
+<tt>fred</tt> up in the global environment.
+
+
+
+<p> For  convenience,  let us  define  <tt>evals</tt> which  allows  us  to
+type-check a sequence of expressions in the global environment.
+
+<pre><code>
+(define (evals seq) (for-each evalg seq))
+</code></pre>
+
+<p> We can now do our most of  our banking example and see what happens  in
+the  environment  model  when   we  have  a   <tt>set!</tt>.  Let  us   use
+<tt>evals</tt> to define the <tt>make_account</tt> function, and to make an
+account for Jane. What we can't do is to return the
+string <tt>"insufficient funds"</tt>, or a list <tt>('balance
+balance)</tt>, because our type-system is not rich enough to support this.
+
+<pre><code>
+(evals
+    '(
+     (define ((--> (>< integer?) (--> (>< integer?) integer?)) make_account)
+         (lambda ((integer? balance))
+             (lambda ((integer? amount))
+                 (if (>= balance amount)
+                     (begin (set! balance (- balance amount))
+                          balance
+                         )
+                     balance
+                     )
+                 )
+             )
+         )
+     (define ((--> (>< integer?) integer?) jane)  (make_account 100))
+     jane
+     )
+    )
+</code></pre>
+
+
+<h2> Types for Data Structures </h2>
+
+
+So far we have not treated lists at all. This is because of an important
+problem. A Scheme list can contain objects of any type whatsoever. So how
+are we to talk about its type. There are two main approaches
+
+<ul>
+<li> <b>Parametric Polymorphism:</b> This is the SML approach, which
+involves the idea of a <em>type-constructor</em>, that is to say
+a function from types to types. In fact we have already met
+type-constructors, namely the operators >< and --> which create the
+a cartesian product type and a function type respectively.
+
+
+<p>It <b>type</b> is a type, then <tt>(list <b>type</b>)</tt> denotes the
+type of all Scheme lists
+<tt>(x<sub>1</sub>...x<sub>n</sub>)</tt> (for any <tt>n</tt>)
+where each <tt> x<sub>i</sub></tt> belongs to the type
+<b>type</b>.
+
+
+
+<p>However, the
+most convenient approach to these types involves introducing
+<em>type-variables</em>, so that for example <tt>(list (? a))</tt>
+is used to mean a list of whatever type the variable <tt>(? a)</tt> happens
+to be bound to.
+
+<p> In this approach, the function <tt>car</tt> for example has the
+type <tt> (--> (>< (list (? a))) (? a))  </tt>. So, for example if
+a variable  <tt>l</tt> has type <tt>(list integer?)</tt> then
+the expression <tt>(car l)</tt> is ascribed the type <tt>integer</tt>
+
+
+<p><li> <b>A Type Hierarchy:</b> This is the Java approach. It is less
+precise than parametric polymorphism, but allows you to build a wider
+range of structures (for example lists with alternating integers and
+strings). We might have a hierarchy something like this:
+
+<pre>
+                    object?
+
+    boolean? char? null? integer? pair?  string? symbol? vector?
+</pre>
+
+We will still need a kind of parametric polymorphism for functions, which
+rather complicates the issue (and let's note that Java doesn't have
+functions, but methods, which are not objects in their own right).
+
+<p>With the type-hierarchy approach <tt>car</tt> has the type
+<tt>(--> (>< pair?) object?) </tt>, saying in effect that a
+pair can hold anything as its first component.  To make this
+work, we have to introduce a notion of type-casting - the expression
+
+<pre>
+    (cast (car list1) integer?)
+</pre>
+
+will make sure <em>at run time</em> that <tt>(car list1)</tt> actually is
+an integer.
+
+
+<pre><code>
+(define (method_cast args env)
+    (let ((type (type_check (car args) env))
+          (type_res (cadr args)))
+
+        (cond                                             ;
+            ((castable? type type_res) type_res)
+
+            (else (error
+                     "cannot cast type " type " to type " type_res )))))
+
+(add_method! 'cast method_cast)
+
+</code></pre>
+One type is  <tt>castable?</tt> to another if it is either above it
+or below it in the hierarchy.
+
+</ul>

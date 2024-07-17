@@ -1,0 +1,1645 @@
+
+
+
+
+
+<html><head><title>
+ Implementing the Substitutional Model
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+
+ Lecture 17 Implementing the Substitutional Model of Functions.
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+
+
+<a href = "lecture17.html#substitution">
+1   Implementing the Substitutional Model.</a><br>
+
+<a href = "lecture17.html#fixpoint">
+2   Treating recursion in a purely substitutional way.
+</a><br>
+
+<pre>
+  2.1   The problem of implementing recursion when we only have lambda
+  2.2   The Y combinator is a fixed-point operator.
+  2.3   But Y can be written as a lambda expression!
+  2.4   Using Y to define recursive functions
+</pre>
+
+<a href = "lecture17.html#interpreter">
+  3   Building an interpreter for a functional Scheme-like language
+</a><br>
+
+<pre>
+  3.1   Associations support arbitrary finite mappings
+  3.2   A Scheme Interpreter: eval_eager is the eager, substituting version
+  3.3   eval_compound evaluates special forms, and any application
+      ... Finding the method for a special form
+      ... The definition of eval_compound using method-lookup.
+      ... Defining the method to evaluate the special form lambda
+      ... Defining the method to evaluate the special form if
+      ... Defining the method to evaluate the Y combinator.
+      ... Defining the method for quoted constants
+      ... Testing out eval_eager
+  3.4   Defining apply_eager  to implement the application of a function.
+      ... Applying primitives such as +, *, car, cons, cdr
+      ... The implementation of apply_eager
+      ... Examples of the use of apply_eager
+  3.5   Implementing the application of a compound function to arguments
+      ... Implementing the application of a function of the form (Y- e)
+      ... Implementing the application of a lambda expression
+      ... Implementing the substitution of  values for variables
+      ... Making a substitution in a lambda-expression
+</pre>
+
+<a href = "lecture17.html#shonfinkel">
+  4   Shonfinkel's Combinators enable us to dispense with lambda
+</a><br>
+
+<a name = "substitution"></a>
+<h2>1  Implementing the Substitutional Model.</h2>
+
+<p>
+Our understanding of  the purely  functional use  of Scheme  was expressed  in
+terms of the substitution model of evaluation. This substitution model says
+
+<ul>
+    "To apply a lambda-expression to actual parameters, substitute the
+    actual parameters for the formal parameters in the body of the
+    lambda-expression, and evaluate the resulting body."
+</ul>
+
+<p>
+For example, the expression:
+
+<pre>
+    ( (lambda (x y) (+ x (* 2 y)))  4 5)
+
+    ==> (+ 4 (* 2 5))
+
+    ==> (+ 4 10)
+
+    ==> 14
+</pre>
+
+<p>
+This model assumes that there is  some built-in code for recognising the  what
+to do with primitives such as + *.
+
+<p>
+[Note: The  original definition  of  the lambda  calculus, devised  by  Alonzo
+Church in the 1930's employed substitution as the basic way of simplifying  an
+application].
+
+<a name = "substitution"></a>
+<h2>2  Treating recursion in a purely substitutional way.</h2>
+
+
+<p> Mathematics and science have  progressed by the application of  Occam's
+Razor, <em>non sunt multiplicanda entia praeter necessitatem</em>. Computer
+scientists who have ambitions to be  more than hackers of arbitrary  chunks
+of code might do well to pay attention to this principle, for it the  right
+approach to creating software systems  that are <em>engineered</em> in  the
+sense that they are subject to formal analysis.
+
+<p>
+For the  functional paradigm  the theoretical  basis is  the lambda  calculus,
+which provides a substitutional model.  Applying Occam's Razor, we would  wish
+to shave off as many special forms  as possible by explaining how they can  be
+transformed into more  basic forms.  In fact  we can get  rid of  all of  them
+except the <tt>lambda</tt> construct itself.
+
+<h3>
+2.1  The problem of implementing recursion when we only have <tt>lambda</tt></h3>
+
+
+<p>
+In a mathematical development of the theory of the substitional model we  have
+a problem raised by <em>recursion</em>. Compare
+
+
+<pre>
+(define  double (lambda (x) (* 2 x)))
+
+(define sum
+    (lambda (l) (if (null? l) 0 (+ (car l) (sum (cdr l)))))
+)
+</pre>
+
+<p>
+In the case of <tt>double</tt>
+what we are doing can be regarded as binding a variable.
+Indeed we could write a program like:
+
+<pre>
+    (define  double (lambda (x) (* 2 x)))
+
+    (double 3)
+
+</pre>
+
+As
+
+<pre>
+    ((lambda (double) (double 3)) (lambda (x) (* 2 x)))
+</pre>
+
+<p>
+All Scheme programs which do not  involve recursion and which do not  redefine
+functions can be systematically treated in this way. That is to say, we do not
+need to regard <tt>
+define</tt> as any  special construct, but merely as something  that
+can be transformed into a <tt>lambda</tt> construct.
+
+
+<p>
+However the definition of <tt>sum</tt> is  not so simple, since <tt>sum</tt> occurs  recursively
+in the <tt>lambda</tt> expression. Consider:
+
+
+<pre>
+ (
+  (lambda (sum) (sum '(1 2 3)))
+  (lambda (l)
+      (if
+          (null? l)
+          0
+          (+ (car l) (sum (cdr l)))
+          )
+      )
+  )
+
+</pre>
+
+Error: Cannot apply object Uninitialised variable 'sum  as function
+In file: /users/users3/fac/pop/poplocal/local/Scheme/lecture14.scm
+
+<p>
+The second <tt>lambda</tt> expression has <tt>sum</tt>  as an unbound free variable. (Note  that
+the second <tt>lambda</tt> expression  is <em>not</em>
+contained within  the first, so that  the
+<tt>sum</tt> of the  second <tt>lambda</tt>  expression is  not in the scope of the  <tt>sum</tt> of  the
+first).
+
+<p>
+We could get over this difficulty by giving up on trying to express
+<tt>define</tt>
+in
+terms of <tt>lambda</tt>, and  regarding it as specifying  a <em>recursion
+equation</em>,  whose
+solution was  the  required recursive  function,  for example,  <tt>sum</tt>  could  be
+regarded as a solution of:
+
+<pre>
+  (sum x) = (if (null? x) 0 (+ (car l) (sum (cdr x))))
+</pre>
+
+<h3>2.2  The Y combinator is a fixed-point operator.</h3>
+
+
+<p>
+However it is not necessary to do this! Instead we introduce the
+<tt>Y</tt>-combinator,
+with the property that, for any function <tt>e</tt>:
+
+<pre>
+     (Y e)  = (e (Y e))
+</pre>
+
+<p> We say  that <tt>Y</tt>  is a  <em>fixed point  operator</em>, that  is
+<tt>(Y e)</tt> has  the property that  when we apply  <tt>e</tt> to it,  it
+remains unchanged. The  concept of  a fixed point  is an  important one  in
+mathematics and  physics.  Consider  for  example,  a  rotating  body.  The
+rotation can be considered as a mapping from where the body was  originally
+to where it  is now. The  fixed point of  this mapping is  the <em>axis  of
+rotation</em>. More generally, in Linear Algebra, we have the concept of an
+<em>eigenvector</em>.
+
+<p>
+In engineering generally, the design of a process for making an artefact  very
+often consists of finding an operation  whose fixed point is the artefact,  or
+at least a feature of it. Thus the fixed point of the operation of planing  is
+a planed surface. So, if we need a plane surface we think of planing as a  way
+of achieving it. Likewise the fixed point of the operation of screw-cutting is
+a threaded surface.
+
+<p>
+So, it is not  surprising in Computer Science  that a fixed-point operator  is
+important in constructing the artefacts that we produce - computer programs.
+
+<p> You  might  also  say  that  e  is a
+symmetry of <tt>(Y e)</tt>, and this  is
+a clue to why it works. Observe that the
+data-structures we  construct in  Scheme
+are  <em>self   similar</em>,  or   in a
+sense, symmetric. [Note however that  in
+Mathematics  it  is   usual  to   regard
+symmetry operators as being invertible -
+if you rotate a  body you can rotate  it
+back. Computation generally throws  away
+information, so is not invertible].
+
+When, for example,  you take the <tt>cdr</tt>
+of a
+list, you still have a list. Recursion works by exploiting this symmetry.
+
+<b>
+
+ The notes on the lambda calculus available online discuss Y in a more
+ mathematical framework.
+
+
+</b>
+
+<h3>2.3  But Y can be written as a <tt>lambda</tt> expression!</h3>
+
+
+<p>
+Now, in introducing  <tt>Y</tt>
+we are <em>not</em> introducing a new construct, for it can be
+written in Scheme notation as:
+
+<pre>
+ (lambda (h)
+     (
+      (lambda (x) (h (x x)))
+      (lambda (x) (h (x x)))
+      )
+     )
+</pre>
+
+[This definition is due to Alan Turing]
+<p>
+Let's see how this works - suppose we have some arbitrary expression
+<tt>e</tt>.
+Applying <tt>Y</tt> to  <tt>e</tt>
+
+<pre>
+  (Y e) ==>   [use value for Y given above]
+   (
+     (lambda (h)
+         (
+          (lambda (x) (h (x x)))
+          (lambda (x) (h (x x)))
+          )
+         ) e)
+
+==>  [substitute e for h in the body of the (lambda (h) ..) function, strip
+      off lambda (h) ]
+
+         (                                         [1]
+          (lambda (x) (e (x x)))
+          (lambda (x) (e (x x)))
+          )
+
+==> [substitute the second (lambda (x) ...) expression for x in the body of
+     the first (lambda (x) ...) expression, strip off lambda.
+
+    (e (                                           [2]
+        (lambda (x) (e (x x)))
+        (lambda (x) (e (x x))))
+        )
+
+</pre>
+
+<p>
+But what we have here is two expressions, [1] and [2] for <tt>(Y e)</tt>,
+but the second is of the  form <tt>(e (Y e))</tt>.
+
+
+<h3>2.4  Using Y to define recursive functions</h3>
+
+
+
+<p>
+The <tt>Y</tt>
+combinator is used in theory to create recursive functions by  providing
+a binding for the unbound recursive call that plagued us above.
+
+
+<pre>
+  (lambda (sum)
+    (lambda (l)
+        (if
+            (null? l)
+            0
+            (+ (car l) (sum (cdr l))))
+        )
+    )
+</pre>
+
+in:
+
+<pre>
+ (Y
+   (lambda (sum)
+       (lambda (l)
+           (if
+               (null? l)
+               0
+               (+ (car l) (sum (cdr l))))
+           )
+       )
+   )
+</pre>
+
+<p>
+This expression <em>is</em> the <tt>sum</tt> function that we are trying to
+define recursively.
+
+<p> So, if we  wanted to calculate <em>(sum  '(1 2))</em>, we would  simply
+apply our expression thus:
+
+<pre>
+
+ (
+  (Y
+     (lambda (sum)
+         (lambda (l)
+             (if
+                 (null? l)
+                 0
+                 (+ (car l) (sum (cdr l))))
+             )
+         ) ; end of E
+     )     ; end of (Y E), that is the sum function.
+  '(1 2))  ; the argument of (Y E)
+</pre>
+
+<p>
+The way that  this works as  a recursive definition  is by making  use of  the
+identity <tt>(Y E) = (E (Y E)).</tt>  Applying the identity we obtain:
+
+<pre>
+
+    (
+     (                                         ; start of (E (Y E))
+      (lambda (sum)                            ; start of E
+          (lambda (l)
+              (if
+                  (null? l)
+                  0
+                  (+ (car l) (sum (cdr l))))
+              )
+          )                                     ; end of E
+      (Y                                        ; start of         (Y E)
+         (lambda (sum)
+             (lambda (l)
+                 (if
+                     (null? l)
+                     0
+                     (+ (car l) (sum (cdr l))))
+                 )
+             )                                   ; end of E
+         )                                       ; end of (Y E)
+      )                                          ; end of (E (Y E))
+     '(1 2))                                     ; the argument of (E (Y E))
+
+</pre>
+
+
+<p>
+We can now use the fact that <tt>E</tt>, that is the <tt>(lambda (sum)  ...
+)</tt>   expression,   is   <em>applied</em>   to   the   <tt>(Y    (lambda
+(sum)...))</tt>  expression;  using  the   rule  about  a   <tt>lambda</tt>
+expression  being  applied  to  an  argument,  we  substitute  (Y  E)   for
+<tt>sum</tt> in the body of E [remember that the (Y E) is the  <tt>sum</tt>
+function (we hope!)].  That is, wherever  we have the  "recursive" call  of
+<tt>sum</tt>,  we   may  replace   <tt>sum</tt>  by   the  <tt>(Y  (lambda
+(sum)...))</tt> expression. The  fact that  we can do  this, and  do it  as
+often as we need to, is the secret of how <tt>Y</tt> works.
+
+
+<pre>
+==>
+
+
+    (
+     (lambda (l)
+         (if
+             (null? l)
+             0
+             (+ (car l)
+                (                           ; (Y E) replaces sum
+                 (Y                         ; start of         (Y E)
+                    (lambda (sum)
+                        (lambda (l)
+                            (if
+                                (null? l)
+                                0
+                                (+ (car l) (sum (cdr l))))
+                            )
+                        )                                  ; end of E
+                    )                                      ; end of (Y E)
+                 (cdr l)))                                 ;
+             )                                             ; end if
+         )                                                 ; end (lambda(l)..)
+
+     '(1 2))                                 ; the argument of (lambda (l)...)
+
+
+</pre>
+
+
+<p>
+You can see what has  happened - the expression <tt>(Y e)</tt> has been pulled  inside
+the lambda-expression that  we created  for <tt>sum</tt>, indeed  substituting for  the
+recursive call of <tt>sum</tt>. That is if <tt>(Y e)</tt> is indeed the desired <tt>sum</tt> function, it
+is behaving in the right way!. We can now reduce the outer <tt>lambda</tt>
+expression:
+
+
+<pre>
+    (if
+        (null? '(1 2))
+        0
+        (+ (car '(1 2)) (
+            (Y (lambda (sum)         ; start of  (Y E)
+                   (lambda (l)
+                       (if
+                           (null? l)
+                           0
+                           (+ (car l) (sum (cdr l))))
+                       )
+                   )
+
+               (cdr '(1 2)))))
+        )
+    )
+</pre>
+
+<p>
+We can now do some straightforward computation. The expression
+<tt>(null? '(1 2))</tt>
+evaluates to <tt>#f</tt>,
+and <tt>(cdr '(1 2))</tt> evaluates to <tt>'(2)</tt>
+so applying the rules for
+<tt>if</tt> we obtain:
+
+<pre>
+  ==>
+
+  (+ 1 (
+    (Y (lambda (sum)
+           (lambda (l)
+               (if
+                   (null? l)
+                   0
+                   (+ (car l) (sum (cdr l))))
+               )
+           )
+
+       '( 2))))
+        )
+</pre>
+
+<p>
+We can now use <tt>(Y E) = (E (Y E))</tt> all over again, obtaining:
+
+<pre>
+  (+ 1
+    (if
+        (null? '( 2))
+        0
+        (+ (car '( 2)) (
+            (Y (lambda (sum)
+                   (lambda (l)
+                       (if
+                           (null? l)
+                           0
+                           (+ (car l) (sum (cdr l))))
+                       )
+                   )
+
+               (cdr '( 2)))))
+        )
+    )
+  )
+</pre>
+
+<p>
+One further use of <tt>(Y E) = (E (Y E))</tt> gives us:
+
+<pre>
+  (+ 1
+   (+ 2
+      (if
+          (null? '())
+          0
+          (+ (car '()) (
+              (Y (lambda (sum)
+                     (lambda (l)
+                         (if
+                             (null? l)
+                             0
+                             (+ (car l) (sum (cdr l))))
+                         )
+                     )
+
+                 (cdr '()))))
+          )
+      )
+   )
+</pre>
+
+<p>
+Now, because <tt>(null? '())</tt> evaluates to  <tt>#t</tt>,
+the <tt>(if..)</tt> expression
+evaluates  to
+<tt>0</tt>. So the whole expression evaluates to the simple form:
+
+<pre>
+  (+ 1
+   (+ 2 0))
+
+    ==> 3
+</pre>
+
+<p>
+Note that, while the definition of the <tt>Y</tt>
+combinator can be written in  Scheme,
+we cannot get it to work correctly  in Scheme itself, since Scheme uses  eager
+evaluation and will give rise to  recursive run-away We treat the  application
+of <tt>Y</tt> to its argument in a lazy way to obtain a correct reduction.
+
+<p>
+Suppose we define Y as:
+
+<pre><code>
+(define Y
+    (lambda (h)
+        (
+         (lambda (x) (h (x x)))
+         (lambda (x) (h (x x)))
+         )
+        )
+    )
+</code></pre>
+
+<p>
+And try to evaluate [paste this into  a file 'temp.scm']
+
+<pre>
+    (Y (lambda (sum) (lambda (l) (if (null? l) 0 (+ (car l) (sum (cdr l)))))))
+</pre>
+
+we obtain the error message:
+
+<pre>
+Error: rle: RECURSION LIMIT (pop_callstack_lim) EXCEEDED
+In file: /users/users3/fac/pop/temp.scm
+</pre>
+
+
+<a name = "interpreter"> </a>
+<h2>3  Building an interpreter for a functional Scheme-like language</h2>
+
+<p>
+Now that we have defined the Y-combinator, we can try to write an  interpreter
+for a purely-functional  Scheme-like language which  uses <tt>lambda</tt>
+as  a way  of
+creating functions together with the <tt>Y</tt>
+combinator for recursion. We will  use
+<tt>Y-</tt>
+to denote  this combinator, to  avoid confusion with  the the  identifier
+<tt>Y</tt>
+which is a useful name we would not want to have as a special form.
+
+<p>
+This enterprise may seem like pulling ourselves up by our own bootstraps,  but
+it is actually a vary good  way of characterising a language precisely,  and a
+good start to a portable implementation.
+
+<p>
+In interpreting our formalism we have two choices for the evaluation strategy:
+<em>eager
+evaluation</em>
+in which the actual parameters of a function-application  are
+evaluated before  substitution, and  <em>lazy
+evaluation</em> in  which they  are  not
+evaluated before substitution. In fact, with lazy evaluation, expressions  are
+only evaluated when there is an actual need for their values, for example when
+we need to print them out. The Scheme language itself is defined to use  eager
+evaluation, but we  could define a  lazy version (indeed  there is one  called
+Sloth!) which ran lazily.
+
+
+<h3>3.1  Associations support arbitrary finite mappings</h3>
+
+<p>
+Any consideration of the  evaluation of expressions requires  us to have  some
+way of associating  a variable with  a value. The  conventional way to  handle
+this requirement in Scheme is to  use an <em>association
+list</em>, commonly called  an
+<em>alist</em>.
+This consists of a list of attribute-value pairs. For example:
+
+
+<pre>
+     '((a . 3) (x . 2))
+</pre>
+
+<p>
+associates <tt>a</tt> with  the value  <tt>3</tt> and  <tt>x</tt> with  the
+value <tt>2</tt>. We sometimes say that the variable <tt>a</tt> is bound to
+the value <tt>3</tt>  and the  variable <tt>x</tt>  is bound  to the  value
+<tt>2</tt>.
+
+<p>
+The standard Scheme functions <tt>assoc</tt>, <tt>assq</tt>
+and <tt>assv</tt> are used to look up a value
+in an association list.  They differ in which  function they use to  determine
+equality, <tt>equal?</tt>
+or  <tt>eq?</tt>
+or  <tt>eqv?</tt> respectively. We  shall use  <tt>assoc</tt> in  these
+notes, although <tt>assq</tt> would be more efficient.
+
+
+<pre><code>
+(example '(assoc 'x '((a . 3) (x . 2))) '(x . 2))
+</code></pre>
+
+<p>
+Note that we are using "dotted pairs" here, rather than the proper lists  that
+we used previously with <tt>assoc</tt>. This is a more space-efficient choice.
+
+
+<h3>
+3.2 A Scheme Interpreter: eval_eager is the eager, substituting version
+</h3>
+
+<p>
+Let us write a  function <tt>eval_eager</tt> which will  <em>evaluate</em>
+a Scheme  expression.
+Now an expression  can be either a <em>pair</em> or not.
+
+<p> If  the expression  is a  pair [1]  it means  that we  have a  function
+<em>applied</em> to  arguments, or  a special  form. We  call the  function
+<tt>eval_compound</tt> [2] to handle this case.
+
+<p> If the expression is not a pair [3] then it always evaluates to itself.
+
+
+<pre><code>
+(define (eval_eager expr)
+    (if (pair? expr)                                  ; [1]
+        (eval_compound (car expr) (cdr expr))         ; [2]
+        expr )                                        ; [3]
+    )
+</code></pre>
+
+<pre><code>
+(example '(eval_eager 34) 34)
+</code></pre>
+
+
+<p>
+Notice that for an unbound variable x  we have:
+
+<pre><code>
+(example '(eval_eager 'x) 'x)
+</code></pre>
+
+
+<p>
+This makes  our evaluator  behave in  a way  closer to  how one  would  like a
+symbolic algebra system (for example Mathematica) to behave.
+
+<h3>3.3  eval_compound evaluates special forms, and any application</h3>
+
+<p>
+The function <tt>eval_compound</tt>  treats special forms  by examining an  association
+list to see  if a  particular function  is a special  form. We  can call  this
+process finding a  "method" to  deal with  the special  form. If  there is  no
+method, then we do not have a  special form, so we evaluate the arguments  and
+call <tt>apply_eager</tt> to apply the function to it.
+
+<h4>...  Finding the method for a special form</h4>
+
+
+<p>
+We use a global association list, <tt>alist_method</tt>, which we  will
+define later, to map from the name of a special form to a <em>method</em>
+for
+implementing it. The
+
+
+<pre><code>
+(define (method f)
+    (let ((pair (assoc f alist_method)))
+        (if pair (cdr pair) pair )
+        )
+    )
+</code></pre>
+
+
+<h4>...  The definition of <tt>eval_compound</tt> using method-lookup.</h4>
+
+<p>
+The function <tt>eval_compound</tt> examines the  function of the original  expression.
+It gets the method for the  function [1] if there is  one, and uses it [2]  to
+compute the value of the expression.
+
+<p>
+Otherwise [3] we  don't have a  special form,  so we have  an actual  function
+applied to arguments. We make a list of the evaluated arguments [4], to  which
+the function is applied [3].
+
+<pre><code>
+(define (eval_compound f args)
+    (let ((m (method f)))               ; [1] get method if there is one
+        (if m
+            (m args)                    ; [2] use method if there is one
+            (apply_eager f              ; [3]
+                (map eval_eager args))  ; [4] otherwise evaluate the arguments
+                                        ; and apply the function to them
+            )                           ; end if
+        )                               ; end let
+    )
+</code></pre>
+
+
+<p> We will need to define at least 4 special forms to get any  computation
+done  at  all.  Firstly  we  will  need  one  for  <tt>lambda</tt>,   since
+<tt>(lambda   (<b>args</b>)
+...)</tt>   certainly   does   not   mean   "apply
+<tt>lambda</tt> to ....". Secondly we will need <tt>if</tt> to be a special
+form, since it must be evaluated  lazily. Thirdly we will define a  special
+form for <tt>Y</tt>, since  it should be evaluated  lazily. And finally  we
+need to define a special form for <tt>quote</tt>. Recall that  '<b>expr</b>
+is just a shorthand for <tt>(quote <b>expr</b>)</tt>.
+
+<h4>... Defining the method to evaluate the special form lambda</h4>
+
+
+<p>
+In the substitution  model, a  <tt>lambda</tt>
+expression  evaluates to  itself, so  we
+define  the  following   method  which  simply   reconstitutes  the   original
+expression.
+
+<pre><code>
+(define (method_lambda args)
+    (cons 'lambda args)
+    )
+</code></pre>
+
+
+<p>
+We only actually do anything  with a <tt>lambda</tt>
+expression  when it is applied  to
+arguments.
+
+<h4>...  Defining the method to evaluate the special form if</h4>
+
+
+<p>
+To evaluate a conditional expression of  the form <tt>(if
+<b>bool expr1  expr2</b>)</tt>
+we first evaluate <b>bool</b>
+[1]. If it  evaluates to <tt>#t</tt> then we evaluate  <b>expr1</b>
+[2]. If <b>bool</b>
+evaluates to  <tt>#f</tt> then we  evaluate <b>expr2</b>
+[3]. Otherwise  we
+arrange that the <tt>(if...)</tt>
+expression evaluates to itself. Note that here  again
+we have a rule for evaluation that differs from standard Scheme.
+
+<pre><code>
+(define (method_if args)
+    (let ((bool (eval_eager (car args))))                   ;[1]
+        (cond                                               ;
+            ((eq? bool #t) (eval_eager (cadr args)))        ;[2]
+            ((eq? bool #f) (eval_eager (caddr args)))       ;[3]
+            (else (cons 'if args))                          ;[4]
+            )
+        )
+    )
+</code></pre>
+
+
+<h4>...  Defining the method to evaluate the Y combinator.</h4>
+
+
+<p>
+The Y-combinator also  needs to be  evaluated lazily, since  we could use  the
+rule <tt>(Y e) ==> (e (Y e))</tt>
+ad nauseam, that is until we run out of space. So  we
+leave <tt>(Y e)</tt>  unevaluated. Let us  choose the symbol
+<tt>'Y-</tt>
+for the  name of  the
+<tt>Y</tt>-combinator
+in Scheme - we do this for the obvious reason that the symbol  <tt>'y</tt>
+[which is the same as the sybol <tt>'Y</tt>
+in Scheme] is rather too commonly used  as
+the name of an ordinary variable.
+
+<pre><code>
+(define (method_Y- args)
+    (cons 'Y- args)
+    )
+</code></pre>
+
+
+<p>
+Again, as with <tt>lambda</tt>,
+we will actually  do something with <tt>Y-</tt> when we find  an
+expression of the form <tt>((Y
+e1) e2)</tt>, during our implementation of <tt>apply_eager</tt>.
+
+<h4>...  Defining the method for quoted constants</h4>
+
+<p>
+Treating <tt>quote</tt>
+poses us a problem - we might think that <tt>(quote (1 2 3))</tt> should
+evaluate to the list  <tt>(1
+2 3)</tt>.  Indeed this is  fine for the  non-substitution
+model of  interpretation which  we discuss  later.  But it  is wrong  for  the
+substitution model, since we want <tt>(quote
+(+ 3 4))</tt> to behave differently  from
+<tt>(+ 3 4)</tt>. So we make a quoted expression evaluate to itself.
+
+<pre><code>
+(define (method_quote args)
+    (cons 'quote args)
+)
+</code></pre>
+
+
+
+<IMG SRC = "subst_lists.gif">
+
+<!--
+-------------------------------------------------------------------------------
+|                                                                             |
+|                    An alternative way of treating lists                     |
+|-----------------------------------------------------------------------------|
+|   An alternative to using quote for implementing lists is to use the        |
+|   capabilities implicit in lambda itself. Essentially, the idea is that     |
+|   a pair, made by cons is a function which takes an integer argument.       |
+|   If [1] the integer is 0, then the result #t is returned, indicating that  |
+|   the object is a list. If the integer is 1, then the original first        |
+|   argument of  cons is returned. If [3] the integer is 2, then the          |
+|   original second argument of cons is returned.                             |
+|                                                                             |
+|                                                                             |
+|   (define cons                                                              |
+|       (lambda (x y)                                                         |
+|           (lambda (k)                                                       |
+|                                                                             |
+|               (cond                                                         |
+|                   ((eq? k 0) #t)    ;[1] yes! this is a pair                |
+|                   ((eq? k 1) x)     ;[2] return car of pair                 |
+|                   ((eq? k 2) y)     ;[3] return cdr of pair                 |
+|                   )                                                         |
+|               )                                                             |
+|           )                                                                 |
+|       )                                                                     |
+|                                                                             |
+|   (define car (lambda (x) (x 1)))                                           |
+|   (define cdr (lambda (x) (x 2)))                                           |
+|   (define pair? (lambda (x) (x 0)))                                         |
+|                                                                             |
+|   This makes it plain that a quoted list evaluates to itself in this        |
+|   model, since it is a lambda expression.                                   |
+------------------------------------------------------------------------------- 
+
+-->
+
+<p>
+Now we can define our association list for methods:
+
+<pre><code>
+(define alist_method
+    (list
+        (cons 'lambda method_lambda)
+        (cons 'Y-     method_Y-)
+        (cons 'if     method_if)
+        (cons 'quote  method_quote)
+        )
+    )
+
+</code></pre>
+
+<h4>...  Testing out eval_eager</h4>
+
+<p>
+We can now try out those cases of the use of <tt>eval_eager</tt> which don't require us
+to apply a function to arguments.
+
+<pre><code>
+(example '(eval_eager '(if #t 3 4)) 3)
+(example '(eval_eager '(if #f 3 4)) 4)
+(example '(eval_eager '(lambda (x) (+ x 5))) '(lambda (x) (+ x 5)))
+(example '(eval_eager '(Y- (lambda (x) (+ x 5)))) '(Y- (lambda (x) (+ x 5))))
+(example '(eval_eager ''x) ''x)
+(example '(eval_eager ''(1 2 3)) ''(1 2 3))
+</code></pre>
+
+
+<h3>3.4  Defining <tt>apply_eager</tt>  to implement the application of a function.
+</h3>
+
+<p> Now we come to the definition of <tt>apply_eager</tt>. This has to deal
+with the  primitive  operations of  the  language,  and with  the  case  of
+application of <tt>lambda</tt>
+expressions and of expressions of the form <tt>(Y e)</tt>.
+
+<h4>...  Applying primitives such as +, *, car, cons, cdr</h4>
+
+
+<p> First, we need to define some functions to handle primitives, before we
+attempt <tt>apply_eager</tt>. Applying a primitive is quite easy - we  just
+use the built-in function <tt>apply</tt>.
+
+<pre><code>
+(define (apply_prm f args) (apply f args))
+</code></pre>
+
+
+<p>
+However we have to treat list-manipulating primitives specially -  essentially
+we strip off quotes  from arguments, apply the  built-in Scheme function,  and
+replace quotes as required to ensure that any constant that might be  mistaken
+for an expression is suitably quoted.
+
+<p>
+The <tt>apply_prm_q</tt>
+function strips  off  any quote,  calls  <tt>f</tt>, which  will  be a
+list-processing function like <tt>car</tt>
+and puts  quotes back on if the result  is a
+pair (and so might be confused with an expression).
+
+<pre><code>
+(define (apply_prm_q f l)           ; f will be car, cdr ...
+     (requote (apply f (map de_quote l)))
+    )
+</code></pre>
+
+
+<p>
+The <tt>requote</tt>
+function  puts quotations  back on to  lists and  symbols -  those
+things  which  must  be  quoted  for  they  will  otherwise  be  mistaken  for
+expressions.
+
+<pre><code>
+(define (requote x)
+   (if (or (pair? x) (null? x) (symbol? x)) (list 'quote x) x)
+)
+</code></pre>
+
+
+<p>
+The <tt>de_quote</tt> function takes off the quotes.
+
+<pre><code>
+(define (de_quote l)
+   (if (and (pair? l) (eq? (car l) 'quote)) (cadr l) l)
+)
+</code></pre>
+
+
+<h4>...  The implementation of <tt>apply_eager</tt></h4>
+
+<p> What has to happen in the call <tt>(apply_eager f args)</tt> is [1]  if
+<tt>f</tt>  is  a  symbol  which  names  a  primitive  operation,  we  call
+<tt>apply_prm</tt> to provide a value.  In the case [2] of  list-processing
+primitives,  we  call  <tt>apply_prm_q</tt>  to  strip  off  quotes   where
+necessary, and restore them as required.
+
+<p> If [3] <tt>f</tt>
+is  a symbol which does not  name a primitive, we evaluate  <tt>(f
+<b>args</b>)</tt>
+to itself. Note that it is not possible that <tt>f</tt>
+should be a variable
+whose value is a user-defined  function, because in the  substitution-based
+model of evaluation,  such variables  are substituted for  by the  function
+they denote before <tt>apply_prm</tt>
+gets its  hands on them. We return <tt>(f  <b>args</b>)</tt>
+as a  way of  supporting  symbolic evaluation.  Scheme, in  the  equivalent
+situation, reports an error.
+
+<p>
+If [4] the function <tt>f</tt>
+is a pair,  we call <tt>apply_compound</tt> to work out what  the
+value should be. Any other value [5] of <tt>f</tt> is illegal.
+
+<pre><code>
+(define (apply_eager f args)
+    (cond
+        ((symbol? f)
+         (cond
+             ((eq? f '+)     (apply_prm + args))       ; [1] apply primitives
+             ((eq? f '-)     (apply_prm - args))
+             ((eq? f '*)     (apply_prm * args))
+             ((eq? f '/)     (apply_prm / args))
+             ((eq? f 'null?) (apply_prm_q null? args)) ; [2]
+             ((eq? f 'car)   (apply_prm_q car args))
+             ((eq? f 'cdr)   (apply_prm_q cdr args))
+             ((eq? f 'cons)  (apply_prm_q cons args))
+             (else (cons f args))                      ; [3]
+             )                                         ; end primitives
+         )
+        ((pair? f)
+         (apply_compound f (car f) (cdr f) args)       ; [4]
+         ; end cond
+         )                                             ; end (pair? f)
+        (else  (error                                  ; [5]
+                "illegal object applied to arguments"
+                f args))
+        )
+    )
+</code></pre>
+
+
+<h4>...  Examples of the use of <tt>apply_eager</tt></h4>
+
+<p>
+We can now try  out <tt>apply_eager</tt> in  those cases in which  we have a  primitive
+applied to arguments, or [1], when we have a symbol that denotes no  primitive
+applied to arguments.
+
+<pre><code>
+(example '(apply_eager '+ '(2 3)) 5)
+(example '(apply_eager '* '(2 3)) 6)
+(example '(apply_eager 'car '('(2 3))) 2)
+(example '(apply_eager 'cdr '('(2 3))) ''(3))
+(example '(apply_eager 'cdr '('(3))) ''())
+(example '(apply_eager 'cons '(2 3)) ''(2 . 3))
+(example '(apply_eager 'null? '('(2 3))) #f)
+(example '(apply_eager 'f '(2 3)) '(f 2 3))       ;[1]
+
+</code></pre>
+
+<h3>
+3.5  Implementing the application of a compound function to arguments</h3>
+
+<p>
+Now we turn to  the call <tt>(apply_compound
+f fn_f rest_f args)</tt>.  Here <tt>f</tt> is  the
+original function that was passed to <tt>apply_eager</tt>, for example
+
+<pre>
+        (lambda (x y) (+ x (* 2 y)))
+</pre>
+
+<p> while <tt>fn_f</tt> is whatever is the first element of the list  which
+is <tt>f</tt> - in  this example it will  be <tt>lambda</tt>. The  variable
+<tt>rest_f</tt> holds the remainder of  <tt>f</tt>, in the example if  will
+be <tt>((x y) (+ x (*  2 y)))</tt>, while the variable <tt>args</tt>  holds
+the argument(s) that <tt>f</tt> was applied  to. Thus if we started off  by
+trying to evaluate.
+
+<pre>
+    ((lambda (x y) (+ x (* 2 y))) 3 (+ 7 5))
+</pre>
+
+<p>
+<tt>args</tt> will be the list <tt>(3 12)</tt>.
+
+<p>
+There  are three cases  here, 2 special  and 1 general:
+
+<ul>
+
+<li>
+[1] If we are applying a <tt>lambda</tt>-expression, then we must apply the
+rule that  we substitute  actual parameters  for formal  parameters in  the
+body, stripping off the <tt>lambda</tt> and formal parameters.
+
+<li>
+[2] If we are  applying something of the form <tt>(Y- e)</tt>
+then we will use
+the fact
+that
+
+<pre>
+      (Y- e) = (e (Y- e))
+</pre>
+
+<p>
+The reason for treating things this way is that it ensures that  <tt>Y</tt>
+has something to get its teeth into!
+
+
+<p>  With  eager  evaluation  we  cannot  replace  <tt>Y-</tt>
+by  its  form   as a
+<tt>lambda</tt>-expression
+because  if  we did  we  would create  a  non-terminating
+computation. Even  with  lazy evaluation  it  would be  inefficient  -  the
+interest in <tt>Y-</tt>
+as a  lambda-expression is a  theoretical one.  So, in  any
+event we will need to treat <tt>Y-</tt> as a special case.
+
+<li>
+[3] If we have  neither a <tt>lambda</tt>
+nor  a <tt>Y-</tt> expression we  will evaluate <tt>f</tt>  and
+apply it  to  its  arguments.  Note  that  we  could  have  a  non-terminating
+computation here, since there is no guarantee that <tt>f</tt> will evaluate to anything
+simpler than  itself. However,  if the  user's program  is correct,  <tt>f</tt>  should
+evaluate to something that can be applied in a way that leads to  termination,
+e.g. a <tt>lambda</tt> expression.
+</ul>
+
+<p>
+So, let us now write <tt>apply_compound</tt>,
+to  determine which of the above 3  cases
+we have and call an appropriate function for each case.
+
+<pre><code>
+(define (apply_compound  f fn_f rest_f args)
+    (cond
+        ((eq? fn_f 'lambda)
+         (apply_lambda                             ; case [1] above
+             (car rest_f)                          ; formal parameters
+             args                                  ; actual parameters
+             (cdr rest_f)                          ; body of lambda-expr
+             ))
+
+        ((eq? fn_f 'Y-)                            ; Y-combinator?
+         (apply_y f rest_f args))                  ; case [2] above
+
+        (else  (apply_eager (eval_eager f) args)   ; case [3] above
+            )
+        )
+    )
+</code></pre>
+
+
+<p>  This  leaves  us  needing  to  write  <tt>apply_lambda</tt>  [1]   and
+<tt>apply_y</tt> [2] to define.
+
+<h4>... Implementing  the application  of a  function of  the form  <tt>(Y-
+e)</tt></h4>
+
+
+<p> Case [2] Let us begin with treating <tt>apply_y</tt>, which is simpler.
+What we need to do is convert <tt>((Y- e) args)</tt> into
+
+<pre>
+    ((e (Y- e)) args)
+</pre>
+
+<p>    Since     <tt>e</tt>     will    normally     be     an     ordinary
+<tt>lambda</tt>-expression, it will be applied in the ordinary way.
+
+
+<pre><code>
+(define msg_Y   "Y-combinator takes one argument")
+
+(define (apply_y ye list_e args)
+    (if (= (length list_e) 1)               ; check we don't have (Y- e1 e2..)
+        (let ((e (car list_e)))             ; get e
+            (eval_eager
+                (cons (list e ye) args)     ; form (e (Y- e))
+                )
+            )                               ; end let.. => (e (Y- e))
+        (error msg_Y args_y args)           ; wrong number of arguments
+        )  ; end if
+    )
+</code></pre>
+
+
+<h4>...  Implementing the application of a lambda expression</h4>
+
+
+<p> Now let us treat  case [1] above, that is  the application of a  lambda
+expression applied  to  arguments.  The call  <tt>(apply_lambda  vars  args
+body)</tt> will apply the lambda expression <tt>(lambda <b>vars
+body</b>)</tt>
+to the list of  arguments <tt>args</tt>. For example  if we are  evaluating
+the expression:
+
+<pre>
+    ((lambda (x y)  (+ x (* 2 y))) 3 (+ 5 7))
+</pre>
+
+<p> then <tt>vars</tt> will  be the list <tt>(x  y), args</tt> will be  the
+list <tt>(3 12)</tt> and <tt>body</tt> will  be <tt>( (+ x (* 2  y)))</tt>.
+Note that  Scheme syntax  allows  <tt>body</tt> to  be a  <em>list</em>  of
+expressions. We assume that there is only one expression in body, since  we
+are restricting ourselves to a functional model of computing.
+
+<p> We can now write <tt>apply_lambda</tt>. If [1] <tt>body</tt> is a  list
+consisting of  a  single expression,  we  call <tt>eval_eager</tt>  [2]  to
+evaluate what we get  when we substitute [3]  actual parameters for  formal
+parameters in the  expression. The  function <tt>multi_subst</tt>  performs
+the substitution. It is given as  argument an association list [4] made  by
+using the  system function  <tt>map</tt>,  which is  like  <tt>maplist</tt>
+except that it can map multiple lists.
+
+<p> If [6] <tt>body</tt> does not contain a single expression, we report an
+error.
+
+<pre><code>
+(define (apply_lambda vars args body)
+    (if (= (length body) 1)                                       ; [1]
+        (eval_eager                                               ; [2]
+            (multi_subst                                          ; [3]
+                (map cons vars args)                              ; [4]
+                (car body)))                                      ; [5]
+        (error "lambda expression with multi-expr body" args body); [6]
+        )
+    )
+</code></pre>
+
+
+<h4>...  Implementing the substitution of  values for variables</h4>
+
+
+<p>  Next   comes  the   definition  of   <tt>multi_subst</tt>.  The   call
+<tt>(multi_subst  alist   expr)</tt>   will  take   an   association   list
+<tt>alist</tt> and an expression <tt>expr</tt>  and replace each symbol  in
+the expression  which  has an  entry  in  <tt>alist</tt> by  its  value  as
+specified in <tt>alist</tt>. When we are evaluating:
+
+<pre>
+    ((lambda (x y)  (+ x (* 2 y))) 3 (+ 5 7))
+</pre>
+
+<p> <tt>expr</tt> will be <tt>(+ x (* 2 y))</tt> while <tt>alist</tt>  will
+be <tt>((x . 5) (y . 7))</tt>
+
+
+<p> We  have to  take  some care  with <tt>lambda</tt>  expressions  nested
+inside <tt>expr</tt>. Suppose we are evaluating:
+
+<pre>
+    ((lambda (x) (lambda (x) (+ x 2) (+ 3 x))) 7)
+</pre>
+
+<p>
+then we must <em>not</em> substitute <tt>7</tt>
+for <tt>x</tt> in the lambda-expression
+
+<pre>
+    (lambda (x) (+ x 2))
+</pre>
+
+<p> this is  implementing the scope  rules for variables  bound in  lambda-
+expressions.
+
+<p> So here  is the definition  of <tt>multi_subst</tt>. If  [1] we  have a
+symbol, we look  up its  value in  <tt>alist</tt>, returning  the value  if
+there is one, otherwise we return the symbol unchanged.
+
+<p> Otherwise, if we  have a pair [2]  we look to see  if we have a  lambda
+expression   [3],   in   which   case   we   call   the   helper   function
+<tt>multi_subst_lambda</tt>. Otherwise [4]  we proceed  by deep  recursion,
+rebuilding the substituted <tt>car</tt> and <tt>cdr</tt> of the expression.
+
+<p> Finally [5] if <tt>expr</tt> is neither a symbol nor a pair it must  be
+a constant, which is unchanged.
+
+<pre><code>
+(define (multi_subst alist expr)
+    (cond
+        ( (symbol? expr)                          ; [1]
+         (let ((pair (assoc expr alist)))         ; value is in alist
+             (if pair (cdr pair) expr)            ; use it if there is one.
+             )
+         )                                        ; end symbol?
+        ( (pair? expr)                            ; [2] pair?
+         (if (eq? (car expr) 'lambda)             ; [3] lambda? - use helper
+             (multi_subst_lambda
+                 alist (cadr expr) (cddr expr))
+             (cons (multi_subst alist (car expr)) ; [4] recurse deeply
+                 (multi_subst alist (cdr expr)))
+             )
+         )
+        (else expr)                              ; [5] must be constant
+        )                                        ; end cond
+    )
+</code></pre>
+
+
+<p>
+<em>Warning</em>
+the <tt>multi_subst</tt>
+function  defined above is still,  in its handling  of
+free variables, short of  fulfilling the requirements  of substitution in  the
+lambda calculus. The <em>actual</em>
+definition of substitution is to be found in  page
+6 of the  notes on the  lambda calculus on  the 287 menu.  However, the  above
+definition of <tt>multi_subst</tt> willl fill our needs for this class.
+
+
+<pre><code>
+(example '(multi_subst '((x . 7) (y . 4)) '((+ y (* 5 x))))
+          '((+ 4 (* 5 7))))
+</code></pre>
+
+
+
+<p>
+So we can now apply <tt>lambda</tt> expressions:
+
+<pre><code>
+(example '(apply_eager '(lambda (x) (* 5 x)) '(7)  )   35 )
+</code></pre>
+
+
+<p>
+And, moreover, we can evaluate expressions involving them:
+
+<pre><code>
+(example '(eval_eager '((lambda (x) (* 5 x)) 7)  )   35 )
+(example '(eval_eager '((lambda (x y ) (+ y (* 5 x))) 7 4)  )   39 )
+</code></pre>
+
+
+<h4>...  Making a substitution in a lambda-expression</h4>
+
+<p>
+However we now have to treat  substitution in a lambda-expression. To do  this
+we must  treat the  variables  introduced by  the lambda-expression  as  -new-
+variables, so they will be deleted from the <tt>alist</tt> if they occur.
+
+<p> For example, if we want to perform the substitution <tt> ((a . 2)  (x .
+3))</tt> in the  lambda-expression <tt>(lambda  (x) (+ a  x))</tt> we  must
+substitute for <tt>a</tt>  but not  for <tt>x</tt>.  The way  we meet  this
+requirement is [3] to delete  the variables bound in the  lambda-expression
+from the association list <em>before</em> we substitute in the body of  the
+lambda-expression. The result  [1] recreates the  lambda-expression out  of
+the substituted body.
+
+
+<pre><code>
+(define (multi_subst_lambda alist vars body)
+    (list 'lambda vars                      ; [1]
+        (multi_subst                        ; [2]
+            (delete_alist vars alist)       ; [3]
+            (car body))
+        )
+    )
+</code></pre>
+
+
+<p>
+The function to delete  variables from an association  list can be defined  as
+follows:
+
+<pre><code>
+(define (delete_alist vars alist)
+    (if (null? alist) '()
+        (if (memq (caar alist) vars)
+            (delete_alist vars (cdr alist))
+            (cons (car alist) (delete_alist vars (cdr alist)))
+            )
+        )
+    )
+</code></pre>
+
+
+
+<p>
+The following example illustrates the use of <tt>delete_alist</tt>.
+
+<pre><code>
+(example
+    '(delete_alist '(x y z) '((x . 2 ) (a . 4) (y . 3) (p . 7)))
+    '((a . 4) (p . 7))
+    )
+</code></pre>
+
+
+<p>
+We can now check  out substitution
+
+<pre><code>
+(example
+    '(multi_subst
+        '((x . 7) (y . 4))
+        '((lambda (x) (+ x y))  (* 5 x))
+        )
+
+    '((lambda (x) (+ x 4))  (* 5 7))
+    )
+</code></pre>
+
+
+<p> And we see that the variable <tt> x</tt> bound in the lambda expression
+is not substituted for in the body of the lambda expression expression  but
+<em>is</em>  substituted  for  elsewhere,  while  the  variable  <tt>y</tt>
+<em>is</em> substituted for in the body of the lambda expression.
+
+<p>
+We can see how this mechanism supports higher order functions:
+
+<pre><code>
+(example
+    '(eval_eager
+        '((lambda (f)
+             (lambda (x)
+                 (f (f x))) )
+         car))
+    '(lambda (x) (car (car x)))
+    )
+</code></pre>
+
+
+
+<p>
+Finally let us try a simple use of the Y-combinator to find the <tt>sum</tt>
+of an empty list.
+
+<pre><code>
+(example
+    '(eval_eager
+        '((Y- (lambda (sum)
+                 (lambda (l)
+                     (if
+                         (null? l)
+                         0
+                         (+ (car l) (sum (cdr l))))
+                     )
+                 )        ;end lambda
+             )            ; end (Y- E)
+              '()))
+    0)
+</code></pre>
+
+
+<p>
+and a non-empty list:
+
+<pre><code>
+(example
+    '(eval_eager
+        '((Y- (lambda (sum)
+                 (lambda (l)
+                     (if
+                         (null? l)
+                         0
+                         (+ (car l) (sum (cdr l))))
+                     )
+                 )
+             )  '(2 3 4)))
+    9)
+</code></pre>
+
+
+<p>
+If you want to see this computation performed in mind-numbing detail, try
+typing
+
+<pre>
+    (trace eval_eager)
+</pre>
+
+<p>
+and running the last example again.
+
+<a name = "shonfinkel">
+<h2>4  Shonfinkel's Combinators enable us to dispense with lambda</h2>
+
+<center><h4>This section is optional</h4></center>
+
+<p>
+Mathematically the lambda calculus is a little tricky to reason about  because
+of  the  concept  of  <em>free</em>
+and  <em>bound</em>  variables.  There  is  an  alternative
+formulation, using  concepts  developed  by Shonfinkel  in  the  1920's  which
+requires no notion of variable. However, this work is best approached by using
+mathematical conventions for understanding functions  in which
+<em>a function only
+ever has  one  argument</em>.
+With  these  conventions  we  can  avoid  a  lot  of
+parentheses with the convention that <tt>f x</tt>
+means "apply <tt>f</tt> to <tt>x</tt>" and <tt>f x y</tt>
+ means
+"apply <tt>f</tt>
+to <tt>x</tt>
+and then apply the  resulting function to <tt>y</tt>, that is <tt>((f
+x)  y)</tt>.
+Also, using  something  closer  to mathematical  conventions  we  shall  write
+<tt>(lambda x. expr)</tt> for <tt>(lambda (x) expr)</tt>.
+
+
+<p>
+The approach to functional programming based on Shonfinkel's work makes use of
+the <em>combinators</em>,
+<em>S,K and I</em>, characterised by the following reduction rules:
+
+<pre>
+[S1]    S f g x => f x (g x)
+[S2]    K x y   => x
+[S3]    I x     => x
+</pre>
+
+<p>
+Any lambda-expression can be translated into <em>S,K
+and I</em> (the good news), but at
+a quadratic penalty in time and  space (the bad news). This translation  takes
+place by applying the rules given below until no lambda-expressions are left.
+
+<pre>
+[T1]    (lambda x. x)       ->  I
+[T2]    (lambda x. c)       ->  K c             [where c/=x,
+                                                 c is not an application]
+[T3]    (lambda x. e1 e2) -> S (lambda x. e1)  (lambda x. e2)
+</pre>
+<p>
+So consider the expression
+
+<pre>
+     (lambda x. + x x) 5
+</pre>
+
+<p>
+This is, putting in the parentheses to emphasise the application structure
+
+
+<pre>
+     (lambda x. (+ x) x) 5
+</pre>
+<p>
+Applying the S-translation T3 we get:
+
+<pre>
+  ->   S (lambda x. (+ x)) (lambda x. x) 5
+</pre>
+
+<p>
+Applying T1 we get
+
+  ->    S (lambda x. (+ x)) I 5
+
+<p>
+Applying T3
+
+<pre>
+  ->    S (S (lambda x. +) (lambda x. x)) I 5
+</pre>
+
+<p>
+and, from T1 and T2
+
+<pre>
+  ->    S (S  (K +) I) I 5
+</pre>
+
+<p>
+We can now use the reduction rules to evaluate:
+
+<pre>
+     S (S  (K +) I) I 5
+
+  => S (K +) I 5 (I 5)
+
+  => K + 5 (I 5) (I 5)
+
+  => + (I 5 ) (I 5)
+
+  => + 5 (I 5)
+
+  => + 5 5
+
+  => 10
+</pre>
+
+<p>
+It is clear that we could modify our implementation of <tt>eval_eager</tt>
+to use these
+combinators, and that the resulting program  would be simpler, since we  would
+replace the complicated  function <tt>apply_lambda</tt>
+by code very  similar to  that
+which we used for the <tt>Y-</tt>
+combinator - essentially code to check whether we had
+an application involving <tt>S</tt>,
+<tt>I</tt> or <tt>K</tt>,  and if so  to implement the  appropriate
+rule [S1], [S2]  or [S3]. Moreover,  we would  easily get it  right, which  we
+didn't quite  do for  <tt>lambda</tt>
+(see  the cautionary  warning in  the section  on
+substitution).
+
+<p>
+One snag is that, as noted aboove, that a lambda-expression translates  into a
+combinatorial expression  of  size  quadratic  in the  size  of  the  original
+lambda-expression. This  snag  can  be  addressed  by  introducing  additional
+combinators which  support  a more  compact  encoding. A  discussion  of  this
+possibility is to be found in Simon Peyton Jones's book "The Implementation of
+Functional  Programming   Languages",  published   by  Prentice   Hall   (ISBN
+0-13-453333-X or in paperback 0-13-453325).
+
+<p>
+Experimental computers designed to  implement the combinatorial approach  have
+been built.  However they  have not  proved competitive,  even for  supporting
+functional languages,  essentially  because  they  do  not  exploit  the  very
+efficient mapping  from  variable  to  value that  can  be  implemented  using
+conventional machine memory.
+
+
+</body></html>

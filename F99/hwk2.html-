@@ -1,0 +1,45 @@
+
+<h1> Course CMPSCI 287 Assignment 2 </h1>
+<h2>Due 11:59 PM, 30 SEP 99 as hwk2.scm in your cs287 directory </h2>
+
+The polynomial function <tt>p</tt> for which
+<pre>
+    p(x) =  a<sub>0</sub> +  a<sub>1</sub> x +  a<sub>2</sub> x<sup>2</sup> ... a<sub>n</sub> x<sup>n</sup>
+</pre>
+can be represented by the Scheme list
+
+<pre>
+    (a<sub>0</sub> a<sub>1</sub> a<sub>2</sub> ... a<sub>n</sub>)
+</pre>
+For example  the function p<sub>1</sub>, defined by
+<tt>p<sub>1</sub>(x) =  4 + 3x + 5x<sup>2</sup></tt> is represented by the list
+
+<pre>
+          (4 3 5)
+</pre>
+
+<p>
+(1)  Write a function <tt>eval_poly</tt> for which
+the application <tt>(eval_poly p v)</tt> evaluates a polynomial
+function represented as a Scheme list <tt>p</tt> with argument <tt>v</tt>
+For example:
+<pre>
+    (eval_poly '(1 2 3) 4)
+</pre>
+evaluates to 57.
+
+<p>(2) The derivative of the polynomial function p for which
+
+<pre>
+    p(x) = a<sub>0</sub> +  a<sub>1</sub> x  a<sub>2</sub> x<sup>2</sup> ... a<sub>b</sub>  x<sup>n</sup>
+</pre>
+
+is the polynomial function p' for which
+
+   p'(x) = a<sub>1</sub> +  2 a<sub>2</sub> x<sup>2</sup> + ... n + a<sub>n</sub>  x<sup>n</sup>
+
+Write a Scheme function <tt>derivative</tt> for which the call <tt>(derivative p)</tt>
+converts a polynomial into its derivative.
+
+For example <tt> (derivative '(3 4 5 6)) </tt>
+evaluates to (4 10 18).

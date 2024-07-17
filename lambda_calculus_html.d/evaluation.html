@@ -1,0 +1,999 @@
+
+
+
+<html><head><title>
+
+Evaluation
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+Evaluation
+</center>
+
+</h1>
+
+<p>For this work, we'll write <em><img src=Lambda.gif>(C)</em> for the
+<img src=lambda.gif>-calculus
+with a particular constant set <em>C</em>.
+
+
+<p>So far, we've looked at the <img src=lambda.gif>-calculus as a formalism which we can
+manipulate according to rules that do (I hope) seem reasonable. Now, we
+<em>could</em> take the <img src=lambda.gif>-calculus itself as a basis for computation -
+it's fairly easy to implement what we've defined as a computational
+structure, particularly  using a LISP derivative (Scheme, POP-11, SML...).
+
+<p>However, from a computational point of view, to restrict ourselves to a
+literal implementation of <img src=beta.gif>-reduction as a means of
+computation is problematic, because substitution as defined involves
+extensive copying of structures if it is implemented in the most obvious
+way. So, it's desirable to think of ways that we can <em>map</em> the
+<img src=lambda.gif>-calculus onto various kinds of structure some of which will be more
+efficient computationally.
+
+<p> Mathematically,  there is  also  a problem  with the  unvarnished  <img
+src=lambda.gif>-calculus. Since we are interested  in using it a basis  for
+specifying computations that we  can <em>prove</em> correct.  Unfortunately
+the <img src=lambda.gif>-calculus, as we currently know it, is  paradoxical
+when used  as the  basis for  a logic.  So, we'd  like to  see how  we  can
+eliminate the possibility  of paradox,  by restricting  ourselves to  forms
+which are seen as legal.
+
+
+<p>To illustrate this problem, let's adapt an example from Meyer[1982].
+Consider the term
+<ul>
+    T = <img src=lambda.gif> f x. f(f x)
+</ul>
+for which <em>T g</em> means, in effect, that function which applies
+the function <em>g</em> twice to its argument. So, for example,
+<ul>
+T (<img src=lambda.gif> z. z<sup>3</sup>) <img src=reduces_beta.gif>
+<img src=lambda.gif> x. ((<img src=lambda.gif> z. z<sup>3</sup>) ((<img src=lambda.gif> z. z<sup>3</sup>) x))
+<p><img src=eqv.gif>
+<img src=lambda.gif> x. ((<img src=lambda.gif> z. z<sup>3</sup>)  x<sup>3</sup>)
+<p><img src=eqv.gif>
+<img src=lambda.gif> x.   (x<sup>3</sup>)<sup>3</sup>
+<p><img src=eqv.gif>
+<img src=lambda.gif> x. x<sup>9</sup>
+</ul>
+
+
+<p>Now, consider the term <em>(T T)</em>. Can we
+can put an interpretation upon it, despite the fact that it would not be
+legal if we think of <img src=lambda.gif>-expressions as being mathematical
+functions, because in the standard mathematical concept of functions,
+a function <em>can't lie in its own domain</em>. But if <em>(T T)</em> is
+legal, and <em>T</em> is seen as a mathematical function, then <em>T</em>
+must lie in its own domain, a contradiction.
+
+<p>Nevertheless, there is a commonsense interpretation that can bu put upon
+<em>(T T)</em>. Consider the expression:
+<ul>
+(T T) g =
+((<img src=lambda.gif> f x. f(f x)) T) g
+<p> <img src=reduces_beta.gif>
+((<img src=lambda.gif> x. T(T x)) ) g
+<p> <img src=reduces_beta.gif> T(T g)
+<p> <img src=reduces_beta.gif> T((<img src=lambda.gif> f x. f(f x)) g)
+<p> <img src=reduces_beta.gif> T(<img src=lambda.gif> x. g(g x) )
+<p> <img src=reduces_beta.gif>
+(<img src=lambda.gif> f x. f(f x))(<img src=lambda.gif> x. g(g x) )
+<p> <img src=reduces_beta.gif>
+(<img src=lambda.gif> x.
+(<img src=lambda.gif> x. g(g x) )
+((<img src=lambda.gif> x. g(g x) )
+x)))
+
+<p> <img src=reduces_beta.gif>
+(<img src=lambda.gif> x.
+(<img src=lambda.gif> x. g(g x) ) ( g(g x) ))
+<p> <img src=reduces_beta.gif>
+(<img src=lambda.gif> x. (g (g (g (g x)))))
+<p>
+</ul>
+
+So, we could conclude that
+<ul>
+(T T) <img src=eqv.gif> (<img src=lambda.gif>g x. (g (g (g (g x)))))
+<img src=eqv.gif> T <b>o</b> T
+</ul>
+
+where <b>o</b> denotes function product.
+
+<p>However allowing self-application, as in <em>(T T)</em>, can lead to
+contradiction. For example, suppose we  define a (higher-order)
+function <em>P</em> by the rule
+<ul>
+     <em>(P f) = 0</em>  if  <em>(f f) <img src=not_eq.gif> 0</em>
+<p>     <em>(P f) = 1</em>  otherwise
+</ul>
+
+Then the expression <em>(P P)</em> is paradoxical.
+
+<em>An Equational View</em>
+
+<p> Note that if we regard the above "definition" of <em>P</em> as being
+instead an <em>equation</em> for <em>P</em>, the paradox disappears,
+just as the equation <em>x + 1 = x</em> is not paradoxical, merely
+insoluble.
+
+<p>Now there is a long tradition in mathematics of characterising functions
+by equations. The elementary trancendental functions <em>sin, cos..</em>
+can be characterised by <em>differential equations</em>, and indeed
+more advanced functions, such as the Bessel functions are primarily
+characterised by differential equations.
+
+<p>Similarly, we can regard recursive functions, such as the factorial
+function, as solutions of <em>recursion equations</em>. Thus if we solve
+
+<ul>
+    f = <img src=lambda.gif> n. (if (= n 0) 1 (* n (f (- n 1))))
+</ul>
+
+we obtain the factorial function. On the other hand, an equation such as
+
+<ul>
+    f = <img src=lambda.gif> n. f (- n 1)
+</ul>
+
+has no solution.
+
+
+<h2>Applicative Algebras</h2>
+
+<p>Bearing in mind the  above discussion, from  both the computational  and
+mathematical point of view, it's useful to proceed abstractly by  focussing
+on the idea of <em>mapping</em>  the <img src=lambda.gif>-calculus to  some
+kind of <em>domain</em>  in which computation  takes place. By  considering
+what should be the <em>essential properties</em> of such a map we can  hope
+to characterise a useful variety of domains.
+
+<p>Such abstraction is second-nature to mathematicians raised in the modern
+tradition; computer scientists can reflect that what we are trying to do is
+to characterise an <em>abstract data type</em> which will allow us to
+consider a range of possible implementations of the <img
+src=lambda.gif>-calculus.
+
+<p>Perhaps the simplest possible mathematical representation of an
+<em>abstract</em> concept of computation is focus on the idea of the
+<em>application</em> of a program-object to a data-object. If we want to be
+faithful to the <em>functional paradigm</em> (and indeed to the idea of
+the von Neumann architecture), we will require that program-objects and
+data-objects inhabit the same <em>applicative algebra</em>.
+
+<hr>
+<h3>Definition</h3>
+An applicative algebra is a structure <em><img src=calC.gif> = &LT;D,<img
+src=dot.gif>></em>
+on which is defined a
+binary operation, called <em>application</em>.
+For any <em>f, x <img src=in.gif> D</em>, we write the application of
+<em>f</em> to <em>x</em> as
+
+<ul>f<img src=dot.gif>x</ul>
+
+<p>We will write <em>D = </em>| <img src=calC.gif> |.
+
+<hr>
+<p>Now our concept of applicative algebra seems rather austere. There is no
+apparent apparatus, for example, for defining functions. The one thing we
+don't want to do is to re-introduce the <img src=lambda.gif>-apparatus directly into the
+algebra, since that would prohibit us investigating other means of
+realising its capabilities. Instead, let's consider a <em>map</em> from the
+<img src=lambda.gif>-calculus to our applicative algebra. Such a map, which
+we'll call an <em>evaluation</em>, is going to be built up  from a simple
+map from the variables and constants,<em>C</em>, of <em><img src=Lambda.gif>(C)</em>
+to <em><img src=calC.gif></em>. Such a map is commonly called an <em>environment</em>.
+
+<p>So, the idea is, given an <em>environment</em> which tells us what
+are the values in <em><img src=calC.gif></em> of variables and constants of
+<em><img src=Lambda.gif>(C)</em>, how can we define an <em>evaluation</em> which maps the
+whole of <em><img src=Lambda.gif>(C)</em> to <em><img src=calC.gif></em>. Such an evaluation ought to
+preserve certain properties of the <img src=lambda.gif>-calculus, so that we can feel
+that the <img src=lambda.gif>-calculus is <em>faithfully represented</em> in <em><img src=calC.gif></em>.
+
+<p>Since we don't want explicitly to reproduce the <img src=lambda.gif>-apparatus in
+<em><img src=calC.gif></em>, we can proceed indirectly to develop our concept of
+faithfulness by requiring that <img src=lambda.gif>-calculus terms which are
+alpha- and beta- equivalent be mapped onto identical members of <em><img src=calC.gif></em>.
+
+<hr>
+
+<h3>Definition</h3>
+
+<ul>
+EV1 <img src=space.gif>
+<img src=calE.gif><sub><img src=rho.gif></sub> (x) = <sub><img
+src=rho.gif></sub>(x)
+</ul>
+
+
+<ul>
+EV2 <img src=space.gif> <img src=calE.gif><sub><img src=rho.gif></sub>(c)
+= <sub><img src=rho.gif></sub>(c)
+</ul>
+
+<ul>
+EV3 <img src=space.gif>
+<img src=calE.gif><sub><img src=rho.gif></sub>((E<sub>1</sub> E<sub>2</sub>))
+= <img src=calE.gif><sub><img src=rho.gif></sub>(E<sub>1</sub>)
+<img src=dot.gif> <img src=calE.gif><sub><img src=rho.gif></sub>(E<sub>2</sub>)
+</ul>
+
+<ul>
+EV4 <img src=space.gif>
+<img src=calE.gif><sub><img src=rho.gif></sub>(<img src=lambda.gif> x.E) =
+<img src=calE.gif><sub><img src=rho.gif></sub>(<img src=lambda.gif>
+y.E[x:=y])
+
+when <em>y</em> is not free in <em>E</em>
+</ul>
+
+<ul>
+EV5 <img src=space.gif>
+<img src=calE.gif><sub><img src=rho.gif></sub>
+((<img src=lambda.gif> x.E) F) =
+    <img src=calE.gif><sub><img src=rho.gif></sub>(E[x:=F])
+</ul>
+
+<hr>
+
+<h3>An Approach to Realising Evaluation</h3>.
+
+Can the characterisation of evaluation given in EV1-5 help us actually
+construct an evaluation? Clearly axioms EV1-EV3 are helpful in this respect
+- they say how the <em>applicative</em> structure of the <img
+src=Lambda.gif> <em>(C)</em> can be mapped directly into operations on an
+applicative algebra. But EV4 and EV5 are less directly helpful -
+EV4 merely relates two abstractions, which is not a manifest
+construct of an applicative algebra, while EV5 relates abstraction to
+substitution, which is again something we don't know how to do.
+
+<p>Rescue from our predicament arrives in the the form of our old
+friends the <b>S</b> and <b>K</b> combinators.
+
+<p><ul>
+         <b>K</b> = <img src=lambda.gif> y x . y
+<p>      <b>S</b> = <img src=lambda.gif> f g x . (f x) (g x)
+</ul>
+
+Let's investigate how an evaluation maps these combinators into an
+applicative domain.
+
+<p>Now suppose we  have an  evaluation that, for  some <em><img src=rho.gif></em>,  maps
+<em><img src=Lambda.gif>(C)</em>
+onto             <em><img src=calC.gif></em>.             Let
+<em>d<sub>1</sub>,d<sub>2</sub>,d<sub>3</sub> <img src=in.gif> <img src=calC.gif></em>. Let
+<em>D<sub>1</sub></em>, <em>D<sub>2</sub></em>,  <em>D<sub>3</sub></em>  be
+the  inverse-images  of  <em>d<sub>1</sub>,d<sub>2</sub>,d<sub>3</sub></em>
+under <em><img src=calE.gif><sub><img src=rho.gif></sub></em>
+
+Consider the expression
+<ul>
+    <img src=calE.gif><sub><img src=rho.gif></sub>(<b>K</b>) <img src=dot.gif> d<sub>1</sub> <img src=dot.gif> d<sub>2</sub>
+<p> = <img src=calE.gif><sub><img src=rho.gif></sub>(<b>K</b>) <img src=dot.gif> <img src=calE.gif><sub><img src=rho.gif></sub>(D<sub>1</sub>) <img src=dot.gif> <img src=calE.gif><sub><img src=rho.gif></sub>(D<sub>2</sub>)
+<p> = <img src=calE.gif><sub><img src=rho.gif></sub>(<b>K</b> D<sub>1</sub> D<sub>2</sub>) = <img src=calE.gif><sub><img src=rho.gif></sub>(D<sub>1</sub>) = d<sub>1</sub>
+</ul>
+And also:
+<ul>
+    <img src=calE.gif><sub><img src=rho.gif></sub>(<b>S</b>)
+<img src=dot.gif> d<sub>1</sub> <img src=dot.gif> d<sub>2</sub> <img src=dot.gif> d<sub>3</sub>
+</ul>
+<ul>
+     = <img src=calE.gif><sub><img src=rho.gif></sub>(<b>S</b>) <img src=dot.gif> <img src=calE.gif><sub><img src=rho.gif></sub>(D<sub>1</sub>) <img src=dot.gif> <img src=calE.gif><sub><img src=rho.gif></sub>(D<sub>2</sub>) <img src=dot.gif> <img src=calE.gif><sub><img src=rho.gif></sub>(D<sub>3</sub>)
+<p>  = <img src=calE.gif><sub><img src=rho.gif></sub>(<b>S</b> D<sub>1</sub> D<sub>2</sub> D<sub>3</sub>) = <img src=calE.gif><sub><img src=rho.gif></sub>((D<sub>1</sub> D<sub>3</sub>) (D<sub>2</sub> D<sub>3</sub>))
+<p>     = (d<sub>1</sub> <img src=dot.gif> d<sub>3</sub>) <img src=dot.gif> (d<sub>2</sub> <img src=dot.gif> d<sub>3</sub>)
+</ul>
+
+<p>Thus any applicative domain that is the image of
+<img src=Lambda.gif>(C) under an evaluation contains analogs of the
+<b>S</b> and <b>K</b>
+combinators. This turns out, as we shall see, to be an important aspect of
+what it is to be a domain which is a model of the <img src=Lambda.gif> (C)
+calculus.
+
+
+<hr>
+<h3>Definition</h3>
+
+An applicative algebra <em><img src=calC.gif></em> is said to be a <em>combinatory
+algebra</em> if there are elements
+<em>K, S <img src=in.gif> </em>|<em><img src=calC.gif></em>|
+such that
+
+<ul>
+CA1 <img src=space.gif>
+    K <img src=dot.gif> d<sub>1</sub> <img src=dot.gif> d<sub>2</sub>
+         = d<sub>1</sub>
+<p>
+CA2 <img src=space.gif>
+
+    S <img src=dot.gif> d<sub>1</sub> <img src=dot.gif> d<sub>2</sub> <img src=dot.gif> d<sub>3</sub>
+     = (d<sub>1</sub> <img src=dot.gif> d<sub>3</sub>) <img src=dot.gif> (d<sub>2</sub> <img src=dot.gif> d<sub>3</sub>)
+</ul>
+
+<p>(from Meyer[1982], originally from Curry.)
+
+<p><hr>
+
+<p>One way in which we can extend an environment into being an evaluation
+is to make use of the <em>S</em> and <em>K</em>
+elements of a combinatory algebra. To do this, we will need an additional
+element <em>I</em>, in effect the identity function, which is shown
+necessarily to exist by the following lemma.
+
+<hr>
+
+<h3>Lemma</h3>
+Let <em><img src=calC.gif></em> be a combinatory algebra. Let <em>I = SKK</em> then
+for all <em>d <img src=in.gif> D</em>
+<ul>
+        I d = d
+</ul>
+<h4>Proof</h4>
+For any <em>d</em> in | <img src = calC.gif> |, we have
+    I d  = S K K d = (K d) (K d) = d
+<p><hr>
+
+Now let  us show  that,  in <img  src=Lambda.gif>(C),  every term  is  <img
+src=alpha.gif>-<img src=beta.gif>-equivalent to  a term in  which the  only
+<img src=lambda.gif>-abstractions are the <b>S, K, I</b> combinators. If we
+do this, it will then be fairly obvious how we can create an evaluation
+mapping to a combinatory algebra.
+
+<h2>Definition</h3>
+A <em>combinatory lambda term</em> is defined inductively as follows.
+
+<ul>
+<p>CT1<img src=space.gif>
+If <em>v <img src=in.gif> <img src=Lambda.gif>(C)</em> is a variable then
+<em>v</em> is a combinatory lambda term.
+<p>CT2<img src=space.gif>
+If <em>c <img src=in.gif> C</em> is a constant then <em>c</em> is a combinatory
+lambda term.
+<p>CT3<img src=space.gif>
+If  <em>F,G</em> are combinatory lambda terms, then so is <em>(F G)</em>
+<p>CT4<img src=space.gif>
+<b>S,K</b> are combinatory lambda terms (and hence so is <b>I</b>).
+
+</ul>
+<hr>
+Now let's start finding out how to transform any term in
+<img src=Lambda.gif>(C) to an equivalent combinatory term.
+To do this, we introduce a piece of notation that I found rather baffling
+when first I saw it. In essence, the notation <em>&LT;x> E </em> means
+"the combinatory lambda equivalent of <em><img src=lambda.gif> x . E</em>".
+We could, of course, have used some more conventional notation
+such as <em>comb(x,E)</em> in defining the transformation to combinatory
+terms, but the syntactic similarity of <em>&LT;x> E </em> to the <img
+src=lambda.gif> form plays a useful role in helping us to understand what
+is happening.
+
+<hr>
+<h3>Definition</h3>
+If <em>x <img src=in.gif> <img src=Lambda.gif>(C)</em>   then, for any
+combinatory lambda term
+<em>E <img src=in.gif> <img src=Lambda.gif>(C)</em>, the term denoted by
+<em>&LT;x> E </em> is defined as follows:
+
+<ul>
+<p> CL1 <img src=space.gif>
+<em>&LT;x> x = <b>I</b></em>
+
+<p> CL2 <img src=space.gif>
+&LT;x> E = (<b>K</b> E)</em> if <em>x</em> is not free in <em>E</em>
+
+<p> CL3 <img src=space.gif>
+&LT;x>(F G) = (<b>S</b> (&LT;x>F) (&LT;x>G))</em>
+if <em>x</em> is free in <em>F</em> or <em>G</em>.
+</ul>
+
+
+
+<hr>
+[Note - Meyer uses the notation <em>&LT&LT;x>> E</em>, since he is
+being meticulous about distinguishing between this operation and an
+similar one defined over a combinatory algebra.]
+
+<p>Now we can define the transformation from a term <em>E</em> to
+an equivalent combinatory term by specifying that we systematically replace
+any abstraction <br><em><img
+src=lambda.gif> v. F</em> occurring in <em>E</em>
+by <em>&LT;v> F</em>
+
+<h3>Definition</h3>
+Let <em>E</em> be a term of <img src=Lambda.gif>(C). Then
+<em>comb(E)</em> of <em>E</em> is defined by
+
+<ul>
+
+<p>CM1<img src=space.gif>
+<em>comb(c) = c</em> for <em>c <img src=in.gif> C</em>
+<p>CM2<img src=space.gif>
+<em>comb(x) = x</em> for any variable <em>x</em>
+<p>CM3<img src=space.gif>
+<em>comb((F G)) = (comb(F) comb(G))</em>
+<p>CM4<img src=space.gif>
+<em>comb(<img src=lambda.gif> x. F) = &LT;x>comb(F)</em>
+</ul>
+
+<h3>Lemma (the Combinatory Lambda Term Lemma)</h3>
+If <em>E</em> is a term of <em><img src=Lambda.gif>(C)</em>
+then
+<ul>
+<p><em>comb(E)</em> is a combinatory lambda term.
+<p><em>E <img src=eqv.gif> comb(E)</em>
+where  <img src=eqv.gif> denotes <img src=alpha.gif>-<img
+src=beta.gif> equivalence.
+</ul>
+
+<h4>Proof</h4>
+By induction on the height of <em>E</em>.
+
+<h4>Base Case</h4>
+ For any term of height 0, the result follows from CM2 and CM2.
+
+<h4>Inductive Step</h4>
+Suppose for any term <em>E</em> for which  <em>height(E) <img
+src=leq.gif> n</em> we have that
+<em>comb(E)</em> is a combinatory lambda term
+and <em>E <img src=eqv.gif> comb(E)</em>.
+
+<p>Consider a term <em>E</em> for which <em>height(E) = n+1</em>
+
+<ul>
+<li>Case 1: <em>E = (F G)</em>. Here, by CM3
+<p><ul>
+comb((F G)) = (comb(F) comb(G))
+</ul>
+
+<p>and so by the inductive hypothesis and CT3,  <em>comb((F G))</em> is a
+combinatory lambda term. Moreover, by the definition of <img
+src=alpha.gif>-<img src=beta.gif> equivalence, since we have, from the
+inductive hypothesis, <em>comb(F) <img src=eqv.gif> F</em>,
+<em>comb(G) <img src=eqv.gif> G</em>, that
+<p><ul>
+comb((F G)) <img src=eqv.gif> (F G)
+</ul>
+
+
+<p><li>Case 2: <em>E = <img src=lambda.gif>x. F</em>.
+Here, by CM4
+<p><ul>
+comb(<img src=lambda.gif> x. F) = &LT;x>comb(F)</em>
+</ul>
+<p>Now by the inductive hypothesis, <em>comb(F)</em> is a combinatory
+lambda term equivalent to <em>F</em>.
+<ul>
+
+<p><li>Sub case 2.1, <em>F = x</em>. Here
+<em>&LT;x>comb(F) = <b>I</b></em>. Hence <em>comb(E)</em> is a combinatory
+lambda term, and
+<p><ul>
+  comb(E) = <b>I</b> <img src=eqv.gif> (<img src=lambda.gif> x. x)
+<img src=eqv.gif> E
+</ul>
+
+
+<p><li>Sub case 2.2, <em>x</em> is not free in <em>comb(F)</em>.
+<p><ul>
+comb(<img src=lambda.gif> x. F)
+= (<b>K</b> comb(F))
+     <img src=eqv.gif> (<img src=lambda.gif> u v. u) comb(F)
+<p>     <img src=eqv.gif> (<img src=lambda.gif> v. comb(F))
+</ul>
+<p>applying the definition of <b>K</b> and equivalence.
+So, by the inductive hypothesis, and <img src=alpha.gif>-conversion
+this is
+<p><ul>
+     <img src=eqv.gif> (<img src=lambda.gif> x. F)
+</ul>
+<p>since <em>x</em> is not free in <em>comb(F)</em>
+
+
+<p><li>Sub case 2.3, <em>F = (G H)</em> and <em>x</em> is free in
+<em>comb(G)</em> or in <em>comb(H)</em>
+
+<p><ul>
+comb(<img src=lambda.gif> x. F)
+= &LT;x> comb((G H))
+<p>= &LT;x> (comb(G) comb(H))
+<p> = (<b>S</b>  (&LT;x> comb(G))  (&LT;x> comb(H)))
+<p> = (<b>S</b>  comb(<img src=lambda.gif> x. G)
+                comb(<img src=lambda.gif> x. H))
+<p> <img src=eqv.gif>
+     ((<img src=lambda.gif> f g x. (f x) (g x))
+     comb(<img src=lambda.gif> x. G)
+     comb(<img src=lambda.gif> x. H))
+
+<p> <img src=eqv.gif>
+     ((<img src=lambda.gif> f g x. (f x) (g x))
+     (<img src=lambda.gif> x. G)
+     (<img src=lambda.gif> x. H))
+<p> <img src=eqv.gif>
+     (<img src=lambda.gif> x. G[x:=x] H[x:=x])
+<p>  = (<img src=lambda.gif> x. G H)
+<p>  = E
+
+</ul>
+</ul>
+
+</ul>
+
+</ul>
+
+<h4>An Example</h4>
+The following shows the transformation process at work. Consider:
+
+<ul>
+<img src=lambda.gif> x . ((+ x) 1)
+</ul>
+If we  rewrite this using CM1 as
+<ul>
+&LT;x> . ((+ x) 1)
+</ul>
+the Combinatory Lambda Term Lemma assures us that the result of this
+rewriting will be a new form which is
+alpha-beta-equivalent to the original one. Now,  <em>x</em> occurs
+free in <em>((+ x ) 1)</em> so, using CL3 we can rewrite this to
+<ul>
+((S (&LT;x> (+ x))) (&LT;x> 1))
+</ul>
+This can be rewritten further as
+<ul>
+((S (S (&LTx> +)) (&LTx> x)) (K 1))
+</ul>
+and finally as
+<ul>
+((S (S (K +)) (I x)) (K 1))
+</ul>
+<p>As a reality check, if we transform back any one line by replacing the
+&LT;x>.. form by the corresponding lambda abstraction, we should obtain a
+function equivalent to the initial one.
+Consider
+<ul>
+((S (&LT;x> (+ x))) (&LT;x> 1))
+</ul>
+Transform this back to
+<ul>
+((S (<img src=lambda.gif> x . + x)) (<img src=lambda.gif> x . 1))
+</ul>
+Substituting an alpha-equivalent version of the
+definition of <b>S</b> we obtain:
+
+<ul>
+((<img src=lambda.gif> f g z. (f z) (g z))
+(<img src=lambda.gif> x . + x)) (<img src=lambda.gif> x . 1))
+</ul>
+By beta-reduction we obtain:
+<ul>
+(<img src=lambda.gif> z. ((<img src=lambda.gif> x . + x) z)
+   ((<img src=lambda.gif> x . 1) z))
+</ul>
+Which, by further beta-reduction, yields
+<ul>
+(<img src=lambda.gif> z. (+ z) 1)
+</ul>
+which is alpha-equivalent to our original function.
+
+
+<h3>Enhancing the Efficiency of the Combinator Approach</h3>
+The combinatorial approach is conceptually simple, which is an advantage
+for mathematicians. However we find that a modest lambda expression is
+converted to a big combinatorial expression. We can go some way towards
+mitigating this problem by introducing some new (redundant) combinators.
+Consider
+
+<ul>
+<p> CL3 <img src=space.gif>
+&LT;x>(F G) = (<b>S</b> (&LT;x>F) (&LT;x>G))</em>
+if <em>x</em> is free in <em>F</em> or <em>G</em>.
+</ul>
+
+<p>Using <b>S</b> in this case in effect is piping <em>x</em> into
+<em>both</em> the transformed versions of <em>F</em> <em>and</em>
+<em>G</em>. This only makes sense if <em>x</em> is free in both.
+
+So, let's introduce two new combinators, defined as follows
+
+<ul>
+<p><b>B</b> = <img src=lambda.gif> f g x. f (g x)
+<p><b>C</b> = <img src=lambda.gif> f g x. (f x) g
+</ul>
+
+And now we can modify rule CL3, obtaining 3 new rules
+
+<ul>
+<p> CL3' <img src=space.gif>
+&LT;x>(F G) = (<b>S</b> (&LT;x>F) (&LT;x>G))</em>
+if <em>x</em> is free in <em>F</em> and <em>G</em>.
+
+<p> CL4 <img src=space.gif>
+&LT;x>(F G) = (<b>B</b> F (&LT;x>G))</em>
+if <em>x</em> is only free in <em>G</em>.
+
+<p> CL5 <img src=space.gif>
+&LT;x>(F G) = (<b>C</b> (&LT;x>F) G)</em>
+if <em>x</em> is only free in <em>F</em>.
+
+</ul>
+
+<h4>The example reworked</h4>
+We can now rework our earlier example.
+
+<ul>
+<img src=lambda.gif> x . ((+ x) 1)
+</ul>
+If we  rewrite this using CM1 as
+<ul>
+&LT;x> . ((+ x) 1)
+</ul>
+Now,  <em>x</em> occurs
+free in <em>((+ x ) 1)</em>, but only occurs free in <em>(+ x)</em>
+so, using CL5 we can rewrite this to
+<ul>
+((C (&LT;x> (+ x)))  1)
+</ul>
+This can be rewritten further as
+<ul>
+(C (B  + (&LTx> x)) 1)
+</ul>
+and finally as
+<ul>
+(C (B  + I) 1)
+</ul>
+Which is quite a decent condensation.
+
+However there is more to come, since we still have not dealt with
+<em>the</em> major obstacle to the practical use of combinators: multiple
+nested <img src=lambda.gif>-abstractions give rise to expressions that grow
+too rapidly. [Peyton-Jones has a good discussion on this - see section
+16.2]
+
+<p>Consider an expression of the form <em>F G</em>. A single
+lambda-abstraction translates, in the most general case,
+<em> (<img src=lambda.gif> z. F G)</em> into
+
+<ul>
+&LT;z>(F G) = (<b>S</b> (&LT;z>F) (&LT;z>G))</em>
+</ul>
+
+Abstracting again, even with the <b>B</b> optimisation, converts
+<em> (<img src=lambda.gif>y z. F G)</em> into
+
+<ul>
+&LT;y> (<b>S</b> (&LT;z>F) (&LT;z>G))
+=
+ (<b>S</b>(<b>B</b><b>S</b> (&LT;y>&LT;z>F)) (&LT;y>&LT;z>G))
+</ul>
+
+Abstracting again, converts
+<em> (<img src=lambda.gif>x y z. F G)</em> into
+
+<ul>
+&LT;x>
+(<b>S</b>(<b>B</b> <b>S</b> (&LT;y>&LT;z>F)) (&LT;y>&LT;z>G))
+<p> =
+<b>S</b>(<b>B S</b> (<b>B</b> (<b>B S</b>) (&LT;x>&LT;y>&LT;z>F)))
+(&LT;x>&LT;y>&LT;z>G))
+</ul>
+
+
+If we think of the commonest circumstance in which the B combinator finds
+itself, we have
+<pre>
+    &LT;x>((<b>B</b> E) F)   =  (<b>B</b> (<b>B</b> E) &LT;x>F)
+</pre>
+That is, every abstraction replaces each such occurrence <b>B</b>
+combinator by 2 occurrences of a <b>B</b>. So we'd seem to
+have an <em>exponential</em> dependence on the number of abstractions.
+
+<h3>The Turner Combinators</h3>
+
+<p>We can remedy this problem by introducing yet another family
+of combinators, the Turner combinators (have
+faith - we're not going to do this indefinitely). The most important of
+these is <b>S'</b>, and its definition is:
+
+<ul>
+<b>S</b>' = <img src=lambda.gif> h f g x. h (f x) (g x)
+</ul>
+
+And we introduce a new rule:
+
+<ul>
+<p> CL2.9 <img src=space.gif>
+&LT;x>(H F G) = (<b>S'</b> H (&LT;x>F) (&LT;x>G))</em>
+if <em>x</em> is not free in <em>H</em>
+<p><img src=space.gif><img src=space.gif><img
+src=space.gif>but is free in <em>F</em> or
+<em>G</em>.
+</ul>
+
+The use of  <b>S'</b> combinator is a great improvement because it gives
+rise to an expression that is <em>linear</em> in the number of
+abstractions.
+
+
+<p>Reverting to our consideration of abstraction over
+an expression of the form <em>F G</em>, we see that a single
+lambda-abstraction translates, as before,
+<em> (<img src=lambda.gif> z. F G)</em> into
+
+<ul>
+&LT;z>(F G) = (<b>S</b> (&LT;z>F) (&LT;z>G))</em>
+</ul>
+
+But the next abstraction  shows a marked improvement
+since it converts
+<em> (<img src=lambda.gif>y z. F G)</em> into
+
+<ul>
+&LT;y> (<b>S</b> (&LT;z>F) (&LT;z>G))
+=
+ (<b>S' S</b> (&LT;y>&LT;z>F) (&LT;y>&LT;z>G))
+</ul>
+
+Abstracting again, we  convert
+<em> (<img src=lambda.gif>x y z. F G)</em> into
+
+<ul>
+&LT;x>
+ (<b>S' S</b> (&LT;y>&LT;z>F) (&LT;y>&LT;z>G))
+<p> =
+ (<b>S'</b> (<b>S' S</b>) (&LT;x>&LT;y>&LT;z>F) (&LT;x>&LT;y>&LT;z>G))
+
+</ul>
+
+It's fairly clear that each successive abstraction will simply have the
+effect of nesting the first combinator one deeper, with the addition of one
+<b>S'</b> combinator. The same process will take place inside <em>F</em>
+and <em>G</em>, but the number of additional combinators will be
+related to the product of the number that arose in the first abstraction
+and the number of abstractions.
+
+
+<p> Peyton Jones discusses the use of the <b>B'</b> and
+<b>C'</b> combinators, which bear the same relation to <b>S'</b> as
+<b>S'</b> does to <b>S</b>. He points out that the use of <b>B'</b> is not
+necessarily beneficial, and discusses an alternative <b>B*</b> combinator.
+
+<p>The following lemma shows that it's correct to use these new combinators
+and their rules in the <em>comb</em> function.
+
+<h3>Lemma (the <b>S,K,I,B,C,S'</b> Combinatory Lambda Term Lemma)</h3>
+If <em>E</em> is a term of <em><img src=Lambda.gif>(C)</em>
+and <em>comb</em> is defined using rules CL1,CL2,CL2.9,CL3',CL4,CL5, then
+<ul>
+<p><em>comb(E)</em> is a combinatory lambda term.
+<p><em>E <img src=eqv.gif> comb(E)</em>
+where  <img src=eqv.gif> denotes <img src=alpha.gif>-<img
+src=beta.gif> equivalence.
+</ul>
+
+<h4>Proof</h4>
+By induction on the height of <em>E</em>.
+
+<h4>Base Case</h4>
+ For any term of height 0, the result follows from CM2 and CM2.
+
+<h4>Inductive Step</h4>
+Suppose for any term <em>E</em> for which  <em>height(E) <img
+src=leq.gif> n</em> we have that
+<em>comb(E)</em> is a combinatory lambda term
+and <em>E <img src=eqv.gif> comb(E)</em>.
+
+<p>Consider a term <em>E</em> for which <em>height(E) = n+1</em>
+
+<ul>
+<li>Case 1: <em>E = (F G)</em>. Here, by CM3
+<p><ul>
+comb((F G)) = (comb(F) comb(G))
+</ul>
+
+<p>and so by the inductive hypothesis and CT3,  <em>comb((F G))</em> is a
+combinatory lambda term. Moreover, by the definition of <img
+src=alpha.gif>-<img src=beta.gif> equivalence, since we have, from the
+inductive hypothesis, <em>comb(F) <img src=eqv.gif> F</em>,
+<em>comb(G) <img src=eqv.gif> G</em>, that
+<p><ul>
+comb((F G)) <img src=eqv.gif> (F G)
+</ul>
+
+
+<p><li>Case 2: <em>E = <img src=lambda.gif>x. F</em>.
+Here, by CM4
+<p><ul>
+comb(<img src=lambda.gif> x. F) = &LT;x>comb(F)</em>
+</ul>
+<p>Now by the inductive hypothesis, <em>comb(F)</em> is a combinatory
+lambda term equivalent to <em>F</em>.
+<ul>
+
+<p><li>Sub case 2.1, <em>F = x</em>. Here
+<em>&LT;x>comb(F) = <b>I</b></em>. Hence <em>comb(E)</em> is a combinatory
+lambda term, and
+<p><ul>
+  comb(E) = <b>I</b> <img src=eqv.gif> (<img src=lambda.gif> x. x)
+<img src=eqv.gif> E
+</ul>
+
+
+<p><li>Sub case 2.2, <em>x</em> is not free in <em>comb(F)</em>.
+<p><ul>
+comb(<img src=lambda.gif> x. F)
+= (<b>K</b> comb(F))
+     <img src=eqv.gif> (<img src=lambda.gif> u v. u) comb(F)
+<p>     <img src=eqv.gif> (<img src=lambda.gif> v. comb(F))
+</ul>
+<p>applying the definition of <b>K</b> and equivalence.
+So, by the inductive hypothesis, and <img src=alpha.gif>-conversion
+this is
+<p><ul>
+     <img src=eqv.gif> (<img src=lambda.gif> x. F)
+</ul>
+<p>since <em>x</em> is not free in <em>comb(F)</em>
+
+
+
+<p><li>Sub case 2.29, <em>F = (J G H)</em> and <em>x</em> is free in
+<em>comb(G)</em> or in <em>comb(H)</em> but <em>x</em> is not free in
+</em>comb(J)</em>
+
+
+<p><ul>
+comb(<img src=lambda.gif> x. F)
+= &LT;x> comb((J G H))
+
+<p>= &LT;x> (comb(J) comb(G) comb(H))
+
+<p> = (<b>S'</b> comb(J) (&LT;x> comb(G))  (&LT;x> comb(H)))
+
+<p> = (<b>S'</b> comb(J) comb(<img src=lambda.gif> x. G)
+                comb(<img src=lambda.gif> x. H))
+<p> <img src=eqv.gif>
+     ((<img src=lambda.gif> j f g x. j (f x) (g x))
+     comb(J)
+     comb(<img src=lambda.gif> x. G)
+     comb(<img src=lambda.gif> x. H))
+
+<p> <img src=eqv.gif>
+     ((<img src=lambda.gif> j f g x. j (f x) (g x))
+     J
+     (<img src=lambda.gif> x. G)
+     (<img src=lambda.gif> x. H))
+<p> <img src=eqv.gif>
+     (<img src=lambda.gif> x. J G[x:=x] H[x:=x])
+<p>  = (<img src=lambda.gif> x. J G H)
+<p>  = E
+
+
+</ul>
+
+<p><li>Sub case 2.3', <em>F = (G H)</em> and <em>x</em> is free in
+<em>comb(G)</em> and in <em>comb(H)</em>
+
+<p><ul>
+comb(<img src=lambda.gif> x. F)
+= &LT;x> comb((G H))
+<p>= &LT;x> (comb(G) comb(H))
+<p> = (<b>S</b>  (&LT;x> comb(G))  (&LT;x> comb(H)))
+<p> = (<b>S</b>  comb(<img src=lambda.gif> x. G)
+                comb(<img src=lambda.gif> x. H))
+<p> <img src=eqv.gif>
+     ((<img src=lambda.gif> f g x. (f x) (g x))
+     comb(<img src=lambda.gif> x. G)
+     comb(<img src=lambda.gif> x. H))
+
+<p> <img src=eqv.gif>
+     ((<img src=lambda.gif> f g x. (f x) (g x))
+     (<img src=lambda.gif> x. G)
+     (<img src=lambda.gif> x. H))
+<p> <img src=eqv.gif>
+     (<img src=lambda.gif> x. G[x:=x] H[x:=x])
+<p>  = (<img src=lambda.gif> x. G H)
+<p>  = E
+
+</ul>
+
+
+
+
+</ul>
+
+<p><li>Sub case 2.4, <em>F = (G H)</em> and <em>x</em> is not free in
+<em>comb(G)</em> but is free <em>comb(H)</em>
+
+<p><ul>
+comb(<img src=lambda.gif> x. F)
+= &LT;x> comb((G H))
+<p>= &LT;x> (comb(G) comb(H))
+<p> = (<b>B</b>   comb(G)  (&LT;x> comb(H)))
+<p> = (<b>B</b>  comb(G)
+                comb(<img src=lambda.gif> x. H))
+<p> <img src=eqv.gif>
+     ((<img src=lambda.gif> f g x. f (g x))
+     comb(G)
+     comb(<img src=lambda.gif> x. H))
+
+<p> <img src=eqv.gif>
+     ((<img src=lambda.gif> f g x. f (g x))
+      G
+     (<img src=lambda.gif> x. H))
+<p> <img src=eqv.gif>
+     (<img src=lambda.gif> x. G H[x:=x])
+<p>  = (<img src=lambda.gif> x. G H)
+<p>  = E
+
+</ul>
+
+<p><li>Sub case 2.5, <em>F = (G H)</em> and <em>x</em> is  free in
+<em>comb(G)</em> but is not free in <em>comb(H)</em>
+
+This case is similar to 2.4.
+
+
+
+</ul>
+
+</ul>
+
+</ul>
+
+<h3>Summary</h3>
+
+<p>The first combinatory term lemma  provides one approach to  constructing
+an  <em>evaluation</em>   of  an   arbitrary   term  <em>E</em>   of   <img
+src=Lambda.gif> (C). All we need to  do is to transform <em>E</em> into  an
+equivalent combinatory term <em>E'</em>, which  can then be mapped into  an
+arbitrary combinatory algebra <img src=calC.gif> using rules EV1-EV3.
+
+<p>The second combinatory term lemma suggests a more efficient approach
+in which we use the additional combinators <b>B,C,S'</em> to obtain
+relatively condensed combinatory terms. Since the new combinators can be
+defined in terms of <b>S</b> and <b>K</b>, we can again map a combinatory
+term <em>E''</em> obtained from <em>E</em> by use of the second lemma, into
+<img src=calC.gif> using rules EV1-EV3.
+
+<p>Computationally, of course, it would be important to implement the new
+combinators as part of any implementation of a combinatory algebra -
+mathematically however they're already there.
+
+<p>Mathematically, however, there is a snag. While we've shown that the
+concept of evaluation requires that an applicative algebra <em>must</em> be
+a combinatory algebra if it is the image of <img src=Lambda.gif> (C) under
+evaluation, and we've shown one way to construct a mapping from
+<img src=Lambda.gif> (C) to a combinatory algebra, we haven't shown that
+the mapping so constructed <em>is</em> an evaluation. In fact, we need a
+stronger concept than the <em>combinatory algebra</em>.
+
+<p>This situation will be familiar to computer scientists. An abstract
+data-type may be characterised by some kind of type-signature which
+partly specifies what the functions acting on  the data-type should do, and
+what kinds of objects the data-type should have. But a program that meets
+the type-signature is not necessarily a correct implementation of the
+data-type.  Even the equations we have put upon combinatory algebras,
+in CA1 and CA2, are too weak.
+
+<p>There are two approaches to remedying this problem. The
+<em>algebraic</em> approach is to add additional conditions beyond CA1 and
+CA2 which will characterise a structure called a <em>Lambda Algebra</em>.
+The <em>non-algebraic</em> approach is to add <em>non-algebraic</em>
+conditions beyond CA1 and CA2 which will characterise a structure called
+a <em>Combinatory Model</em>.
+
+
+   D. A. Turner ``Another Algorithm for Bracket Abstraction'', Journal
+   of Symbolic Logic, vol 44, no 2, pp 267-270 (June 1979).
+
+
+
+</body>
+</html>

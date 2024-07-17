@@ -1,0 +1,24 @@
+
+
+<p>Now, we can put an interpretation upon <em>(T T)</em>. For, consider
+<ul>
+(T T) g =
+((<img src=lambda.gif> f x. f(f x))  (<img src=lambda.gif> f x. f(f x))) g
+<p> <img src=reduces_beta.gif>
+<img src=lambda.gif> x.  <img src=lambda.gif> f x. f(f x)( <img
+src=lambda.gif> f x. f(f x) x) g
+<p>
+
+</ul>
+
+<p>Now, we can put an interpretation upon <em>(T T)</em>. For, consider
+<ul>
+(T T)<img src=reduces_beta.gif>
+(<img src=lambda.gif> f x. f(f x)  <img src=lambda.gif> f x. f(f x))
+ <img src=reduces_beta.gif>
+ x.  <img src=lambda.gif> f x. f(f x)( <img src=lambda.gif> f x. f(f x) x)
+<p>
+
+
+
+</ul>

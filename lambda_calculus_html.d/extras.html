@@ -1,0 +1,47 @@
+
+<h2><img
+src=lambda.gif>-calculus + syntactic sugar = a programming language?</h2>
+
+In an influential paper, `The  Next 700 Programming Languages', written  in
+1964, Peter Landin argued that  all programming languages could and  should
+be regarded  as a  way of  making the  <img src=lambda.gif>-calculus palatable  to human  users  by a
+coating of `syntactic  sugar'. If  we speak of  functional languages,  this
+view has won universal  acceptance; while formally  valid, it is  often
+seen as  less helpful  and  appropriate for  procedural languages,  and  is
+rejected by most of the `logic  language' community who see the rival  <em>
+predicate calculus</em> as a more appropriate basis.
+
+
+<p>
+In Landin's view, the <img src=lambda.gif>-calculus acts as a kind of mathematical analogue of
+machine code - it is a form that it is simple to reason about, in the
+same way that machine code is a form that it is simple for a machine to
+execute.
+
+<h2>The SML formalism for a <em><img src=lambda.gif></em> abstraction.</h2>
+
+<p>
+Let us take a preview of some `syntactic sugar' in ML and Modula-2. The
+<img src=lambda.gif> calculus expression <em><img src=lambda.gif> x. +  x  2</em> is rendered in ML as
+
+<pre>
+fn x => x+2
+</pre>
+
+<p>
+Here the <em><img src=lambda.gif></em> is replaced  by <em>fn</em>. This is  hardly sugar at all,  but
+reflects the poverty of the ASCII alphabet. Likewise the `.' is replaced by
+`$=>$', which avoids confusion  with other uses of  `.', e.g. as a  decimal
+point, although  we shall  see that  the syntactic  constructions in  which
+`$=>$' occurs in ML provide much  more than simple <img src=lambda.gif> abstraction.  The
+last  piece  of  syntactic   sugar  is  to  write   `<em>x+2</em>'  in  place   of
+`$+ x 2<em>', in accordance with usual mathematical notation.
+
+<p>
+Another piece of syntactic sugar is the <em>let</em> construct in ML.
+<pre>
+let val x = 3 in x+7 end
+</pre>
+can be translated into <img src=lambda.gif>-calculus as <em>(<img src=lambda.gif> x. +  x  7)3</em>. Note that
+<em>E<sub>1</sub></em> and <em>E<sub>2</sub></em> in <em>(<img src=lambda.gif> x. E<sub>1</sub>) E<sub>2</sub></em> change their order in the <em>let<em>
+construct. This often accords with programming language practice.

@@ -1,0 +1,69 @@
+
+Next comes  the definition  of multi_subst.  We have  to take  some care  with
+lambda expressions, if  we are making  a substitution such  as (x .  4) in  an
+expression like (lambda (x) (+ x 5)) we have to recognise that we have a ___new x
+bound in the lambda expression. Note also that we have even more work to do to
+get it completely right - see notes on lambda calculus.
+
+(define (multi_subst alist expr)
+    (cond
+        ( (symbol? expr)                      ; symbol? - find val in alist
+         (let ((pair (assoc expr alist)))
+             (if pair (cdr pair) expr)
+             )
+         )                                    ; end symbol?
+        ( (pair? expr)                        ; pair? - substitute recursively
+         (if (eq? (car expr) 'lambda)         ; lambda? - use helper function
+             (multi_subst_lambda
+                 alist (cadr expr) (cddr expr))
+             (cons (multi_subst alist (car expr))
+                 (multi_subst alist (cdr expr)))
+             )
+         )
+        (else expr)                           ; otherwise must be constant
+        )                                     ; end cond
+    )
+
+
+
+
+(example '(multi_subst '((x . 7) (y . 4)) '((+ y (* 5 x))))
+          '((+ 4 (* 5 7))))
+
+(example '(multi_subst '((x . 7) (y . 4)) '((lambda (x) x)  (* 5 x)))
+          '((+ 4 (* 5 7))))
+
+
+
+
+
+However we now have to treat substitution in a lambda-expression. To
+do this we must treat the variables introduced by the lambda-expression as
+-new- variables, so they will be deleted from the alist if they occur.
+
+
+(define (multi_subst_lambda alist vars body)
+    (list 'lambda vars
+        (multi_subst (delete_alist vars alist) (car body))
+        )
+    )
+
+The function to delete  variables from an association  list can be defined  as
+follows:
+
+(define (delete_alist vars alist)
+    (if (null? alist) '()
+        (if (memq (caar alist) vars)
+            (delete_alist vars (cdr alist))
+            (cons (car alist) (delete_alist vars (cdr alist)))
+            )
+        )
+    )
+
+(example '(delete_alist '(x y z) '((x . 2 ) (a . 4) (y . 3) (p . 7)))
+   '((a . 4) (p . 7)))
+
+So now we can try out substitution in an expression that involves lambda-s.
+
+(example '(multi_subst '((x . 7) (y . 4)) '((lambda (x) x)  (* 5 x)))
+        '((lambda (x) x) (* 5 7)))

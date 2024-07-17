@@ -1,0 +1,125 @@
+
+<h1> Course CMPSCI 287 Assignment 3 </h1>
+<h2>Due 11:59 PM, 7OCT 99 as hwk3.scm in your cs287 directory </h2>
+
+
+Recall that the polynomial function <tt>p</tt> for which
+<pre>
+    p(x) =  a<sub>0</sub> +  a<sub>1</sub> x +  a<sub>2</sub> x<sup>2</sup> ... a<sub>n</sub> x<sup>n</sup>
+</pre>
+can be represented by the Scheme list
+
+<pre>
+    (a<sub>0</sub> a<sub>1</sub> a<sub>2</sub> ... a<sub>n</sub>)
+</pre>
+
+
+<hr>
+
+<p>(1) Write a function <tt>lam_poly</tt> for which the application
+<tt>(lam_poly p)</tt> produces a lambda-expression that is
+the definition of the polynomial-function as a Scheme function
+
+<p>Below is a possible example - you may produce a solution that
+is more or less optimised than it, as long as it is correct.
+
+<pre>
+    (example
+        '(lam_poly '(3 4 5))
+        '(lambda (x) (+ 3 (* 4 (expt x 1)) (* 5 (expt x 2))
+</pre>
+
+</hrule>
+
+<hr>
+
+(2)
+The built-in Scheme function <tt>eval</tt> provides a way of compiling
+a Scheme expression. The call:
+
+<pre>
+  (eval expr (nearest-repl/environment))
+</pre>
+will evaluate an expression in the "current environment". For example:
+
+  (eval '(+ 2 3) (nearest-repl/environment))
+
+evaluates to 5.
+
+<p>Write a function <tt>fun_poly</tt> for which the application
+<tt>(fun_poly p)</tt> produces a Scheme procedure object
+
+<pre>
+    (example
+        '((fun_poly '(3 4 5)) 2)
+         (+ 3 (* 4 (expt 2 1)) (* 5 (expt 2 2)))
+    )
+</pre>
+
+[Note that from Naomi Nag's point of view, this is a level-1 problem.]
+
+<hr>
+
+
+
+(3) The Newton-Raphson method for the iterative solution of  non-linear
+equations makes use of the equation
+
+<pre>
+    f(x+t) = f(x) + t f'(x) + e  ------------------- (1)
+</pre>
+where  f'  denotes the derivative of  f  and  e is an error term
+quadratic in t [for analytic functions]. Setting
+<pre>
+    f(x+t) = 0
+</pre>
+we obtain
+<pre>
+    t = -f(x)/f'(x)  - e/f'(x)  -------------------- (2)
+</pre>
+
+
+We can use (2) as a basis for improving a approximate solution
+x<sub>i</sub> of f(x) = 0 to a better solution  x<sub>i+1</sub> by
+
+<pre>
+    x<sub>i+1</sub> =  x<sub>i </sub>- f(x)/f'(x)
+</pre>
+
+Write a Scheme function <tt>solve_poly</tt> for which the application
+<tt>(solve_poly  p x0 eps)</tt> will evaluate to an approximation to
+a root of the polynomial equation <tt> p = 0 </tt>
+provided that  <tt>x0</tt>
+is sufficiently close to a root of p.  The parameter <tt>eps</tt>
+is used to determine the accuracy of the root - you should regard
+a solution as adequate when
+
+<pre>
+    abs(x<sub>i+1</sub> -  x<sub>i </sub>) < eps
+</pre>
+
+Do not forget that you should use floating point contagion to
+ensure that your program doesn't try to produce a rational
+answer (which if correct, would be produced slowly, and wouldll be
+meaningless to the average user).
+
+<p> The simplest example should converge in one iteration:
+<pre>
+ (solve_poly '(1 1) 0 0.000001)
+</pre>
+to give the root -1.0
+
+<pre>(solve_poly '(1 0 -1) 0.5 0.000001)
+</pre>
+Should give the root 1.0  (approximately) while
+
+<pre>(solve_poly '(1 0 -1) -0.5 0.000001)
+</pre>
+
+Should give the root -1.0.
+
+Finally, to get serious, try to find the roots of the polynomial
+defined by the Scheme list
+<pre>
+'(2 -1 2 1)
+</pre>

@@ -1,0 +1,50 @@
+
+
+                                    February 4, 1998
+To:  Big Carrot
+
+Re: Your telephone directory system
+
+It has come to our attention that your company is seeking a software
+package which will act as a telephone directory. Our company, Goulash,
+has developed a process which we feel would suit this need extremely well.
+
+Our process utilizes the hash table data construct. This method is
+essential for the fastest searching possible. The best case scenario, using
+our method, would only require one unit of time for the user to locate the
+information sought.
+
+To best see why hash tables are the best possible choice, you must first
+understand how they work. A hash table consists of a linked list of one
+dimensional arrays. Each array would contain the information which is
+pertinent to each entry in the directory. When an entry is created, our
+system would create a key based upon a simple algorithm. This key would
+then be recomputed when the user typed in the information s/he was seeking.
+Using this key, the software would then be pointed to the correct position
+of the required information in the list. Searching in this way greatly cuts
+down the number of entries which need to be examined for a match.
+
+Since your needs call for a directory consisting of 100,000 data items, our
+software will take this into account so that the fewest possible items need
+to be examined for each search. The solitary downfall of this system is
+that it requires a little more size than some others. However, this allows
+for the fastest searching. We feel that this is a more than adequate
+trade-off.
+
+Our software package would require that your systems be running a 32-bit
+operating system with virtual memory capabilities. Also, the system would
+need to have sufficient external storage to load the software. The more RAM
+that the platform has, the better, since more RAM allows for even faster
+access and, therefore, response time.
+
+We hope that our proposal meets with your needs and look forward to being
+in contact with you soon.
+
+Best regards,
+Goulash Products International
+
+From: Noah D Burt <ndburt@student.umass.edu>
+Cc: kagagne@student.umass.edu, zakara@student.umass.edu,
+        rjdumais@student.umass.edu, jeffroy@student.umass.edu,
+        irslutz@student.umass.edu, wingus@student.umass.edu,
+        jecraig@student.umass.edu, ahannon@student.umass.edu

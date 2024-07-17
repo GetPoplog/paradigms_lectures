@@ -1,0 +1,659 @@
+
+
+
+\documentstyle[12pt]{article}
+\parskip = 0.1 in
+\parindent = 0 in
+\topmargin = 0 in
+\textheight= 21 cm
+\textwidth = 16 cm
+\oddsidemargin = 0 in
+\evensidemargin = 0 in
+
+\newcommand{\LC}{$\lambda$-calculus }
+\newcommand{\reducesto}{\longrightarrow}
+\newcommand{\comment}[1]{}
+
+
+
+%\def\section#1{\newpage\begin{center}{\bf #1}\end{center}}
+%\def\subsection#1{\newpage\begin{center}{\bf #1}\end{center}}
+%\def\SlideHeader#1{\newpage\begin{center}{\bf #1}\end{center}}
+%\def\SlideHeader#1{}
+
+
+
+\begin{document}
+%\Huge
+
+
+\section{Introduction}
+
+The \LC was invented by Church, the American logician, in 1941. It was
+developed as a branch of mathematics, rather than as a programming language
+(antedating all programming languages), and was thus defined
+essentially as marks on a piece of paper. However it is very easily
+represented in a computer. The \LC is capable of expressing any
+computation, like a Turing machine, but, unlike a Turing machine, it can be
+made the basis of elegant and powerful computer languages.
+
+
+One of the conceptual problems that beginners in formal logic, and
+the \LC is a formal logic, face is the `bootstrapping conundrum', namely
+that we are trying to build a very formal system using our less formal
+ideas of ordinary mathematics, which were, in our teens, build using the
+even less formal ideas expressible in natural language. There is probably
+little that can be said except to point out that there is a computational
+analogy --- if for example we want to build a super-secure computer system,
+it will depend on using less-secure tools, and ultimately on hand-crafted
+machine code which is not secure at all. Nevertheless, by careful checking
+and cross checking, and incorporating tests for consistency, we can build
+systems in which we trust.
+
+\section{Expressions in the \LC}
+
+We will begin with the {\em pure} \LC, whose expressions
+consist of
+
+\begin{enumerate}
+\item a countably infinite alphabet of variables,
+$u\ldots z, u_1 \ldots z_1, \ldots u_n \ldots z_n, \ldots $
+(It is of course only for human convenience that we allow distinct letters
+of the alphabet, formally and computationally we could use one sequence
+$v_1\ldots$)
+
+\item  Application.  If $E_1$ and $E_2$ are expressions of the \LC, then
+the application of $E_1$ to $E_2$ is written ($E_1E_2$), and is an
+expression.
+
+\item  $\lambda$-abstraction.
+If $v$ is a variable, and $E$ is an expression
+of the \LC, then $\lambda v. E$ is an expression of the \LC.
+
+\end{enumerate}
+To avoid a proliferation of parentheses, it is conventional to write
+$(\ldots(((E_1 E_2) E_3)\ldots E_n)$ as $(E_1 E_2 E_3\ldots E_n)$ and
+$(\lambda v.(E_1E_2))$ as $\lambda v.E_1 E_2$.
+
+Note that application is {\em not} an associative operation, so that  $E_1
+(E_2 E_3)$ is not the same as $(E_1 E_2) E_3$
+
+\subsection{The ``meaning" of Application}
+
+Informally we can think of $E_1 E_2$ as meaning `apply the function $E_1$
+to the argument $E_2$. So if $s$ is the $\sin$ function, and $x$ is a real
+number, then $sx$ means `take the sine of x'.  Moreover $\lambda v E$ can
+be thought of as meaning `that function which maps $v$ to $E$'. Note that
+usually $v$ will occur in E. Thus if $l$ is the $\log$ function and
+$s$ is the $\sin$ function, then $\lambda x. lsx$ is the function which
+takes the logarithm of the sine of its argument.
+
+\subsection{$\beta$-reduction}
+
+It should be obvious that the \LC is like a rudimentary computer
+language, with the ability to define functions of one argument (by
+$\lambda$-abstraction), and the ability to call them (by application).
+Before it can really be considered a language, we have to specify how it is
+to be interpreted. Miraculously, we need 1 rule:
+
+$\beta$ reduction: $(\lambda v E_1)E_2$ may be replaced by $E_1[E_2/v]$
+
+
+here $E_1[E_2/v]$ means `substitute $E_2$ for the variable $v$ in the
+expression $E_1$.
+
+For example, $(\lambda x. u x) (v g) = u (v g)$
+
+This substitution is a little more complicated than
+appears at first, because the variable $v$ may be {\em rebound} in an
+inner lambda expression. A full definition appears subsequently.
+
+\section{LISP and the \LC}
+
+A word of warning is needed here to readers who are familiar with the  LISP
+language: LISP was inspired by the \LC, but is not an exact  implementation
+of it. In particular the lisp CONS  function does not mean ``apply", or  at
+least does  not  {\em  just}  mean  ``apply",  and  the  LISP  S-expression
+$(u\;v\;w)$ does not mean ``apply $u$ to  $v$ and then apply the result  to
+$w$, as it would  in the \LC. At  the time LISP was  designed, back in  the
+1950's, many of the problems of an  efficient treatment of the \LC had  not
+been solved. This is not to  detract from the great contribution that  LISP
+has made to Computer Science.
+
+\section{Constants, with $\delta$-reduction}
+
+The pure lambda calculus is Turing complete --- we can in theory perform
+any computation just by doing repeated
+$\beta$-reduction. For example, the natural
+number 5 can be represented by applying a function 5 *.
+
+Mathematicians, who have swallowed Occam's razor\footnote{The author
+trusts that his mixed metaphors will not give his readers indigestion},
+may be satisfied with the pure calculus. However, as a model for practical
+computation, we need to introduce $constants$ which will be used to denote
+capabilities ``built in'' to any practical computer, such as addition, and
+also memory.
+
+\subsection{An Impure $\lambda-$Calculus}
+We obtain an impure \LC by allowing a set of constants $C$. These will
+consist of {\em primitives}, which correspond to the built-in operations
+of the machine, and {\em constructors}.
+
+$$Prim = \{+, -, *, div, if\}$$
+
+$$Con = \{0,1,2,3\ldots,-1,-2,-3,\ldots,a,b,c,d,a_1,b_1,c_2,\ldots\}$$
+
+The difference between primitives and constructors is that there are
+reductions associated with a primitive.  If $p$ is a primitive, then
+$p\ldots \longrightarrow \ldots$. Thus $+\; 2\; 3$ is rewritten as $5$.
+
+
+Thus with the introduction of primitives, we in effect introduce new
+reduction rules into the \LC, sometimes called $\delta$-reduction.
+
+
+There are no such rules for constructors. (The reason that they are called
+constructors is that in any implementation of the \LC the application of a
+constructor can only be implemented by building data-structures. Since such
+applications can't be $\delta$-reduced, the
+only thing to do is to record them in memory. The LISP CONS function acts
+as a constructor.)
+
+
+\section{Bound and Free variables}
+
+The concepts treated in this section are immediately necessary for the
+purpose of defining precisely the substitution operation required for
+$\beta$ reduction. However they will recur continually in our study of
+programming languages.  Thus in the Modula-2 fragment:
+
+\begin{verbatim}
+PROCEDURE f(i:INTEGER):INTEGER;
+BEGIN RETURN(i+n)
+END f
+\end{verbatim}
+
+The variable $n$ occurs {\em free} in $f$, and the question of how such
+free variables are handled is an important implementation issue.
+
+\subsection{Binding an occurence of a variable}
+
+Let $E$ be an expression of the \LC, and let $v$ be a variable. We say that
+an occurrence of $v$ in $E$ is {\em bound} if it is inside a sub-expression
+of $E$ of the form $\lambda v.E_2$.  An occurrence is said to be {\em free}
+otherwise. Thus  $v$ occurs bound in  $\lambda v. x v$ and $y \lambda v. v$
+but it occurs free in $\lambda x. v x$.
+
+
+
+Note that we are speaking of an {\em occurrence} of a variable as being
+bound --- a variable can occur both bound and free in a given
+expression. For example, in   $v \lambda v. v$, the first occurrence of $v$
+is free, and the last is bound.
+
+We can define a function $FV$ on an expression by:
+
+$FV(v) = \{v\}$  for a variable $v$\\
+$FV(c) = \{\}$    for a constant $c$\\
+$FV(E_1E_2) = FV(E_1)\cup FV(E_2)$ \\
+$FV(\lambda v .E) = FV(E) - \{v\}$\\
+
+An expression $E$ is said to be {\em closed} if it has no free variables,
+i.e. $FV(E) = \{\}$.
+
+
+\section {When are two expressions in \LC `equal'?}
+
+In secondary school we learned that expressions can be ``worked out'' or
+evaluated, by substitution and arithmetic. Thus $x+2$, with $x=4$,
+evaluates to $6$. $\beta$- and $\delta$- reduction play the `working out'
+role for \LC. However we also learned ways of determining that two
+expressions were {\em identically equal}. Thus  $x+2$ and $2+x$ are
+identically equal in school algebra. In this section we want to examine the
+question `can we say whether two expressions in the \LC are equal?'.
+
+\subsection{$\lambda$ calculus expressions denote functions}
+In school algebra the symbols stand for numbers. In the  \LC
+they stand for, or as we say {\em denote}, functions (and other entities as
+well if we have added constants to make our \LC impure). It turns out to be
+non-trivial to develop a theory of denotation for the \LC --- it took
+mathematicians nearly 30 years to come up with a satisfactory one, which we
+will not discuss here. However we will use some informal ideas of
+denotation in our discussion.
+
+For example we may say that $\lambda x. +\; x\; 3$ denotes the
+function `add 3', which is commonly regarded formally as the infinite set
+$\{\ldots (-4,-1), (-3,0), (-2,1),(-1,2),(0,3),(1,4)\ldots\}$ of pairs of
+integers --- you might think of it as a graph drawn on an infinite piece of
+graph paper.
+
+Thus we will discuss, informally, some rules that allow us to say that two
+expressions in the \LC always denote the same thing.
+
+\subsection{We can't always decide equality}
+
+The \LC is a powerful formalism, capable of expressing any computation. We
+know we can't {\em decide} whether two programs perform the same
+computation, so we should not expect to be able to {\em decide} whether two
+\LC expressions are equal --- we may be able to say `yes for sure', `no for
+sure', or `I can't tell'.
+
+
+\subsection{$\beta$-conversion and equality}
+
+The $\beta$-reduction rule that we have already met can also be used as a
+equality inference rule --- in both directions.
+
+\subsection{$\alpha$-conversion}
+
+The variable used in a $\lambda$-abstraction is, to a considerable extent,
+arbitrary. Thus $\lambda x. +\;x\;2$ and $\lambda y. +\;y\;2$ are,
+intuitively, the same function: certainly they {\em denote} the same set of
+pairs, given above.
+
+There is indeed a rule of the $\lambda$
+calculus, called $\alpha$-conversion, which allows the above to expressions
+to be treated as equivalent. It is a little tricky however, since one does
+{\em not} want to convert $\lambda x. y x$ to $\lambda y. y y$
+--- the rule is that we may only replace the variable bound in a
+$\lambda$-abstraction by one that does not occur free in the body.
+
+The $\alpha$ conversion rule is thus:
+
+$$\lambda x.E \longrightarrow \lambda y.E$$ provided $$y\not\in FV(E)$$
+
+
+\subsection{$\delta$-reduction and laws}
+Having introduced constants to make an impure \LC, we have to admit
+$\delta$ reduction, and its inverse, into our rules for equality,
+together with the {\em laws} of the algebra(s) to which the constants
+belong. Thus
+
+$$\lambda x. (+\;(+\;x\;3) 9) \equiv \lambda x. (+\;x\;12)$$
+
+
+\subsection{$\eta$-reduction}
+
+Finally there is $\eta$ reduction. To motivate this, let us consider the
+expression $(+\; 1)$. What does it denote?  Well, if we apply it to an
+argument $3$ we obtain $((+\; 1)\; 3)$ which $\delta$ reduces to $4$,
+and likewise with the argument $4$ it will reduce to $5$.
+Thus it seems that the expression $(+\; 1)$ is the `add one' function,
+commonly called the successor function. But we also can write this as a
+$\lambda$-abstraction, $\lambda x. +\; 1\; x$.
+
+For the pure \LC, the $\eta$ rule can be stated:
+
+$(\lambda v.E)v \longrightarrow E$ provided $v\not\in FV(E)$
+
+In an impure \LC, it is customary to restrict the $\eta$-rule to the case
+in which $E$ denotes a function.
+
+
+\section{Defining substitution formally}
+
+Substitution, forming $E_1[E_2/v]$, `$E_1$ with $E_2$ substituted for $v$'
+is a straightforward matter of rewriting sub-terms except when we come to a
+$\lambda$-abstraction which binds the variable $v$ or a variable free in
+$E_2$.
+
+
+We can define it by cases:\\
+S1 --- $v[E/v] = E$  \\
+S2 --- $u[E/v] = u$, when $u\neq v$\\
+S3 --- $c[E/v] = c$, for any $c\in C$\\
+S4 --- $(E_1E_2)[E/v] =(E_1[E/v]E_2[E/v])$\\
+S5 --- $\lambda v. E [E_1/v] = \lambda v. E$\\
+S6 --- $(\lambda u. E_1) [E/v] = \lambda u. (E_1 [E/v])$,
+when $u\neq v$ and $u\not\in FV(E)$\\
+S7 --- $(\lambda u. E_1) [E/v] = \lambda w. ((E_1[w/u]) [E/v])$,
+when $u\neq v$ and $u\in FV(E)$ and $w\not\in FV(E)$\\
+
+\subsection{Comments on S1---S7}
+
+Cases S1---S4  need no comment. In case S5 the variable we are substituting
+for is rebound in a $\lambda$-abstraction. Thus, inside the $\lambda$
+expression it no longer `means' the same thing --- in some sense it is
+actually a different variable, so we should not substitute for it.  In case
+S6, the $\lambda$-abstraction introduces a new variable $u$, but, since it
+does not occur in $E$ there is no problem of confusing it with any variable
+occurring in $E$.
+
+However in case S7 there is a real problem --- the new variable $u$
+introduced in the $\lambda$-abstraction is the same as a variable occurring
+free in $E$. The solution is to replace it throughout the
+$\lambda$-abstraction by a variable $w$ that does not occur.
+We can always choose a $w$ for S7 because we have an infinite supply of
+variables to choose from (and any \LC expression only contains finitely
+many).
+
+
+\section {\LC + syntactic sugar = a programming language?}
+In an influential paper, `The  Next 700 Programming Languages', written  in
+1964, Peter Landin argued that  all programming languages could and  should
+be regarded  as a  way of  making the  \LC palatable  to human  users  by a
+coating of `syntactic  sugar'. If  we speak of  functional languages,  this
+view has won universal  acceptance; while formally  valid, it is  often
+seen as  less helpful  and  appropriate for  procedural languages,  and  is
+rejected by most of the `logic  language' community who see the rival  {\em
+predicate calculus} as a more appropriate basis.
+
+In Landin's view, the \LC acts as a kind of mathematical analogue of
+machine code --- it is a form that it is simple to reason about, in the
+same way that machine code is a form that it is simple for a machine to
+execute.
+
+\subsection{The ML formalism for a $\lambda$ abstraction.}
+Let us take a preview of some `syntactic sugar' in ML and Modula-2. The
+lambda calculus expression $\lambda x. +\; x\; 2$ is rendered in ML as
+
+\begin{verbatim}
+fn x => x+2
+\end{verbatim}
+
+Here the $\lambda$ is replaced  by $fn$. This is  hardly sugar at all,  but
+reflects the poverty of the ASCII alphabet. Likewise the `.' is replaced by
+`$=>$', which avoids confusion  with other uses of  `.', e.g. as a  decimal
+point, although  we shall  see that  the syntactic  constructions in  which
+`$=>$' occurs in ML provide much  more than simple lambda abstraction.  The
+last  piece  of  syntactic   sugar  is  to  write   `$x+2$'  in  place   of
+`$+\;x\;2$', in accordance with usual mathematical notation.
+
+Another piece of syntactic sugar is the $let$ construct in ML.
+\begin{verbatim}
+let val x = 3 in x+7 end
+\end{verbatim}
+can be translated into \LC as $(\lambda x. +\; x\; 7)3$. Note that
+$E_1$ and $E_2$ in $(\lambda x. E_1) E_2$ change their order in the $let$
+construct. This often accords with programming language practice.
+
+\subsection{A conventional language - MODULA-2}
+
+The MODULA-2 fragment:
+
+\begin{verbatim}
+PROCEDURE f(i:INTEGER):INTEGER;
+BEGIN
+  RETURN(i+1)
+END f
+BEGIN
+  RETURN(f(27))
+END
+\end{verbatim}
+
+corresponds to the ML
+
+\begin{verbatim}
+  let val f = fn(i) => i+1 in f(27)
+\end{verbatim}
+
+
+and to the \LC $(\lambda f. f\;  27) (\lambda i. +\; i\; 1)$. Note  that
+the simple translation of MODULA-2 into the \LC is only possible because of
+the restricted use of MODULA-2 in  this example --- essentially it is  used
+functionally, without  side-effects, and  so it  is easily  translated.  An
+example that used assignment, especially assignment to record-fields  would
+be much harder to translate.
+
+\section {Landin's fixed-point combinator lets us recurse}
+
+A programming language has to allow us, in some sense, to perform an action
+repeatedly. In imperative languages you will have met constructs like {\bf
+while} and {\bf for} loops. It is not immediately apparent that the \LC has
+equivalent power, but it does!
+
+Let us suppose we have an operator $Y$ which acts upon expressions of the
+\LC according to the rule
+
+$$YE = E(YE)$$
+
+\subsection{Doing the factorial function with $Y$}
+
+Consider the expression
+
+$$F =  \lambda u. \lambda x. (if\;(=\;x\;0)\;1\;(*\;x\;(u(-\;x\;1))))$$
+
+For some variable $n$
+
+$$(YF) n = (F(YF)) n$$
+
+using $\beta$-reduction we obtain:
+
+$$ = (\lambda x. if\;(=\;x\;0)\;1\;(*\;x\;(YF\;(-\;x\;1))))\;n$$
+
+
+again using $\beta$-reduction we obtain:
+
+$$ = if\;(=\;n\;0)\;1\;(*\;n\;(YF\;(-\;n\;1)))$$
+
+that is to say, $YF$ satisfies the equation usually given for the factorial
+function
+
+$$fact(n) = if\; n=0\; then\; 1\; else\; n*fact(n-1)$$
+
+\subsection{$YE$ is a fixed point of E}
+
+We say that $YE$  is a {\em  fixed point} of  $E$, and we  call $Y$ a  {\em
+fixpoint combinator}.\footnote{There is  an interesting  analogy in  linear
+algebra - let $\cal  E$ be a function  which returns the eigenvectors  of a
+matrix. Then $A(\cal E A) \equiv \cal E A$, where vectors are equivalent  if
+they have the  same direction. Thus  eigenvectors are a  fixed point of
+the matrix. Indeed, if we take $A$ to  be a linear function over
+projective space, then \cal E is a fixpoint combinator in the same sense as
+$Y$}
+
+
+\subsection{Working out the factorial function}
+For an exercise, let us evaluate $YF$ for a few natural numbers:
+
+$$YF(0) =  if\;(=\;0\;0)\;1\;(*\;0\;(YF\;(-\;0\;1)))$$
+$$  =    if\;true\;1\;(*\;0\;(YF\;(-\;0\;1)))$$
+$$ = 1 $$
+
+
+$$YF(1) =  if (=\;1\;0)\;1\;(*\;1\;(YF\;(-\;1\;1)))$$
+$$  =    if\;false\;1\;(*\;1\;(YF\;(-\;1\;1)))$$
+$$ =      (*\;1\;(YF\;(-\;1\;1)) $$
+$$ =      (*\;1\;(YF\;0)) $$
+$$ =      (*\;1\;1) $$
+$$ =        1 $$
+
+
+$$YF(2) =  if\;(=\;2\;0)\;2\;(*\;2\;(YF\;(-\;2\;1)))$$
+$$  =    if\;false\;1\;(*\;2\;(YF\;(-\;2\;1)))$$
+$$ =      (*\;2\;(YF\;(-\;2\;1)) $$
+$$ =      (*\;2\;(YF\;1)) $$
+$$ =      (*\;2\;1) $$
+$$ =        2 $$
+
+\subsection{But we have freedom in where to reduce}
+Note that {\em where chose to apply our reduction rules} is significant
+in working out $YF$. For example, we could have chosen to expand using
+$YF = F(YF)$, and gone on forever. In the next section we will consider
+reduction strategies.
+
+\subsection{We can define $Y$ in \LC!}
+Up to now we have supposed that $Y$ is an operator that we have made
+available as an addition to the \LC. But it is not! We can define it as an
+expression in the \LC:
+
+$$ Y = (\lambda h. (\lambda x.h (x x)) (\lambda x.h (x x)))$$
+
+It is left as an exercise to the reader to verify that, for any expression
+$E$ of the \LC, YE = E(YE), where Y is defined as above.
+
+
+\section{Doing reduction systematically}
+
+The $\beta, \eta$ and $\delta$ reductions which we have considered can,
+in general, be applied in various places in an expression. Consider, for
+example: $(\lambda x.(+\;1 x))((\lambda x.x)2)$. This can be reduced using
+$\beta-$ reduction to $(\lambda x.(+\;1 x))2$ or to $+\;1 ((\lambda
+x.x)2)$. Another stage of  $\beta-$ reduction arrives at $+\;1\; 2$ in
+both cases.  In this section we ask `does it matter where we chose to do
+the reduction'.
+
+If $E$ is an expression of \LC then a {\em redex} is a
+sub-expression of $E$ which can be reduced by one of our rules.
+
+\subsection{Choice of Redex is vital for Y}
+A close look at our definition of the Y-combinator indicates that its very
+mode of letting the recursion genie out of the bottle makes the choice of
+redex important.  A simplified version of $Y$ illustrates our difficulty:
+
+$$(\lambda x. x x)(\lambda x.x x)
+\reducesto_\beta (\lambda x. x x)(\lambda x.x x)
+$$
+Thus, this $\lambda$ expression can be rewritten forever to itself using
+$\beta-$ reduction.  Worse, consider:
+
+\label{blowup}$$(\lambda x. x x x)(\lambda x.x x x)
+\reducesto_\beta (\lambda x. x x x)(\lambda x.x x x)(\lambda x.x x x)
+$$
+here we have a $\lambda$ expression that gets bigger and bigger every time
+it is rewritten. It should not surprise us that we might have difficulty in
+telling whether a sequence of  reductions in the \LC will terminate. If the
+\LC is powerful enough to be a general purpose programming language, then
+it is powerful enough
+
+If $\reducesto$ is a relation, then we say that $\reducesto^*$ is the
+transitive and reflexive closure of $\reducesto$. The $*$ is often called
+the Kleene Star operation, after the mathematician Kleene.
+
+Formally, $x\reducesto^*x$, and if $x\reducesto y$ and $y\reducesto^*z$
+then $x\reducesto^* z$.
+
+Our reduction rules can be turned into {\em conversion rules} by taking the
+symmetric closure.
+
+  $$E_1 \longleftrightarrow E_2 \; iff \; E_1\longrightarrow E_2 \;or\;
+      E_2\longrightarrow E_1$$
+
+
+Now we have shown that $\reducesto^*$ is an {\em infinite relation}, since
+we have exhibited a series of  `reductions' a each step of which we obtain
+a bigger expression \ref{blowup}. In navigating this infinite maze of
+reduction, is there any guiding light, and can we recover if we take a
+wrong turn? The answers are ``Yes! and Yes!'', as is shown by the
+following:
+
+\subsection{Normal Forms}
+
+An expression $E$ of the \LC is said to be in {\em normal form} if there
+is no expression $E'$ for which $E\rightarrow E'$.
+
+\subsection{Church Rosser Theorem I}
+
+If $E_1\longleftrightarrow^*
+E_2$ then there exists an expression $E$ such that
+  $E_1\longrightarrow^* E$  and $E_2\longrightarrow^* E$
+
+{\bf Corollary:} A normal form for an expression is unique.
+
+
+The strategy of always choosing to reduce the leftmost outermost redex
+first always produces a normal form if one exists. This is called normal
+order reduction.
+
+\subsection{Church Rosser Theorem II}
+If $E_1\longrightarrow^* E_2$ and $E_2$ is a normal form, then normal order
+reduction will always result in reduction to $E_2$.
+
+
+This result is of great importance to the design of programming languages
+because {\em it implies that the vast majority of programming languages
+(including Scheme and ML) are {\em wrong}!}, because they do not use a
+normal order reduction. A small set of languages, of which Haskell is the
+most important, do use normal order reduction, or reductions that are
+provably equivalent to it.
+
+\subsection{Weak normal forms, call-by-name and call-by-value.}
+
+
+Normal order reduction will perform reductions both inside and outside
+lambda abstractions. If we wish to regard reduction as a model of
+computation then only reductions outside of lambda abstractions can be
+regarded as corresponding to {\em running a program}. Reductions inside a
+$\lambda$ abstraction are in effect manipulating program, something that is
+usually done by a compiler. Thus we introduce the ideas of {\em weak normal
+order reduction} and {\em weak normal form} in which the only reductions
+performed are performed outside of any $\lambda$-abstraction. This is also
+called {\em call by name}, and is {\em safe} in the sense that if a
+weak normal form exists, weak normal order reduction will find it.
+
+Recall that normal order reduction takes the leftmost outermost redex. An
+alternative strategy is to take the {\em leftmost innermost redex}. This is
+{\em call by value} and is {\em unsafe} in the sense that an infinite
+sequence of reductions may arise despite the fact that a (weak) normal form
+exists.
+
+Nevertheless most languages use some kind of call by value for almost all
+reductions because it is easier to implement efficiently than call by name
+(call by reference does not really make sense from the functional point of
+view).
+
+\subsection{Strictness and Laziness}
+A function is said to be {\em strict} if it is certain to need the value of
+its argument. The $sin$ function for example is strict. The conditional
+function $if$ is non-strict, since evaluating the expression
+$if\;E_1\;E_2\;E_3$ can be performed without evaluating both $E_2$ and
+$E_3$.  Indeed it would be impossible to write recursive functions without
+some laziness around.
+
+
+
+\section{Semantics}
+
+Our \LC is a fine edifice, but is it sound?  A mathematician looking at it
+for the first time would be reminded of a sad little story of the beginning
+of the 20th century: the mathematician Frege had built an elegant
+theory of sets; Unfortunately it was inconsistent --- that is to say it had
+no meaning, and was torpedoed and sunk by Bertrand Russell.
+
+The problem with this set theory was that it allowed expressions of the
+form $x\in x$, and in particular allowed the formalism $\{x|x\not\in x\}$
+--- `the set of all sets which are not members of themselves'. Consider
+$\{x|x\not\in x\}\in\{x|x\not\in x\}$. To give a meaning to this, we must
+assign the value $TRUE$ or the value $FALSE$ to it. But in either case we
+have a contradiction.
+
+There is a  horrid formal resemblance  to $\lambda x.xx$,  and to  $\lambda
+x.xx\lambda x.xx$ which is allowed in  the \LC, and a nasty suspicion  must
+arise in the  mathematical mind  that it might  not be  possible to  give a
+`sensible' meaning to the \LC in which the common-sense view of  $\lambda-$
+expressions as {\em functions} can be substantiated.
+
+\subsection{Mending logic: Types and ZF-Set Theory}
+
+Fortunately for mathematics, set-theory was mended, and in two ways:
+\begin{itemize}
+\item Russell and Whitehead developed a {\em theory of types} which ruled
+out forms such as $x\in x$ by treating it as {\em not well typed}. From
+this theory has developed, with more or less precision, the whole idea of
+{\em type} in programming languages.
+\item Zermelo and Frankel developed a set theory in which restricted the
+problematic $\{x|P(x)\}$ by requiring that the property $P$ only be used to
+choose members of a set constructed by other means {\em constructed here is
+a relative term}. Thus the only allowed form is $\{x|x\in S and P(x)\}$,
+where $S$ is constructed by operations such as cartesian product or
+power set.
+\end{itemize}
+
+Russell and Whitehead's approach would require us to have a {\em typed}
+\LC. Such a edifice can be built, and is indeed a very desirable mansion
+that actual programming languages may inhabit. However that elegant
+creature the $Y$ combinator cannot dwell therein.
+
+But it is not mathematically necessary to have a typed \LC: it was shown in
+1969 by Scott and Strachey that it is possible to devise an interpretation
+of the untyped \LC in ZF set theory.
+
+%\subsection{ TO BE CONTINUED ???}
+
+\end{document}
+
+Answer:
+$$YE = (\lambda h. (\lambda x.h (x x)) (\lambda x.h (x x))) E$$
+$$ =  (\lambda x.E (x x)) (\lambda x.E (x x))
+$$ =  (E (\lambda x.E (x x) \lambda x.E (x x)))
+$$ =  E (YE) $$

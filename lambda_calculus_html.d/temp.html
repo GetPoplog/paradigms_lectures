@@ -1,0 +1,210 @@
+
+
+<html><head><title>
+
+Proof
+
+</title></head>
+
+<body bgcolor="white">
+
+<html>
+<body>
+<hr>
+
+<a name = proof></a>
+<h2> Proving that Programs are Correct </h2>
+
+<p>The <img src=lambda.gif>-calculus was intended as a kind of Mathematical
+Logic, and  we shall  use it  as such  to construct  proofs  <em>about</em>
+programs in our language <em>within</em> our language. Essentially the idea
+is that since the <img src=lambda.gif>-calculus provides the definition  of
+our language, we can require that any implementation obeys the laws of  the
+calculus, together with additional laws which characterise the behaviour of
+the built-in <em>System</em> capabilities.
+
+<p>For example, suppose we  want to prove that  a sorting function that  we
+have written,  say  <tt>merge_sort</tt>,  is correct.  Then  since  we  are
+operating within  the functional  paradigm, <tt>merge_sort</tt>  should  be
+exactly equivalent to an  expression of the <img  src=lambda.gif>-calculus.
+What does it mean to say that <tt>merge_sort</tt> is correct? There are two
+criteria:
+
+<ul>
+
+<li>For any  list  <tt>l</tt> of  data  (possibly a  list  satisfying  some
+criterion that is  part of  the specification  of <tt>merge_sort</tt>)  the
+result of evaluating
+
+<pre>
+        (merge_sort l) </pre>
+
+is sorted. How  do we render  this English requirement  into a  formalism?
+Well it's fairly easy to  write a function <tt>sorted</tt> that  determines
+if a list <em>is</em> sorted - a list is sorted if it is empty, or contains
+one element, or if the first two elements are in order and tail of the list
+(everything but the first element) is sorted. So our requirement can be
+expressed as</p>
+
+<ul>
+     <img src="lambda.gif"> l .(sorted (merge_sort l)) =
+     <img src="lambda.gif"> l . true
+</ul>
+
+<p>
+<li> The other requirement is that <tt>(merge_sort l)</tt> contain
+exactly the same elements as <tt>l</tt> itself.
+</ul>
+
+<h4>This is a hard problem</h4>
+<p>Proving that programs  are correct at  the level of  detail to which  we
+aspire is an  undecidable problem, for  our approach is  in effect to  show
+that two different programs always produce  the same result when given  the
+same data, which is  known to be  undecidable if taken  over a wide  enough
+class of programs.
+
+<p>However, there is nothing in the undecidability result which says that
+it is impossible to prove that a particular program is correct. So, it is
+reasonable to attack the problem of proof with a combination of human
+ingenuity controlling a collection of <em>inference rules</em> provided
+as functions in the language itself.[Theoretical Foundations of Programming
+Languages and their Practical Realisation.
+
+<h4> The Abstract Data-type "Theorem"</h4>
+<p> Practically, this can be realised by using an abstract data-type
+<tt>Theorem</tt> with the property that the only ways a language-user can
+get hold of a theorem are guaranteed to ensure the validity of the theorem.
+
+<p> A theorem has two essential components, its <em>premises</em> and its
+<em>conclusion</em>. Our theorems will also carry a history with them.
+A theorem prints as
+<pre>
+    premises |- conclusion
+</pre>
+
+For example, we might have
+
+<pre>
+    Integer.? x, Integer.?y |- x+y = y+x
+</pre>
+
+Which states that it doesn't matter whether you add <tt>x</tt> to
+<tt>y</tt> or <tt>y</tt> to <tt>x</tt>.
+
+
+If there are no premises, then we write simply
+
+<pre>
+    |-  conclusion
+</pre>
+
+For example we require:
+<pre>
+    |-  x = x
+</pre>
+
+<p>The <em>meaning</em> of theorems is a bit tricky to define. Essentially,
+the premises are a sequence of things that look like terms of the
+<img src="lambda.gif">-calculus, while the conclusion is one of these
+term-like things. Notionally, the premises and conclusion "evaluate" to one
+of the values "true" or "false", and we require of our theorems  that if
+all the premises "evaluate" to true, so does the conclusion.
+
+<p>The tricky bit is that such evaluation is not constructive. This has to
+be so because we are interested in proving theorems about <em>equality of
+functions</em>.  We'd like, for example to be able to prove that
+
+<pre>
+    |-  \x. x+3 = \x. 3+x
+</pre>
+
+<p>The conclusion <tt>\x. x+3 = \x. 3+x</tt> looks like a term of the <img
+src="lambda.gif">-calculus, but we can't evaluate it in the ordinary way
+we'd evaluate a program. Instead, we have to employ a mathematical concept
+of evaluation. In this particular case, the meaning of the equality can be
+taken to be that if each of these  <img src=lambda.gif>-abstractions is
+given any of a countably infinite universe of objects of <em>values</em>,
+the results are computably identical.
+
+<p>Theorems provid arbitration between users and implementors.
+
+
+<h4> Obtaining Theorems </h4>
+There are 3 ways that a user can obtain a theorem.
+<ul>
+<li>A user can access built-in <em>axioms</em> which characterise, as
+theorems, the behaviour of the system. The built-in <em>System</em>
+function provides access to these axioms.
+
+For example the expression
+<pre>
+    (System 'Theorem' 'Axiom' 'Integers' 'C_plus')
+</pre>
+will evaluate to the theorem
+<pre>
+    (Integer.? x), (Integer.? y) |-
+        ((Integer. +) x y) = ((Integer. +) y x)
+</pre>
+which states that the built-in addition operation is commutative over the
+integers.</p>
+
+<li> A user can create theorems by using <em>rules of inference</em> which
+are in effect the abstract constructors of the Theorem data-type. For
+example:
+
+<pre>
+    (BETA '((\x. 5+x) 20)')
+</pre>
+evaluates to
+<pre>
+    |- '((\x. 5+x) 20)' = 5+20
+</pre>
+The <tt>BETA</tt> function thus creates a theorem which says that an
+expression is unchanged in "meaning" by <img src=beta.gif>-reduction.</p>
+
+<p>Incidentally, the <em>functional</em> nature of our work is built-in to
+rules-of-inference. For the reflexive law of equality is one of the
+primitive rules-of-inference:
+
+(REFL 'fred x')
+
+evaluates to the theorem
+
+<pre>
+    |-  (fred x)  = (fred x)
+</pre>
+
+But it is <em>simply not true</em> that, in an imperative language such as
+C, that <tt>fred(x) = fred(x)</tt> for a call of an arbitrary function <tt>
+fred</tt> -  fred might side-effect a global variable, so evaluations of
+<tt>fred</tt> in apparently identical circumstances can yield different
+results.</p>
+
+<li> A user can dignify certain variable-bindings with the status of being
+<em>definitions</em>. These take place in a "global" context (one from
+which the user can never exit during a session). These are tricky to handle
+because we have to make sure that the global variables defined therein
+don't get confused with other locals. Suppose we made the simple
+definition:
+
+<pre>
+Definition double = \x. 2*x
+End;
+</pre>
+
+As a result, the system creates an object with the status of a theorem:
+<pre>
+    |- double = \x. 2*x
+</pre>
+
+
+<p>However
+we have no control over the scope of such a theorem - we certainly
+don't want to get the "double" confused with any one we might want to
+define locally.  This is an issue currently unresolved in the design of
+POP2000 - it would not however be problematic to ensure in some way that
+local and global variables have distinct names, when used in theorems
+derived from definitions.
+
+</body>
+</html>

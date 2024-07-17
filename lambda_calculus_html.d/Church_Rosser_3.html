@@ -1,0 +1,553 @@
+
+
+<html><head><title>
+
+        Church-Rosser - CBV/CBN
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+  Church-Rosser - Call-by-Value and Call-by-Name
+</center>
+
+</h1>
+
+Now let's try to tidy up the Church-Rosser Theorem for the <img
+src=lambda.gif><img src=alpha.gif> <img src=beta.gif>-calculus.
+
+<p>We don't need to worry about the case illustrated in the second figure,
+because it is converted into the case handled by Proposition LC2 by
+<img src=alpha.gif>-conversion. The only case left to us to consider
+is that in which the inner redux occurs in the argument of the outer redux.
+
+<p>Recall the  diagram of  this case.  If we  perform the  outer  reduction
+before the inner one (the "call-by-name"  case), we get a <em>copy</em>  of
+the inner redux  for every  occurrence of the  variable of  the outer  <img
+src=lambda.gif>-bound  variable   in   the   body   of   the   outer   <img
+src=lambda.gif>-abstraction.
+
+<p>If, on the other hand (the  "call-by-value" case), we perform the  inner
+reduction before the outer one,  we get exactly one <em>contractum</em>  of
+the inner redex, leaving us with a new version of the outer redex with that
+contractum in place of the inner redex.
+
+<p>Obviously, to achieve local confluence, we have to reduce those  redexes
+(under  discussion)  which   remain  unreduced   in  each   case.  In   the
+call-by-value case,  the outer  redex  will be  reduced, resulting  in  the
+substitution of the inner contractum for all occurrences of the variable
+of the lambda-abstraction of the outer redex in the body of that
+abstraction.
+
+<p>However, in the call-by-name case, the inner-redex has been copied  zero
+or more times in the body of the lambda-abstraction of the outer redex.  In
+order  to  bring   this  "call-by-name"  reduction   into  line  with   the
+"call-by-value" case,  we will  have to  reduce <em>every  one</em> of  the
+copies of the inner-redex. This  means that we will  need to show that  the
+final <em>substitution</em> which occurs in the call-by-value case gives an
+identical result to multiple-constructive-updates along paths which are the
+effect of multiple applications of our <img src=beta.gif> function.
+
+<p>The practical result of this is that, since (in the call-by-value  case)
+we have to <em>separately</em> reduce each copy of the inner-redux, we will
+use a distinct path to address each redux. We can characterise multiple
+<img src=beta.gif>-reductions by a sequence of paths, each of which
+addresses one redux-copy.
+
+<p>How are we to create this path-sequence? Well, let's observe that each
+copy of the inner-redux occurs in place of an ocurrence of the outer
+lambda-bound variable in the original outer-redux. Thus, if we can make a
+list of all paths to occurrences of a specified variable in an expression,
+we will be well placed to being able to use such a list (or finite
+sequence) as a way of specifying the <img src=beta.gif>-reductions required
+to bring the call-by-name form in line with the call-by-value one.
+This is achieved by the <a href="#paths"> paths </a> function, defined
+below.
+
+
+<p>However we have to show <em>identity</em> (up to
+<img src=alpha.gif>-conversion) of <em>substitution</em> with
+multiple <img src=beta.gif> conversions along paths. This is achieved
+primarily by <a href = #PT4> Lemma PT4</a> which shows that
+the substitution <em>E[v:=F]</em> can be accomplished by a
+series of updates of paths leading to <em>v</em> in <em>E</em>
+
+<p>However, before we can begin work upon this key lemma, we need to
+refresh our memory about various general functions defined on finite
+sequences which are familiar to users of functional languages, to whit
+<em>map</em> and <em>reduce</em>.
+
+<p>The <em>reduce</em> function (<b>not</b> to be confused with the term
+<em>reduction</em> as we have been using it) takes a binary operation as
+argument, and in essence uses that binary operation to combine elements
+of a finite sequence together. A second argument is supplied to provide
+a <em>base</em> for the combination. It
+helps us (or at least it helped me) to
+visualise what's going on if we write the binary operation infixed as
+<b>o</b>.  Thus, if <em>P</em> is a sequence, then
+<ul>
+reduce(<b>o</b>,E,P) =
+P<sub>1</sub><b>o</b> P<sub>2</sub><b>o</b> P<sub>n</sub><b>o</b>E
+</ul>
+In this, <b>o</b> associates to the <em>right</em>, to make this clear
+let's actually write:
+
+<p><ul>
+reduce(<b>o</b>,E,P) =
+(P<sub>1</sub><b>o</b>(P<sub>2</sub><b>o</b>..(P<sub>n</sub><b>o</b>E))..)
+</ul>
+<p>It is essential to remember the right-associativity when we come to
+use <em>reduce</em> for real later.
+
+<p>An elementary example of the use of <em>reduce</em> is.
+<ul>
+reduce(+,0,(3 4 5)) = 3 + 4 + 5 + 0 = 12
+</ul>
+
+<hr>
+
+<h3>Definition of reduce</h3>
+Let <em><b>o</b>: X >&LT; Y->Y</em> be a binary function,
+written infixed. Let <em>s</em> be a finite
+sequence of members of <em>X</em> .<br> Let <em>y <img src=in.gif> Y</em>
+Then the <em>reduce</em> function is defined as follows:
+
+<ul>
+<p>RED1    <img src=space.gif><em>reduce(<b>o</b>, y, ()) = y</em>
+<p>RED2    <img src=space.gif><em>reduce(<b>o</b>, y, x::s)
+                =  x <b>o</b> reduce(<b>o</b>, y, s)</em>
+</ul>
+
+<hr>
+<h4>Note</h4>
+<p>The  <em>reduce</em> function as defined above is missing the first
+argument that the <tt>reduce</tt> function has in the 287 course.
+
+<hr>
+We will also require the function <em>map</em> which transforms one finite
+sequence into another, making a systematic modification of every element.
+While this can be regarded as a special case of <em>reduce</em>, it's more
+convenient to define it separately.
+
+
+<h3>Definition</h3>
+Let <em>f</em> be a function. Let <em>s</em> be a finite sequence.
+
+<ul>
+<p>MAP1    <img src=space.gif><em>map(f, ()) = ()</em>
+<p>MAP2    <img src=space.gif><em>map(f, x::s) = f(x) :: map(f,s)</em>
+</ul>
+<hr>
+We will also need the concept of <em>concatenating</em> two finite
+sequences. Let's define this thus
+
+<h3>Definition  </h3>
+The concatenation function, written infix as "<>", is defined by:
+
+<ul>
+<p>CC1    <img src=space.gif><em> () <> s = s </em>
+<p>CC2    <img src=space.gif><em> (x::s) <> t = x::(s<>t)</em>
+</ul>
+
+
+<hr>
+We also need the concept of the <em>extension</em> of a path by one step.
+This is simply related to the sequence-constructor operation "::".
+
+<h3>Definition</h3>
+
+<ul>
+<p>EXT1    <img src=space.gif><em>ext(s)(p)=s::p</em>
+</ul>
+
+
+<hr>
+
+<a name = "paths">  </a>
+<h3>Definition</h3>  Let <em>E</em> be a term of the <img
+src=lambda.gif>-calculus. Let <em>v</em> be a variable. Then <em> the paths
+leading to <em>v</em> in <em>E</em></em>, written <em>paths(E,v)</em>
+are the sequence of paths defined as
+follows.
+
+<ul>
+
+<p>PL1  <img src=space.gif><em>paths(v,v) = ((v))  </em>
+<p>PL2  <img src=space.gif><em>paths(u,v) = (())   </em>
+<p>PL3  <img src=space.gif><em>paths(c,v) = (())   </em>
+<p>PL4  <img src=space.gif><em>paths((F G),v) =  map(ext(0),paths(F,v)) <>
+                              map(ext(1),paths(G,v))</em>
+<p>PL5 <img src=space.gif> <em>paths((<img src=lambda.gif> v. H),v)
+= ()</em>
+<p>PL6  <img src=space.gif><em>paths((<img src=lambda.gif> u. H),v) =
+            map(ext(1), paths(H,v))</em>
+
+</ul>
+
+
+
+</ul>
+<p>Now the above definition of <em>paths</em> makes use of the
+concatenation operator "<>", as well as the map function. Our general
+strategy will be to use the <em>reduce</em> function to combine the effects
+of multiple <img src=beta.gif>-reductions. Thus inevitably <em>reduce</em>
+is going to interact with "<>" and with <em>map</em>. Let's prove a couple
+of lemmas that address that interaction.
+
+<p>The following lemma is fairly obvious if we think about <em>reduce</em>
+in the right way. Suppose, for example, we have two path-sequences
+<em>P</em> and <em>P'</em>. Then
+
+<p><ul>
+reduce(<b>o</b>,E,P<>P') =
+(P<sub>1</sub><b>o</b>(P<sub>2</sub><b>o</b>..(P<sub>n</sub><b>o</b>
+(P'<sub>1</sub><b>o</b>(P'<sub>2</sub><b>o</b>..(P'<sub>n'</sub>
+<b>o</b>E))..)
+</ul>
+We can, by emphasising the bracketing, easily see that the RHS can be
+seen as
+
+<ul>
+(P<sub>1</sub><b>o</b>(P<sub>2</sub><b>o</b>..(P<sub>n</sub><b>o</b>
+ <b>(</b>P'<sub>1</sub><b>o</b>(P'<sub>2</sub><b>o</b>..(P'<sub>n'</sub>
+<b>o</b>E)) <b>)</b> .. ) ..)
+</ul>
+so, it's not surprising that we can treat such a beast as a <em>nested</em>
+application of reduce.
+
+<h3>Lemma Red1</h3>
+Let  <em>l<sub>1</sub></em> <em>l<sub>2</sub></em> be two finite sequences.
+Let <b>o</b> be a binary function, written as an infix. Then
+<ul>
+reduce(<b>o</b>, b,  l<sub>1</sub> <> l<sub>2</sub>) =
+    reduce(<b>o</b>,reduce(<b>o</b>,b,l<sub>2</sub>),l<sub>1</sub>)
+</ul>
+
+<h4>Proof</h4>
+By induction on <em>length(l<sub>1</sub>)</em>
+<h4>Base Case</h4>
+If <em>length(l<sub>1</sub>) = 0</em> then <em>l<sub>1</sub> = ()</em>.
+<p>On the one hand, from the definition of "<>".
+<ul>
+<p>reduce(<b>o</b>, b,  l<sub>1</sub> <> l<sub>2</sub>)
+ = reduce(<b>o</b>, b,  l<sub>2</sub>)
+</ul>
+On the other hand, since <em>l<sub>1</sub>=()</em>, by the definition of
+<em>reduce</em> we have:
+
+<p><ul>
+    reduce(<b>o</b>,reduce(<b>o</b>,b,l<sub>2</sub>),l<sub>1</sub>)
+    = reduce(<b>o</b>,reduce(<b>o</b>,b,l<sub>2</sub>),())
+<p>    = reduce(<b>o</b>,b,l<sub>2</sub>)
+</ul>
+<p>Hence the result holds in the base case.
+
+<h4>Inductive Step.</h4>
+Suppose for all sequences <em>l</em> for which
+<em>length(l) = n</em> that
+
+<p><ul>
+reduce(<b>o</b>, b,  l<sub>1</sub> <> l<sub>2</sub>) =
+    reduce(<b>o</b>,reduce(<b>o</b>,b,l<sub>2</sub>),l<sub>1</sub>)
+</ul>
+
+<p>we have to show that the result holds for a sequence <em>s::l</em>
+where <em>length(l) = n</em>. Applying first the definition of "<>" and
+then the definition of <em>reduce</em> we obtain
+<ul>
+reduce(<b>o</b>, b,  (s::l) <> l<sub>2</sub>) =
+reduce(<b>o</b>, b,  s:: (l <> l<sub>2</sub>)) =
+s <b>o</b> reduce(<b>o</b>, b,  l <> l<sub>2</sub>)
+<p>= s <b>o</b> reduce(<b>o</b>,reduce(<b>o</b>,b,l<sub>2</sub>),l)
+</ul>
+by the inductive hypothesis. On the other hand, using the definition
+of <em>reduce</em> we obtain
+<ul>
+    reduce(<b>o</b>,reduce(<b>o</b>,b,l<sub>2</sub>),s::l)
+    = s <b>o</b> reduce(<b>o</b>,reduce(<b>o</b>,b,l<sub>2</sub>),l)
+</ul>
+<p>Hence the result holds for any sequence <em>s::l</em> of length
+<em>n+1</em>. Hence the result holds for all finite sequences.</p>
+<hr>
+<h4>Note</h4>
+It's worth noting that the proof of the above lemma is independent of any
+algebraic properties (such as associativity) of the <b>o</b> operation.
+
+<p>Next we come to the interaction of <em>reduce</em> and the use of
+<em>map</em> in the definition of <em>paths</em>. In this case, we
+prove lemmas specific to the actual use of <em>map</em> in the definition
+of <em>paths</em>. These lemmas are motivated by the requirements of <a
+href = "#PT4"> Lemma PT4</a>, which shows how substitution can be performed
+using path-updates - so those seeking motivation of the immediate lemmas
+should perhaps look first at PT4.
+
+
+<hr>
+<h3>Lemma Red2</h3>
+Let <em>F, G, H</em> be terms of the lambda-calculus. Let <em>P</em>
+be a sequence of paths. Let us define the infix operation <b>o</b> to be,
+for any path <em>p</em> and any term <em>E</em>
+<ul>
+        p <b>o</b> E = E[p:=F]
+</ul>
+Then
+<ul>
+reduce(<b>o</b>,(G H), map(ext(1),P)) =
+ (G  reduce(<b>o</b>,H,P))
+</ul>
+
+<h4>Proof</h4>
+
+By induction on <em>length(P)</em>
+<h4>Base Case</em>
+<ul>
+reduce(<b>o</b>,(G H), map(ext(1),())) = (G H)
+</ul>
+On the other hand
+<ul>
+ (G  reduce(<b>o</b>,H,())  = (G H)
+</ul>
+<h4>Inductive Step</h4>
+Suppose that for all path-sequences of length <em>n</em> that
+
+<ul>
+reduce(<b>o</b>,(G H), map(ext(1),P)) =
+ (G  reduce(<b>o</b>,H,P)
+</ul>
+
+Consider a path-sequence  <em>p::P</em> of length <em>n+1</em>.
+
+<ul>
+<p>reduce(<b>o</b>,(G H), map(ext(1),p::P))
+
+<p>=reduce(<b>o</b>,(G H), (1::p) :: map(ext(1),P))
+</ul>
+by the definition of <em>map, ext</em>
+<ul>
+<p>= (1::p) <b>o</b> reduce(<b>o</b>,(G H), (1::p) :: map(ext(1),P))
+</ul>
+by the definition of <em>reduce</em>
+<ul>
+<p> (1::p)  <b>o</b> (G reduce(<b>o</b>,H,P))
+</ul>
+by the inductive hypothesis. Now, using the definition of <b>o</b> and
+of path-update, we obtain
+<ul>
+<p> = (G reduce(<b>o</b>,H,P))[(1::p) := F]
+
+<p> = (G reduce(<b>o</b>,H,P)[p := F])
+
+<p> = (G p <b>o</b> reduce(<b>o</b>,H,P))
+
+<p> = (G reduce(<b>o</b>,H,p::P))
+
+</ul>
+Hence the result holds for any path-sequence of length <em>n+1</em>.
+Hence, by the principle of induction, the result holds for all finite
+sequences of paths.
+
+
+<hr>
+<h3>Lemma Red3</h3>
+Let <em>F, G, H</em> be terms of the lambda-calculus. Let <em>P</em>
+be a sequence of paths. Let us define the infix operation <b>o</b> to be,
+for any path <em>p</em> and any term <em>E</em>
+<ul>
+        p <b>o</b> E = E[p:=F]
+</ul>
+Then
+<ul>
+reduce(<b>o</b>,(G H), map(ext(0),P)) =
+ (reduce(<b>o</b>,G,P) H)
+</ul>
+
+<h4>Proof</h4>
+Similar to Lemma Red2
+
+
+<hr>
+<h3>Lemma Red4</h3>
+Let <em>F, G</em> be terms of the lambda-calculus. Let <em>P</em>
+be a sequence of paths. Let us define the infix operation <b>o</b> to be,
+for any path <em>p</em> and any term <em>E</em>
+<ul>
+        p <b>o</b> E = E[p:=F]
+</ul>
+Then
+<ul>
+reduce(<b>o</b>,<img src=lambda.gif> x. G, map(ext(1),P)) =
+ <img src=lambda.gif> x. (reduce(<b>o</b>,G,P))
+</ul>
+
+<h4>Proof</h4>
+Similar to Lemma Red2
+
+
+
+<hr>
+<h3>Building a connection between path-updates and substitution.</h3>
+This case of the Church Rosser Theorem requires us to show that a
+substitution (of the reduced argument in the body of the
+lambda-abstraction of the outer redux) is equivalent to multiple reductions
+along a variety of paths. Now it is intuitively obvious that a substitution
+can be accomplished by multiple tree-updates along paths. The following
+lemma formalises this.
+
+
+<hr>
+<a name = "PT4"> </a>
+<h3>Lemma PT4</h3>
+
+Let <em>E,F</em> be a expressions of the lambda-calculus, and let
+<em>v</em> be a variable. Suppose no variable free in <em>F</em> is
+bound in <em>E</em>. Let us write the infixed <b>o</b> operation
+to mean
+<ul>
+    p<b> o </b>E = E[p:=F]
+</ul>
+then
+<ul> E[v:=F] = reduce(<b>o</b>,E,paths(E,v))
+</ul>
+
+
+<h4>Proof</h4>
+By induction of the height of E.
+<ul>
+<li> Suppose  E = v.
+Now from PL1, there is one path to <em>v</em>, of no steps.
+<p><ul>
+paths(E,v) = (())
+</ul>
+<p>and, from the definition of <em>reduce</em>
+<p><ul>
+reduce(<b>o</b>,E,()) = E
+</ul>
+Thus
+<p><ul>
+reduce(<b>o</b>,E,paths(E,v)) = p <b>o</b> E = E[p:=F] = F = E[v:=F]
+</ul>
+
+
+<p><li> Suppose E = u,  a variable u <img src=not_eq.gif> v
+
+<p><ul>
+reduce(<b>o</b>,E,paths(E,v)) = E = E[v:=F]
+</ul>
+
+<p><li>
+Suppose E = c,  a constant. This case is similar to the previous one.
+
+
+</ul>
+
+<h4>Inductive Step</h4>
+Suppose for all <em>E</em> for which <em>height(E) <img src=leq.gif> n</em>
+we have that
+
+<ul> E[v:=F] = reduce(<b>o</b>, E, paths(E,v))
+</ul>
+
+We have to show that the result holds for <em>E</em> for which
+<em>height(E)=n+1</em>
+
+<ul>
+<li> Suppose <em>E = (G H)</em>, an application.  Then, by PL4
+
+<p><ul>
+ paths((F G),v) =  map(ext(0),paths(G,v)) <> map(ext(1),paths(H,v))
+</ul>
+
+<p>Hence using Lemma Red1 we obtain
+
+<ul>
+
+<p>RHS = reduce(<b>o</b>,E,paths(E,v))
+<p> =  reduce(<b>o</b>, E, map(ext(0),paths(G,v)) <>
+map(ext(1),paths(H,v)))
+<p> =  reduce(<b>o</b>,
+        reduce(<b>o</b>, E, map(ext(1),paths(H,v)),
+        map(ext(0),paths(G,v))
+
+</ul>
+
+<p>Now consider the inner <em>reduce</em>
+term. We apply Lemma Red2 to this.
+
+<p><ul>
+        reduce(<b>o</b>, E, map(ext(1),paths(H,v)))
+        = (G reduce(<b>o</b> H paths(H,v)))
+        = (G H[v:=F])
+<p>
+</ul>
+by the inductive hypothesis. Substituting in the full expression
+
+<ul>
+<p> RHS =  reduce(<b>o</b>, (G H[v:=F]) map(ext(0),paths(G,v)))
+<p>
+</ul>
+<p>which by a similar use of Lemma Red2 is seen to be
+<p><ul>
+       (G[v:=F] H[v:=F])  = E[v:=F]
+</ul>
+<p>So the lemma holds in this case (Phew! - and there's more to come).
+
+<p><li> Suppose <em>E = <img src=lambda.gif>v.H </em>
+
+<ul>
+<p>E[v:=F] = E<p>
+</ul>
+On the other hand
+<p><ul>
+reduce(<b>o</b>,E,paths(E,v)) =
+reduce(<b>o</b>,E,()) = E
+</ul>
+<p>Concluding this case.
+
+
+<p><li> Suppose <em>E = <img src=lambda.gif>u.H </em>, <em>u <img
+src=not_eq.gif> v</em>. Then
+<p><ul>
+ paths(E,v) =  map(ext(1),paths(H,v))
+</ul>
+<p>Now, because no variable free in <em>F</em> is bound in <em>E</em>
+<ul>
+<p>RHS = reduce(<b>o</b>,E,paths(E,v))
+<p> =  reduce(<b>o</b>, E, map(ext(1),paths(H,v)))
+<p> =  <img src=lambda.gif>u.(reduce <b>o</b>, H, paths(H,v))
+</ul>
+<p>by Red4. And, from the inductive hypothesis we have
+<ul>
+<p> =  <img src=lambda.gif>u.H[v:=F])
+</ul>
+</ul>
+<hr>
+Unfortunately we've defined the <img src=beta.gif>-function to have its
+arguments the wrong way round for the smoothest statement of the next
+result. But here goes:
+<hr>
+
+<!--
+<p><a href = church_rosser_4.ps> Figure  for Proposition LC3</a>
+
+<h3>Proposition LC3</h3>
+
+Let <em>(E = (<img src=lambda.gif> u.C) G)</em>
+be a redex  of the <img src=lambda.gif>-calculus.
+Let <em><img src=beta.gif>'(p,E) = <img src=beta.gif>(E,p)</em>
+
+<p>Let <em>p</em> be a path for which
+<em>E[p] = (<img src=lambda.gif> v.D) H)</em>
+where <em>hd(p)=1</em>.
+Let <em>p' = tl(p)</em>. Then
+<ul>
+<img src=beta.gif>(<img src=beta.gif>(E,p),())
+<img src=eqv.gif><sub><img src=alpha.gif></sub>
+reduce(<img src=beta.gif>',(<img src=beta.gif>(E,()),p'),paths(u,C))
+</ul>
+
+<h4>Proof</h4>
+-->

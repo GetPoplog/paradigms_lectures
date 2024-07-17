@@ -1,0 +1,232 @@
+
+
+            CMPSCI  287 S98 Programming Assignment 1. SOLUTIONS
+
+
+
+[1] An association list is commonly used in Scheme to represent a mapping
+from one finite set to another. For example we might use the definition
+
+    (define age    '((liz 72) (phil 76) (jeremy 23) (anne 45)))
+
+to specify that age is a mapping which takes  liz to 72, phil to 76...
+
+Write a Scheme function lookup  for which   (lookup x alist) will find
+the entry corresponding to x in the association list  alist  and will
+return the corresponding value. If no value is found, lookup will
+return the value  #f.  For example
+
+    (lookup 'jeremy age)  ===>  23
+
+    (lookup 'agatha age)  ===>  #f
+
+Our association lists are lists of pairs. It's better from the point of
+view of data-abstraction to  create a constructor and selectors for
+these pairs, even it it's a bit longer to write, you'll probably find
+it's better for developing your code.
+
+(define (cons_pair x y)
+    (list x y))
+
+(define first_pair car)
+(define second_pair cadr)
+
+(define (lookup x l)
+   (if (null? l)
+           #f
+     (if (equal? (first_pair(car l)) x)
+           (second_pair (car l))
+           (lookup x (cdr l)))))
+
+(define age '((liz 72) (phil 76) (jeremy 23) (anne 45)))
+
+(example '(lookup 'phil age) 76)
+(example '(lookup 'agatha age) #f)
+
+
+------------------------------------------------------------------------------
+
+
+(2) A permutation on a set S is a finite one-to-one mapping from the finite
+set S onto itself. Permutations are commonly represented by  mathematicians
+as a set of  cycles. For example,  (1 2 3)  is a cycle,  meaning that 1  is
+mapped to 2, and 2 is mapped to 3 and 3 is mapped to 1. A permutation  that
+is not  a single  cycle on  the whole  set S  is written  as using  several
+cycles.
+
+So a permutation  {(1 2 3),(4 5)} would be the map f, say, from the set
+{1,2,3,4,5} to itself for which
+
+    f(1) = 2
+    f(2) = 3
+    f(3) = 1
+    f(4) = 5
+    f(5) = 4
+
+In Scheme, we could represent a cycle by a list, and a permutation by
+a list of cycles.  So the above permutation would be represented by
+
+    '((1 2 3)(4 5))
+
+
+Another way that you can represent any finite map in Scheme is as an
+association list This is a list of argument-value pairs. For example our
+permutation could be written as:
+
+    '((1 2) (2 3) (3 1) (4 5) (5 4))
+
+
+You are to:
+
+(a) Write a Scheme function alist_of_cycles to take a permutation expressed
+as a list of cycles and transform it into the equivalent association list
+form.
+
+
+(define (alist_of_cycles l)
+    (if (null? l) '()
+        (append
+            (alist_of_cycle (car l))
+            (alist_of_cycles (cdr l)))))
+
+(example '(alist_of_cycle '(1 2 3))  '((1 2) (2 3) (3 1)))
+
+; (alist_of_cycle c) takes a single cycle c and computes the corresponding
+; association list.
+; It works by calling the helper-function do_cycle.
+
+(define (alist_of_cycle c)
+    (do_cycle (car c) c)
+)
+
+; (do_cycle c_1 c) is a helper-function for alist_of_cycle. The parameter
+; c_1 is the first element of the original cycle, used to create the
+; last pair in the association list.
+
+
+(define (do_cycle c_1 c)
+    (if (null? (cdr c))
+        (list (cons_pair (car c) c_1))
+        (cons
+            (cons_pair (car c) (cadr c))
+            (do_cycle c_1 (cdr c)))))
+
+(example '(alist_of_cycle '(5 4 1))  '((5 4) (4 1) (1 5)))
+
+(example '(alist_of_cycles  '((1 2 4) (3 5)))
+    '((1 2) (2 4) (4 1) (3 5) (5 3)))
+
+
+(example '(alist_of_cycles  '((bill hilary ) (liz phil)))
+    '((bill hilary) (hilary bill) (liz phil) (phil liz)))
+
+
+ ;;end of problem 2a)
+
+
+------------------------------------------------------------------------------
+
+
+[b] Write a Scheme function cycles_of_alist to take a permutation expressed
+as an association list and convert  it into a list of cycles.
+
+The key to this problem is to break it down thus:
+
+[a] First, let's take an alist and find the "first" cycle in it. That is
+to say, we'll look at the first pair in the alist, and start building
+a cycle starting at that pair.
+
+[b] Having found a cycle, we can make a new alist which contains all pairs
+of the original alist except those that occur in the cycle we've found.
+
+[c] Either the new alist is empty, in which case there's no new cycles to
+find, or we recurse to find more cycles.
+
+;(cycles_of_alist alist) converts from an association-list representation
+;of a permutation to the list-of-cycles form.
+
+(define (cycles_of_alist alist)
+    (if (null? alist) '()
+        (let ((c (cycle_of_alist alist)))
+            (cons c (cycles_of_alist (del_cycle c alist)))
+            )
+        )
+    )
+
+
+;(cycle_of_alist alist) finds the first cycle occurring in the alist.
+
+(define (cycle_of_alist alist)
+    (get_cycle
+        (first_pair (car alist))
+        (first_pair (car alist))
+        alist)
+    )
+
+
+; (get_cycle c_1 c_i alist)
+; finds those pairs (c_1 c_2) (c_2 c_3) ....(c_k c_1)
+; occuring in the alist which form a cycle starting at c_1. c_i is the
+; first element of the current pair.
+
+(define (get_cycle c_1 c_i alist)
+    (let ((c_j (lookup c_i alist)))
+        (if c_j
+            (if (equal? c_j c_1)
+                (list c_i)
+                (cons c_i (get_cycle c_1 c_j alist)))
+            (error "association list " alist "is not a permutation")
+            ) ; end if
+        )     ; end let
+    )         ; end define
+
+(example
+    '(get_cycle  1 1 '((1 2) (2 3) (3 1) (4 5) (5 4)))
+    '(1 2 3))
+
+
+(example
+    '(cycle_of_alist  '((1 2) (2 3) (3 1) (4 5) (5 4)))
+    '(1 2 3))
+
+
+
+
+The member?   function determines whether an element is a member of
+a list. Again, we proceed by recursion. If the list  is empty (1),
+then (member? list) is false. Otherwise, if list  begins with something
+equal to x then clearly (member? list) is #t. Otherwise we ask if x
+is a member of the tail of the list.
+
+
+(define (member? x list)
+     (if (null? list) #f                                ;(1)
+         (if (equal? x (car list)) #t                   ;(2)
+              (member? x (cdr list)))))                 ;(3)
+
+;  (del_cycle c alist) produces a new association list with all pairs
+;  occurring in c deleted.
+
+(define (del_cycle c alist)
+    (if (null? alist) '()
+        (if (member? (first_pair(car alist)) c)
+            (del_cycle c (cdr alist))
+            (cons
+                (car alist)
+                (del_cycle c (cdr alist)))
+            ) ; end if
+        )     ; end if
+    )         ; end define
+
+
+(example
+    '(cycles_of_alist  '((1 2) (2 3) (3 1) (4 5) (5 4)))
+    '((1 2 3) (4 5)))
+
+
+
+(example '(cycles_of_alist '((1 3)(2 2) (3 1)))  '((1 3)  (2)))
+
+
+(example '(cycles_of_alist '((r g) (g b) (b r) (m v) (v c) (c m)))
+    '((r g b) (m v c)))

@@ -1,0 +1,279 @@
+
+
+
+
+
+       LECTURE 21   Introduction to Object Orientation
+
+
+ --  The message-passing sub-paradigm
+ --  The distributed-function-definition sub-paradigm
+ --  An example using the POP-11 objectclass library.
+
+example provides only state
+      change to the global  environment - you  may
+define another function
+      for example).
+
+
+
+      (send  person 'print)
+
+which might cause the output:
+
+     name: Frederika Forsythe
+     age:  42
+     sex:  male
+
+Likewise
+
+     (send person 'age)
+
+might return the result 42.
+
+Sometimes arguments are embodied in the message, for example
+
+       (send person 'location 234 456)
+
+might be  used  to  reposition  a  person  in  a  simulation  that  went  into
+topographic detail.
+
+The most  significant development  of this  paradigm was  associated with  the
+Smalltalk language.
+
+Within this  paradigm, a  general concept  of inheritance  corresponds to  the
+possibility that one  class of  objects may share  some of  the attributes  of
+another class. For example, in our university model we would have students who
+are a kind of person and professors who are a kind of person. Students will be
+able to handle all  the messages that  a person can handle  - they have  ages,
+sexes, addresses etc.. However they also have attributes peculiar to students,
+such as the courses that they  take. Moreover they may respond differently  to
+standard messages.
+
+     (send student 'print)
+
+     name: Jeremiah Jolt
+     age:  23
+     sex:  male
+     course: CMPSCI 287, STATS 101
+
+and
+
+     (send student 'courses)  ==> '( (CMPSCI 287) (STATS 101))
+
+The "send a message" approach has some  virtues. It is a quite natural way  of
+talking about a distributed system in  which the objects are not all  resident
+on a single computer so that information  has to be transferred via some  kind
+of communication link, for example a local area network.
+
+It also  has some  snags, not  least among  which is  the fact  that the  nice
+higher-order functions  we have  written in  this course  are not  so  readily
+applicable to this paradigm.  For example if  we wanted to  convert a list  of
+students into a list of lists of the courses they were taking we could not use
+map in quite such a simple way.  In the functional paradigm, if courses  was a
+function mapping from students to their courses, we would write
+
+      (map courses students)
+
+whereas in the message-sending sub-paradigm we have to write:
+
+      (map (lambda (s) (send s 'courses)) students)
+
+Moreover the fact that a  message has to be addressed  to one object makes  it
+tricky to implement  certain functions  which naturally  involve two  objects,
+such as comparing them for equality.
+
+One common term  for this  limitation is  that this  approach embodies  ______single
+________dispatch, that is methods are  selected on the basis  of a single object  (and
+are usually associated fairly directly with that object).
+
+One can regard the  C++ language as supporting  a single-dispatch approach  to
+method invocation.
+
+
+The distributed-function-definition sub-paradigm
+-------------------------------------------------
+The Common Lisp Object System (CLOS) and the objectclass library of POP-11
+support a different sub-paradigm, one in which object orientation is effected
+by extending the definition of functions in an incremental way. In Scheme
+syntax, one would say
+
+      (print person)
+
+and have the same information printed out
+
+     name: Frederika Forsythe
+     age:  42
+     sex:  female
+
+However, instead of the print function being defined in one place
+
+(define (print person)
+    (print-basic-info person)
+    (cond ((student? person) (print-student-info person))
+        ((professor? person) (print-prof-info person))
+        )
+    )
+
+the definition of how to print a person is distributed among various method
+definitions, using a new special form.
+
+
+An example using the POP-11 objectclass library.
+-------------------------------------------------
+
+The code in this section can be run. However you would have to copy it to a
+file with a ".p" extension, for example "obj.p". To enter POP-11 from Scheme,
+execute the function call (pop11) in your base window. To get back, type
+"Scheme".
+
+To load the objectclass library we need to execute the POP-11 command:
+
+lib objectclass;
+
+This will take some tens of seconds, during which the message
+
+;;; Objectclass, version 5.02
+;;; Loading source files.
+;;; Done.
+
+is printed out.
+
+define :objectclass person
+     name = 'John Doe';
+     age :int = 25;              ;;; The type-constraint is optional.
+     sex = 'male';
+enddefine;
+
+This will allow you to create a "default person", by the following POP-11
+initialised declaration:
+
+vars p1 = newperson();
+
+There is a default way of printing a person, called by the following construct
+
+p1=>
+
+** <person name:John Doe age:25 sex:male>
+
+We can however define a function print for a person by defining the method:
+
+define :method print(p:person);
+     printf('name: %p \n',  cons(name(p),[]));
+     printf('age: %p \n',   cons(age(p),[]));
+     printf('sex: %p \n',   cons(sex(p),[]));
+enddefine;
+
+
+Here printf is a function which loosely follows the convention of the printf
+function of the C language, that is to say, the first argument specifies a
+string with "slots" %p  which will be filled in by values taken from the
+list which is the second argument. The empty list is denoted by []  in POP-11.
+
+Now if we say:
+
+    print(p1);
+
+we obtain:
+
+    name: John Doe
+    age: 25
+    sex: male
+
+We can create another person
+
+vars p2 = newperson();
+
+and make the assignments:
+
+'Frederika Forsythe' -> name(p2);
+42                   -> age(p2);
+'female'             -> sex(p2);
+
+print(p2);
+
+name: Frederika Forsythe
+age: 42
+sex: female
+
+We can now create students as a kind of person:
+
+define :objectclass student isa person;
+      classes = ['CMPSCI 287' 'MATH 183'];
+enddefine;
+
+vars s1 = newstudent();
+
+If we print s1 using the standard printing function, we see that students have
+inherited the attributes of people, but have classes as well:
+
+s1=>
+
+** <student name:John Doe age:25 sex:male classes:[CMPSCI 287 MATH 183]>
+
+however our print function does not know this - if there is no method defined
+for printing students, the method for printing people is used instead:
+
+    print(s1);
+
+    name: John Doe
+    age: 25
+    sex: male
+
+We can define a method for printing students:
+
+define:method print(s:student);
+     printf('classes: %p \n',   cons(classes(s),[]));
+enddefine;
+
+However if we call this, we simply get the information about classes:
+
+    print(s1);
+
+gives:
+
+    classes: [CMPSCI 287 MATH 183]
+
+We could of course print out the people-attributes of a student, by copying
+our earlier code for printing persons, but more conveniently there is a POP-11
+special form call_next_method which will, in this case, call the method for
+the person objectclass.
+
+define:method print(s:student);
+     call_next_method(s);
+     printf('classes: %p \n',   cons(classes(s),[]));
+enddefine;
+
+Now we find that:
+
+    print(s1);
+
+will produce:
+
+    name: John Doe
+    age: 25
+    sex: male
+    classes: [CMPSCI 287 MATH 183]
+
+This approach supports multiple dispatch.
+
+define :method senior(p1:person, p2:person);
+   age(p1) > age(p2)
+enddefine;
+
+Egocentrically, one may define:
+
+define :method comparable(s1:student, s2:student);
+    classes(s1) = classes(s2)
+enddefine;
+
+comparable(s1,s1) =>
+
+** <true>
+
+vars s2 = newstudent();
+['BIOL 101'] -> classes(s2);
+
+comparable(s1,s2) =>
+
+** <false>

@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.0Gold (X11; I; OSF1 V4.0 alpha) [Netscape]">
+</HEAD>
+<BODY>
+
+<H1>Conditionals Recursion Lists</H1>
+
+<H2>Special forms in SML</H2>
+
+<P>Special forms in SML include</P>
+
+<P>(1) Functions<TT> fn x =&gt; x+5 </TT>is the equivalent of (lambda (x)
+(+ x 5))</P>
+
+<P>(2) Definitions</P>
+
+<UL>
+<P><TT>val x = 34+7;</TT></P>
+</UL>
+
+<P>is the equivalent of<TT> (define x (+ 34 7))</TT></P>
+
+<P>You can define non-recursive functions this way</P>
+
+<UL>
+<P><TT>val double= fn x =&gt; x*2</TT></P>
+</UL>
+
+<P>But you can't use this to define recursive functions, for which you
+must use the fun or letrec constructs introduced later.</P>
+
+<P>(3) Tuples. A list of (at least two) expressions separated by commas
+and enclosed in parentheses</P>
+
+<UL>
+<P>(expr<SUB>1</SUB>,expr<SUB>2</SUB>,...expr<SUB>n</SUB>)</P>
+</UL>
+
+<P>is called a tuple. A 2-tuple is called a pair. </P>
+
+<P>Note that various syntactic variants such as x+y are not special forms.
+In SML x+y means &quot;apply the function + to the pair (x,y).</P>
+
+<P>The <TT>if ...then...else</TT> construction in SML</P>
+
+<P>SML&nbsp;provides conditional expressions in which a condition (an expression
+which must have a boolean value) or conditions are used to choose which
+of a number of other expressions is to be evaluated. The simplest form
+of conditional in SML is the special form: </P>
+
+<UL>
+<P><TT>if <B>condition</B> then <B>expr1</B> else <B>expr2</B></TT></P>
+</UL>
+
+<P>It evaluates <B>condition.</B> If the condition evaluates to true
+then expr1 is evaluated and is the value of the whole conditional expression,
+otherwise expr2 is evaluated and is the value of the whole conditional
+expression.</P>
+
+<P>Note that SML&nbsp;differs from Scheme in that <B>condition</B> must
+be a boolean expression.</P>
+
+<P>A list in SML&nbsp;is written in square brackets. All the objects in
+the list must be of the same type.</P>
+
+<P>[1,2,3]</P>
+
+<P>fun average list = sum(list) / length(list);</P>
+
+</BODY>
+</HTML>

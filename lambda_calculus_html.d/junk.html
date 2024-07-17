@@ -1,0 +1,109 @@
+
+
+<hr>
+<h3> Finding the type of an application</h3>
+
+
+<p>
+The following lemma suggests how we can ascribe a type to a
+function-application, where the function belongs to a type-intersection.
+
+<h4>Lemma</h4>
+
+Let <i>p</i> <img src=in.gif>
+<i>D<sub>1</sub> <img src=rightarrow.gif> R<sub>1</sub> <img src=cap.gif> D<sub>2</sub> <img src=rightarrow.gif> R<sub>2</sub>
+...D<sub>n</sub> <img src=rightarrow.gif> R<sub>n</sub> </i>.
+Let <i>d</i> <img src=in.gif> <i>D<sub>1</sub> <img src=cap.gif> D<sub>2</sub>..D<sub>n</sub> </i>.
+Then <i>(p d)</i> <img src=in.gif> <i> R<sub>1</sub>/\R<sub>2</sub>...R<sub>n</sub> </i>.
+
+<h4>Proof</h4>
+
+<p>   For   all   i   of   1..n,    d   of   D<sub>i</sub>.   Now   p    of
+D<sub>i</sub> <img src=rightarrow.gif> R<sub>i</sub>. Hence (p d) of R<sub>i</sub> for  all i
+of 1..n.
+
+<hr>
+
+To apply this lemma, suppose we have an expression <i>(p x)</i> where
+<i>p <img src=in.gif>
+D<sub>1</sub> <img src=rightarrow.gif> R<sub>1</sub> <img src=cap.gif> D<sub>2</sub> <img src=rightarrow.gif> R<sub>2</sub>
+...D<sub>n</sub> <img src=rightarrow.gif> R<sub>n</sub> </i>, and x <img src=in.gif> X, for some type X. Then
+we choose a subsequence
+<i>D<sub>j<sub>1</sub> </sub>...D<sub>j<sub>k</sub> </sub> </i> of the
+<i>D<sub>i</sub> </i> for which
+<i>X<img src=leq.gif>D<sub>j<sub>1</sub> </sub>...<img src=leq.gif>D<sub>j<sub>k</sub> </sub> </i>. Then we
+can infer that <i>(p x)</i> <img src=in.gif>
+<i> R<sub>j<sub>1</sub> </sub>...R<sub>j<sub>k</sub> </sub> </i>
+
+
+<hr>
+
+<p>From the covariance-contravariance lemma, we can readily infer the
+following.
+
+
+<h4>Lemma</h4>
+
+(D<sub>1</sub><img src=cup.gif>D<sub>2</sub>)     <img src=rightarrow.gif>      (R<sub>1</sub>/\R<sub>2</sub>)
+<img src=leq.gif>
+(D<sub>1</sub> <img src=rightarrow.gif> R<sub>1</sub>) <img src=cap.gif>
+(D<sub>2</sub>
+<img src=rightarrow.gif> R<sub>2</sub>).
+
+
+
+<!-- This is JUNK
+
+
+
+({+, *} <img src=dot.gif> <b>Integer</b>)
+= <b>Integer <img src=rightarrow.gif> Integer</b>
+<br>
+({+, *} <img src=dot.gif> <b>Float</b>)
+= <b>Float <img src=rightarrow.gif> Float</b>
+<br>
+(<b>Integer <img src=rightarrow.gif> Integer <img src=dot.gif> Integer</b>)
+= <b>Integer</b>
+
+<br>
+(<b>Integer <img src=rightarrow.gif> Integer <img src=dot.gif> Float</b>)
+= <img src=Bottom.gif>
+
+<br>
+(<b>Float <img src=rightarrow.gif> Float <img src=dot.gif> Float</b>)
+= <b>Float</b>
+>
+
+
+
+<h3>Definition</h3>
+
+Let <img src=calC.gif> = &lt;D, <img src=dot.gif>, <b>S</b>,
+<b>K</b> > be a combinatory model with a congruence partition
+<em>T<sub>1</sub>, T<sub>2</sub>, . . .</em>.  Then we say that
+the partition is <em>fully congruent</em> if
+<ul>
+   [[ (e <img src=dot.gif> d) ]]  = [[d]]
+
+</ul>
+
+
+<h3>Lemma</h3>
+Let <em>T<sub>1</sub>, T<sub>2</sub>, . . .</em> be a fully congruent
+partition of a combinatory model. <img src=calC.gif>. Then
+<ul>
+<img src=calC.gif> /( <em>T<sub>1</sub>, T<sub>2</sub>, . . .</em>)</ul>
+is a combinatory model.
+
+<h4>Proof</h4>
+We already know that the quotient is a combinatory algebra.
+Suppose for all <em>[[d]] <img src=in.gif> D/(T<sub>1</sub>. . .)</em>
+<ul>
+([[e]] <img src=dot.gif> [[d<sub>1</sub>]] <img src=dot.gif> [[d]]) =
+([[e]] <img src=dot.gif> [[d<sub>2</sub>]] <img src=dot.gif> [[d]])
+</ul>
+That is to say, for all <em>d <img src=in.gif> D</em>
+<ul>
+[[(e <img src=dot.gif> d<sub>1</sub> <img src=dot.gif> d)]] =
+[[(e <img src=dot.gif> d<sub>2</sub> <img src=dot.gif> d)]]
+</ul>

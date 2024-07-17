@@ -1,0 +1,859 @@
+
+<html><head><title>
+
+       The Church-Rosser Theorems.
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+A Tree-Surgeon's Approach to the Church-Rosser Theorems
+</center>
+
+</h1>
+<hr>
+
+<h4>Note</h4>
+Subsequently I have had cause to repent of my laxity in the definition
+of <em>addressing</em> exhibited in PH2,PH3 below.
+
+<hr>
+<p>Now let us turn our  attention to one of  the most important classes  of
+theorem of the <img src=lambda.gif>-calculus - the Church-Rosser  theorems.
+We have seen that we can think of computation as being characterised in the
+<img    src=lambda.gif>-calculus    by    the    application    of     <img
+src=beta.gif>-reduction rules, which nessarily, by S7, require certain <img
+src=alpha.gif>-conversions.  However,  in  general,  a  term  of  the  <img
+src=lambda.gif>-calculus will contain  several <img  src=beta.gif>-redexes,
+and on the face of it there is no particular reason to choose to reduce one
+rather than another.
+
+<p>We could,  of  course,  make  an arbitrary  choice,  which,  if  we  are
+implementing  our  reduction  computationally,   will  amount  to   doing a
+reduction that some kind of reduction-algorithm selects. A better  approach
+is to study the consequences of making choices. The result of this is  that
+we can prove theorems, the Church Rosser theorems, which show that
+
+<ul>
+<li>No individual choice of redex is irrevocably wrong.
+<li>However, applying the wrong choice <em>strategy</em> can lead to
+a computation that doesn't terminate, even though there is a "right"
+answer which we could have found using the right strategy.
+</ul>
+
+<p> Let's consider how we might choose a redex. For example, let
+
+<ul>
+   G =   ((<img src=lambda.gif> x . E)  F)
+</ul>
+
+where there are redexes in <em>F</em>. To be more specific, we might have:
+
+<ul>
+    ((<img src=lambda.gif> x . x+1) ((<img src=lambda.gif> y . y+2) 4))
+</ul>
+
+<p>We could choose to  reduce <em>F</em> before the top-level redux
+in G, or after. Now most programming languages in effect in most cases
+choose to reduce <em>F</em> before doing the top-level redux. The
+"call-by-value" rule of Scheme, say, says "evaluate the arguments, and then
+apply the function to the evaluated arguments". However this can't be the
+<em>universal</em> rule, for consider any recursive definition such as
+the SML:
+
+<pre>
+    fun fact(n) = if n=0 then 1 else n*fact(n-1)
+</pre>
+
+or, in Scheme:
+
+<pre>
+    (define fact (lambda(n) (if (= n 0) 1 (* n (fact (- n 1))))))
+</pre>
+
+Now if we are evaluating the <tt>if</tt> expression, we <em>must not</em>
+evaluate all its arguments, or the recursion will not terminate - think,
+for example if we replaced <tt>if</tt> in the above definition of
+the factorial function by <tt>my_if</tt> defined by
+
+<pre>
+    (define my_if (lambda (a b c) (if a b c)))
+</pre>
+
+<p>The recursion surely wouldn't terminate.
+
+<p>Scheme gets round this problem by making an <tt>if</tt>-expression be a
+<em>special form</em>, which is evaluated according to its own rules, which
+in effect reduce the first argument of <tt>if</tt> and see what the result
+is before deciding whether to reduce the second or third argument of the
+<tt>if</tt>-expression.
+
+<p>Now mathematicians don't like special cases. You can see why if you
+reflect on our proofs relating to substitution. Almost every proof had
+seven cases, arising from clauses S1-S7 of the definition of substitution.
+And some of the cases had sub-cases. For example in the free-variable
+lemma, Sub.1, some of the cases had sub-cases, arising in effect from the
+sub-cases of the definition of set-union,
+<em>x <img src=in.gif> S <img src=cup.gif> T</em> if
+[case 1] <em>x <img src=in.gif> S</em> OR
+[case 2] <em>x <img src=in.gif> T</em>.
+
+
+<p> In general, if we have a definition of a concept C1 that has
+<em>n<sub>1</sub></em> cases and a definition of a concept C2 that has
+<em>n<sub>2</sub></em> cases then a theorem involving both concepts might
+have as many as <em>n<sub>1</sub>n<sub>2</sub></em> cases. Clearly this can
+get out of hand.
+
+
+<p>So, wouldn't it be nice if we could define a concept of how to evaluate
+an expression that didn't require any special rules for particular kinds of
+expression (except of course <img src=lambda.gif>-abstractions <a
+href=#combinators> and we can even get rid of these).</a>
+
+<h4>The Figures</h4>
+<p><a href = church_rosser_1.ps> Case 1</a>
+<p><a href = church_rosser_2.ps> Case 2</a>
+<p><a href = church_rosser_3.ps> Case 3</a>
+<p><a href = church_rosser_4.ps> Case 4</a>
+
+<p>We can begin see how to attack this problem if we consider the diagram
+(Church-Rosser Theorem Case 1). The convention used in this and subsequent
+diagrams is that a bold triangle stands for a term of the
+<img src=lambda.gif>-calculus. If one triangle <em>F</em>is
+contained in another triangle <em>E</em> then this means that <em>F</em> is
+a sub-term of <em>E</em>.
+Triangles with a small triangle at the top, containing
+a letter, stand for <img src=lambda.gif>-abstractions, while occurrences of
+a letter along the base of the triangle stand for occurrences of a variable
+in an term (usually the bound variable of a lambda-abstraction).
+The light lines are intended to indicate how a sub-term relates to its
+super-term.
+
+<p>The Case  1  diagram  illustrates the  simplest  circumstances  for  the
+Church-Rosser theorem. The  term <em>E</em> has  two sub-terms,  <em>F</em>
+and <em>G</em> each  of which  has the  form of  an application  of a  <img
+src=lambda.gif>-abstraction applied to an argument. <em>F</em> is indicated
+by an @-node with a  <img src=lambda.gif>-abstraction immediately below  it
+to the left, while its argument is indicated by the shaded triangle to  the
+right.  <em>G</em>  is  indicated  similarly.  Since  both  <em>F</em>  and
+<em>G</em> are redexes, we can choose  to reduce either. If we  beta-reduce
+<em>F</em>, as indicated by the dotted arrow going to the left we  obtain a
+new term <em>E<sub>1</sub></em>.  Likewise if we  beta-reduce
+<em>G</em>, as indicated by the dotted arrow going to the right
+we  obtain a
+new term <em>E<sub>2</sub></em>.
+
+<p>However, whether we choose to reduce <em>F</em> or <em>G</em> it is
+clear enough, at least at this diagramatic level, that we can reduce both
+<em>E<sub>1</sub></em> and <em>E<sub>2</sub></em>
+to a common form <em>E<sub>12</sub></em>.
+
+<p>Case 1 is of course the simplest case, in which the two reduxes are
+disjoint - they have nothing in common. Other cases, as you will see by
+perusing this document, are somewhat more complex.
+
+<h2>Confluence, local and global</h2>
+
+<p>Moreover, the diagrams show only what  happens if we take just one  step
+of reduction. The full  Church-Rosser theorem requires  that no matter  how
+many steps of reduction we have taken,  we can always get back to a  common
+term. We can, however, by relatively easy steps, build up the full theorem.
+
+<hr>
+<h4>Definition</h4>
+
+A relation <img src=longrightarrow.gif> is said to be
+(globally) <em>confluent</em> if, given
+<em>E,F,G</em> which are terms of the <img src=lambda.gif>-calculus,
+
+<ul>
+       E  <img src=longrightarrow.gif><sup>*</sup> F
+  <p>  E  <img src=longrightarrow.gif><sup>*</sup> G
+</ul>
+there exists <em>H</em>, a term of the <img src=lambda.gif>-calculus,
+for which
+<ul>
+       F  <img src=longrightarrow.gif><sup>*</sup> H
+       G  <img src=longrightarrow.gif><sup>*</sup> H
+</ul>
+
+Proving global confluence is a bit much to bite off in one proof. Actually,
+in terms of the nitty-gritty of our theory it is enough to prove
+<em>local confluence</em>.
+
+<hr>
+<h4>Definition</h4>
+
+A relation <img src=longrightarrow.gif> is said to be <em>locally
+confluent</em> if, given
+<em>E,F,G</em> which are terms of the <img src=lambda.gif>-calculus,
+
+<ul>
+       E  <img src=longrightarrow.gif>F
+  <p>  E  <img src=longrightarrow.gif>G
+</ul>
+there exists <em>H</em>, a term of the <img src=lambda.gif>-calculus,
+for which
+<ul>
+       F  <img src=longrightarrow.gif><sup>*</sup> H
+       G  <img src=longrightarrow.gif><sup>*</sup> H
+</ul>
+
+<hr>
+Notice that, with local confluence, we may have to take several steps
+to reach the common term <em>H</em>. It's a bit like a railway system - get
+on the wrong train and you can still reach your destination, but it may
+take several steps to get there.
+
+
+<h2>Planning our proof</h2>
+
+<p>Now a set of  diagrams like the Case 1-4 diagrams do not constitute a
+proof of any part of the Church-Rosser theorem. But they do provide a good
+basis on which to plan a proof.
+
+
+
+<p>So, let's  adopt a  strategy of  specifying algorithmically  how we  can
+implement this  local confluence  property. Informally  we may  say "if  we
+transform <em>E</em> to  <em>E<sub>1</sub></em> by reduction  of the  redex
+<em>F</em>  to  <em>F<sub>1</sub></em>,  and  we
+transform  <em>E</em>   to <em>E<sub>2</sub></em>  by   reduction   of
+the   redex   <em>G</em>   to <em>G<sub>2</sub></em>
+then we can transform  <em>E<sub>1</sub></em> to <em>E<sub>12</sub></em>
+by reduction   of the   redex   <em>G</em>   to <em>G<sub>2</sub></em>, and
+we can also transform  <em>E<sub>2</sub></em> to <em>E<sub>12</sub></em>
+by reduction   of the   redex   <em>F</em>   to <em>F<sub>1</sub></em>".
+
+<p>However
+this leaves us with the problem of "what do we mean by 'the redex
+<em>G</em>' when we are speaking of <em>E<sub>1</sub></em>. For
+<em>E<sub>1</sub></em> is a different term from <em>E</em>. It's not enough
+to say "the sub-term that's congruent to <em>G</em> in the original term",
+because <em>G</em> might occur more than once. The hacker's solution to
+this kind of problem would be to specify <em>how</em> to find a sub-term in
+a tree by following a <em>path</em> in that tree. We can think of a path
+as a sequence of the digits "0" and "1", with the idea that "0" means "go
+left" and "1" means "go right". Thus a path acts as a kind of
+<em>address</em> for sub-terms of the tree (actually, if you think about
+it, an address in hardware also corresponds to a path through a tree).
+
+<p>More precisely we may say:
+
+<hr>
+<h4>Definition</h4>
+Let <em>p</em> be a non-empty path. Then the head of <em>p</em>, written
+<em>hd(p)</em>, is the first element of <em>p</em>, and the tail of
+<em>p</em>, written <em>tl(p)</em> is the sequence consisting of all
+elements of <em>p</em> bar the first.
+<hr>
+
+<p>The
+attentive reader who has encountered LISP may think of <em>hd</em> and
+<em>tl</em> as <tt>CAR</tt> and <tt>CDR</tt> respectively; we use the POP-2
+names as being a little more mnemonic.
+
+<p> Following the POP-2 convention, we will also write <em>s::p</em> for
+the path whose head is <em>s</em> and whose tail is <em>p</em>.
+
+
+<p>We are now ready to define our sub-tree addressing operation. We
+will write this as  <em>E[p]</em> - it can be thought of as a kind of
+generalisation of array-access.
+
+
+<hr>
+<h4>Definition</h4>
+Let <em>E</em> be a term of the <img src=lambda.gif>-calculus. Let
+<em>p</em> be a path. Then the <em>subterm of E addressed by p</em> is
+defined to be
+
+<ul>
+
+<p>PH1  if <em>p = ()</em> then <em>E[p] = E</em>
+
+<p>PH2  if <em>E = u</em>, a variable, then <em>E[p] = u</em>
+
+<p>PH3  if <em>E = c</em>, a constant, then <em>E[p] = c</em>
+
+<p>PH4.1  if <em>E = (F G)</em>, an application, and <em>hd(p) = 0</em>,
+          then <em>E[p] = F[tl(p)]</em>
+
+<p>PH4.2  if <em>E = (F G)</em>, an application, and <em>hd(p) = 1</em>,
+          then <em> E[p] = G[tl(p)]</em>
+
+
+<p>PH5.1  if <em>E = <img src=lambda.gif>x.G</em>, an abstraction, and
+            <em>hd(p) = 0</em>, then <em>E[p] = x</em>
+
+
+<p>PH5.2  if <em>E = <img src=lambda.gif>x.G</em>, an abstraction, and
+            <em>hd(p) = 1</em>, then <em>E[p] = G[tl(p)]</em>
+
+</ul>
+<hr>
+
+As well as the addressing operation, we need to define our
+<em>constructive update</em>.
+
+<hr>
+
+<h4>Definition</h4>
+
+<ul>
+
+<p>UP1  if <em>p = ()</em> then <em>E[p:=F] = F</em>
+
+<p>UP2  if <em>E = u</em>, a variable, then <em>E[p:=F] = E</em>
+
+<p>UP3  if <em>E = c</em>, a constant, then <em>E[p:=F] = E</em>
+
+<p>UP4.1  if <em>E = (F G)</em>, an application, and <em>hd(p) = 0</em>,
+          then <em>E[p:=H] = (F[tl(p):=H] ,G)</em>
+
+<p>UP4.2  if <em>E = (F G)</em>, an application, and <em>hd(p) = 1</em>,
+          then <em> E[p:=H] = (F, G[tl(p):=H])</em>
+
+
+<p>UP5.1  if <em>E = <img src=lambda.gif>x.G</em>, an abstraction, and
+            <em>hd(p) = 0</em>, then <em>E[p:=F] = E</em>
+
+
+<p>UP5.2  if <em>E = <img src=lambda.gif>x.G</em>, an abstraction, and
+            <em>hd(p) = 1</em>, then <em>E[p:=F] =
+            <img src=lambda.gif>x.G[p:=F]</em>
+
+</ul>
+
+<hr>
+
+We can now define <img src=beta.gif> as a function. However, we need to
+be sure to distinguish between the substitution <em>E[u:=F]</em> where
+<em>u</em> is a variable of the <img src=lambda.gif>-calculus,
+and the path-update  <em>E[p:=F]</em> in which <em>p</em> is a path.
+So, we'll use <em>p,q,r</em> for paths, and restrict
+ourselves to <em>u,v,w,x,y,z</em> for variables of the <img
+src=lambda.gif>-calculus.
+
+<hr>
+<h4>Definition</h4>
+<ul>
+<p>
+if <em>E[p] = ((<img src=lambda.gif> u. F) G)</em> then
+<em><img src=beta.gif>(p,E) = E[p:=F[u:=G]]</em>
+
+<p>Otherwise <img src=beta.gif>(p,E) = E
+
+</ul>
+<hr>
+
+
+
+<p>It may be objected that in cases PH2
+and PH3 we have not required that the path be empty, despite the fact that
+it is meaningless to have a non-empty path here. The convention adopted has
+the advantage that we don't have  to worry about defining a mathematical
+equivalent of throwing an exception. We'll try to ensure that the paths we
+actually specify will not "run out of tree".
+
+
+<p>With this idea of a path, we can see how to write a <em>program</em> for
+local confluence.
+
+<!--
+Firstly we can replace the <em>relation</em> <img
+src=beta.gif> by a function, which we'll also write as <img src=beta.gif>.
+
+If <em>E</em> is an expression, and <em>p</em> is a path, then
+<em><img src=beta.gif>(E,p)</em> is the result of reducing the redex
+addressed by <em>p</em> in <em>E</em>.-->
+
+<hr>
+
+<p>We are just about ready to state a proposition which covers one case of
+local confluence. It is in fact a special case of that shown in the Case-1
+diagram, in which the paths to the sub-terms <em>F</em> and <em>G</em>
+diverge. We'll prove a number of these propositions, and then
+"glue" them together to show local confluence in the case when two paths
+have a common initial section.
+
+
+<h4>Proposition LC.1</h4>
+If <em>E</em> is a term of the <img src=lambda.gif>-calculus and <em>p</em>
+and <em>q</em> are paths for which <em>hd(p) <img src=not_eq.gif>
+hd(q)</em> then
+
+<ul>
+     <img src=beta.gif>(<img src=beta.gif>(E,p),q)  =
+     <img src=beta.gif>(<img src=beta.gif>(E,q),p)
+</ul>
+
+<h4>Discussion</h4>
+This is certainly the easiest case to handle, because we don't have to
+consider the mechanism of <img src=beta.gif>-reduction at all. Essentially,
+all we have to show is that if you have a tree and replace distinct parts
+of it, it doesn't matter in which order you do the replacements.
+
+Let us abuse (or at least overload) our
+notation somewhat by writing <em>E[p:=F]</em> for that
+expression which is obtained from E by replacing the subterm addressed
+by <em>p</em> by <em>F</em>.  This allows us to specify the replacement of
+one branch of a tree by another.
+
+<h4>We defer the proof of LC.1</h4>
+
+<hr>
+We saw in our preliminary discussion on the Church-Rosser Theorem that the
+subterm relationship
+between two candidate redexes <em>G</em> and <em>H</em>, say,
+of a given term <em>E</em> crucially determined the various cases of the
+Theorem.   In turn <em>G</em> and <em>H</em> can be classified by the
+paths that address them. Two paths <em>p,q</em> can be classified as
+
+<ul>
+<li>
+<em>p = q</em>
+<li><em>p</em> is a sub-path of <em>q</em>
+<li><em>q</em> is a sub-path of <em>p</em>
+<li> <em>p</em> and <em>q</em> diverge.
+</ul>
+We can define the following function <em>PC</em>, which classifies the
+relationship between two paths.
+
+<hr>
+
+<h4>Definition</h4>
+
+<ul>
+
+<p>PC1   PC([],[]) = '='
+
+<p>PC2   PC([],s::p) = '<'
+
+<p>PC3   PC(s::p,[]) = '>'
+
+<p>PC4   PC(s::p,t::q) = 'I'  if s <img src=not_eq.gif> t
+
+<p>PC5   PC(s::p,t::q) = PC(p,q) if s = t
+
+</ul>
+
+<hr>
+
+Proofs involving paths will be by mathematical induction, for which we'll
+need a numeric measure of various aspects of paths. The following function
+computes the length of the common part, <em>CP</em>, of two paths.
+
+<hr>
+
+<h4>Definition</h4>
+
+<ul>
+<p>CP1   CP([],[]) = 0
+
+<p>CP2   CP([],s::p) = 0
+
+<p>CP3   CP(s::p,[]) = 0
+
+<p>CP4   CP(s::p,t::q) = 0  if s <img src=not_eq.gif> t
+
+<p>CP5   CP(s::p,t::q) = 1+CP(p,q) if s = t
+</ul>
+
+<hr>
+
+<h4>Lemma PT1 </h4>
+
+If <em>p, q</em> are binary paths for which PC(p,q) = 'I', and
+<em>E,F,G</em>
+are terms of the <img src=lambda.gif>-calculus, then
+
+    E[p:=F][q:=G]  =  E[q:=G][p:=F]
+
+
+
+<h4>Proof</h4>
+By induction on CP(p,q)
+
+<h4>Base Case</h4>
+
+Suppose CP(p,q) = 0.  If PC(p,q) = 'I' then we must have
+
+<ul>
+ p = s::p',  q = t::q', s <img src=not_eq.gif> t
+</ul>
+
+We can assume W.L.O.G. that s=0,t=1.
+
+<ul>
+
+<li>Case 1-2:  E is a constant or variable. In this case
+
+<p>   E[p:=F][q:=G] = E[q:=G] = E
+<p>E[q:=G][p:=F] = E[p:=F] = E
+
+<p><li>Case 3:      E = (C D), an application.
+<p> E[p:=F][q:=G]  = (C[p':=F] D)[q:=G] = (C[p':=F] D[q':=G])
+<p> E[q:=G][p:=F]  = (C D[q':=G])[p:=F] = (C[p':=F] D[q':=G])
+
+<p><li>Case 4:      E = <img src=lambda.gif>x . H, an abstraction.
+
+<p> E[p:=F][q:=G]  =   (<img src=lambda.gif>x . H)[p:=F][q:=G]
+        =  (<img src=lambda.gif>x . H)[q:=G]
+<p>        =   (<img src=lambda.gif>x . H[q':=G])
+<p> E[q:=G][p:=F]  =  (<img src=lambda.gif>x . H)[q:=G][p:=F]
+    =(<img src=lambda.gif>x . H[q':=G])[p:=F]
+<p>    =(<img src=lambda.gif>x . H[q':=G])
+</ul>
+
+
+<h4>Inductive Step</h4>
+
+
+Suppose for some natural number  <em>n</em> that
+<em>CP(p,q) <img src=leq.gif> n</em>   implies that
+<ul>
+    E[p:=F][q:=G]  =  E[q:=G][p:=F]
+</ul>
+
+
+Consider paths <em>p,q</em> for which <em>CP(p,q) =  n+1</em>
+We must therefore be confronting case CP5 in which
+<em>p = s::p', q = s::q'</em>. Moreover <em>CP(p',q') = n</em>
+
+
+<ul>
+
+<li>Case 1-2:  E is a constant or variable. In this case
+
+<p>   E[p:=F][q:=G] = E[q:=G] = E
+<p>E[q:=G][p:=F] = E[p:=F] = E
+
+<p><li>Case 3:      E = (C D), an application.
+
+We have 2 sub-cases,
+<em>s=0</em> and <em>s=1</em></p>
+
+<ul>
+<p><li>Sub-case 3.1, <em>s=0</em>
+<p> E[p:=F][q:=G]  =  (C[p':=F] D) [q:=G]  = (C[p':=F][q':=G] D)
+
+
+<p> But, since <em>CP(p',q') = n</em>, we have, by the inductive
+hypothesis
+<ul>
+<p> E[p:=F][q:=G] = (C[q':=G][p':=F] D)
+
+</ul>
+<p> Now consider our goal
+<ul>
+
+<p> E[q:=G][p:=F]  = (C[q':=G] D)[p:=F]<p> = (C[q':=G][p':=F] D)
+
+</ul>
+<p>Hence the result holds in this sub-case.
+
+<p><li>Sub-case 3.2, <em>s=1</em>
+This is similar to 3.1
+</ul>
+
+<p><li>Case 4:      E = <img src=lambda.gif>x . H, an application.
+
+We have 2 sub-cases,
+<em>s=0</em> and <em>s=1</em></p>
+
+<ul>
+<p><li>Sub-case 4.1, <em>s=0</em>
+
+<p> E[p:=F][q:=G]  =   (<img src=lambda.gif>x . H)[p:=F][q:=G]
+        =  (<img src=lambda.gif>x . H)[q:=G]<br><br>
+        =   (<img src=lambda.gif>x . H)[q:=G]
+        =   (<img src=lambda.gif>x . H)
+
+<p> E[q:=G][p:=F]  =  (<img src=lambda.gif>x . H)[q:=G][p:=F]
+    =(<img src=lambda.gif>x . H)[p:=F]
+    =(<img src=lambda.gif>x . H)
+
+
+<p><li>Sub-case 4.2, <em>s=1</em>
+<ul>
+<p> E[p:=F][q:=G]  =   (<img src=lambda.gif>x . H)[p:=F][q:=G]<br><br>
+        =  (<img src=lambda.gif>x . H[p':=F])[q:=G]<br><br>
+        =   (<img src=lambda.gif>x . H[p':=F][q':=G])
+        =   (<img src=lambda.gif>x . H[q':=G][p':=F])
+</ul>
+<p>by the inductive hypothesis.
+<p>On the other hand
+<ul>
+<p> E[q:=G][p:=F]  =  (<img src=lambda.gif>x . H)[q:=G][p:=F]
+<p> =(<img src=lambda.gif>x .H[q':=G])[p:=F]
+    =(<img src=lambda.gif>x . H[q':=G][p':=F])
+</ul>
+<p>So the result holds for this sub-case.
+</ul>
+</ul>
+<hr>
+
+
+
+<h4>Lemma PT2 </h4>
+
+If <em>p, q</em> are binary paths for which PC(p,q) = 'I', and <em>E,F</em>
+are terms of the <img src=lambda.gif>-calculus, then
+
+    E[p:=F][q]  =  E[q]
+
+<h4>Proof</h4>
+By induction on CP(p,q)
+
+<h4>Base Case</h4>
+
+Suppose CP(p,q) = 0.  If PC(p,q) = 'I' then we must have
+
+<ul>
+ p = s::p',  q = t::q', s <img src=not_eq.gif> t
+</ul>
+
+
+
+<ul>
+
+<li>Case 1-2:  E is a constant or variable. In this case
+
+<p>   E[p:=F][q] = E[q] = E
+
+<p><li>Case 3:      E = (C D), an application.
+<ul>
+<p><li>Sub-case 3.1, <em>s=0,t=1</em>
+
+<p> E[p:=F][q]  = (C[p':=F] D)[q] = D[q'] = E[q]
+
+<p><li>Sub-case 3.2, <em>s=1,t=0</em>
+This sub-case is similar to 3.1.
+</ul>
+
+<p><li>Case 4:      E = <img src=lambda.gif>x . H, an application.
+
+<p><li>Sub-case 4.1, <em>s=0,t=1</em>
+<p> E[p:=F][q]  =   (<img src=lambda.gif>x . H)[p:=F][q]
+        =  (<img src=lambda.gif>x . H)[q]
+        =   H[q'] = E[q]
+
+<li>Sub-case 4.2, <em>s=1,t=0</em>
+
+<p> E[p:=F][q]  =   (<img src=lambda.gif>x . H)[p:=F][q]
+        =  (<img src=lambda.gif>x . H[p:=F])[q]
+        =   x  = E[q]
+
+</ul>
+
+
+<h4>Inductive Step</h4>
+
+
+Suppose for some natural number  <em>n</em> that
+<em>CP(p,q) <img src=leq.gif> n</em>   implies that
+<ul>
+    E[p:=F][q]  =  E[q]
+</ul>
+
+
+Consider paths <em>p,q</em> for which <em>CP(p,q) =  n+1</em>
+We must therefore be confronting case CP5 in which
+<em>p = s::p', q = s::q'</em>. Moreover <em>CP(p',q') = n</em>
+
+
+<ul>
+
+<li>Case 1-2:  E is a constant or variable. In this case
+
+<p>   E[p:=F][q] = E[q] = E
+
+<p><li>Case 3:      E = (C D), an application.
+
+We have 2 sub-cases,
+<em>s=0</em> and <em>s=1</em></p>
+
+<ul>
+<p><li>Sub-case 3.1, <em>s=0</em>
+<ul>
+<p> E[p:=F][q]  =  (C[p':=F] D)[q]  = C[p':=F][q'] = C[q']
+</ul>
+<p>  by the inductive hypothesis
+<ul>
+<p> = E[q]
+</ul>
+
+<p>Hence the result holds in this sub-case.
+
+<p><li>Sub-case 3.2, <em>s=1</em>
+This is similar to 3.1
+</ul>
+
+<p><li>Case 4:      E = <img src=lambda.gif>x . H, an application.
+
+We have 2 sub-cases,
+<em>s=0</em> and <em>s=1</em></p>
+
+<ul>
+<p><li>Sub-case 4.1, <em>s=0</em>
+
+<p> E[p:=F][q]  =   (<img src=lambda.gif>x . H)[p:=F][q]
+        =  (<img src=lambda.gif>x . H)[q] = x = E[q]
+
+
+<p><li>Sub-case 4.2, <em>s=1</em>
+<ul>
+<p> E[p:=F][q]  =   (<img src=lambda.gif>x . H)[p:=F][q]<br><br>
+        =  (<img src=lambda.gif>x . H[p':=F])[q]<br><br>
+        =   (<img src=lambda.gif>x . H[p':=F][q'])
+        =   (<img src=lambda.gif>x . H[q'])
+</ul>
+<p>by the inductive hypothesis.
+<p>On the other hand
+<ul>
+<p> E[q]  =  (<img src=lambda.gif>x . H)[q]
+ =(<img src=lambda.gif>x .H[q'])
+</ul>
+<p>So the result holds for this sub-case.
+</ul>
+</ul>
+<hr>
+
+
+<h4>Proof of Proposition LC.1</h4>
+We have to show that
+<ul>
+     <img src=beta.gif>(<img src=beta.gif>(E,p),q)  =
+     <img src=beta.gif>(<img src=beta.gif>(E,q),p)
+</ul>
+
+Let us recall the definition of the <img src=beta.gif>-function.
+<ul>
+<p>
+if <em>E[p] = ((<img src=lambda.gif> u. F) G)</em> then
+<em><img src=beta.gif>(p,E) = E[p:=F[u:=G]]</em>
+
+<p>Otherwise <img src=beta.gif>(p,E) = E
+</ul>
+
+The interesting case is:
+
+<h4>Case 1</h4>
+<ul>
+<p> <em>E[p] = ((<img src=lambda.gif> u. D) G)</em> and
+<p> <em>E[q] = ((<img src=lambda.gif> v. F) H)</em>
+</ul>
+
+Here
+<ul>
+     <img src=beta.gif>(<img src=beta.gif>(E,p),q)  =
+     <img src=beta.gif>(E[p:=D[u:=G],q)
+<p>   =  E[p:=D[u:=G]] [q:=F[v:=H]]      _____________________[1]
+</ul>
+since, by Lemma PT2, <em>E[p:=D[u:=G]][q] = E[q]</em>
+<p>Likewise
+<ul>
+     <img src=beta.gif>(<img src=beta.gif>(E,q),p)  =
+     <img src=beta.gif>(E[q:=F[v:=H],p)
+<p>   =  E[q:=F[v:=H]][p:=D[u:=G]]   ______________________[2]
+</ul>
+But, by Lemma PT1 [1] and [2] are equal.
+
+<p>
+
+
+<h4>Case 2</h4>
+<ul>
+<p> <em>E[p] = ((<img src=lambda.gif> u. D) G)</em> and
+<p> <em>E[q]</em> is not a <img src=beta.gif>-redux
+</ul>
+
+
+Here
+<ul>
+     <img src=beta.gif>(<img src=beta.gif>(E,p),q)  =
+     <img src=beta.gif>(E[p:=D[u:=G]],q)
+<p>   =  E[p:=D[u:=G]]       _____________________[1]
+</ul>
+since, by Lemma PT2, <em>E[p:=D[u:=G]][q] = E[q]</em>
+<p>On the other hand
+
+<ul>
+     <img src=beta.gif>(<img src=beta.gif>(E,q),p)  =
+     <img src=beta.gif>(E,p) = E[p:=D[u:=G]] ______[2]
+
+</ul>
+But, since [1] and [2] are equal, the result holds in this case.
+
+
+
+<h4>Case 3</h4>
+
+<ul>
+<p> <em>E[p]</em> is not a <img src=beta.gif>-redux
+<p> <em>E[q] = ((<img src=lambda.gif> v. F) H)</em>
+</ul>
+
+This case is the dual of case 2.
+
+
+<h4>Case 4</h4>
+<ul>
+<p> <em>E[p]</em> is not a <img src=beta.gif>-redux
+<p> <em>E[q]</em> is not a <img src=beta.gif>-redux
+</ul>
+
+In this case
+<ul>
+     <img src=beta.gif>(<img src=beta.gif>(E,p),q)  =
+     <img src=beta.gif>(E,q)  =  E =
+     <img src=beta.gif>(<img src=beta.gif>(E,q),p)
+</ul>
+
+<hr>
+<center>
+ This concludes the proof of Proposition LC.1
+</center>
+<hr>
+
+<p>As we have already remarked, Proposition LC1 addresses the simplest case
+of proving local-confluence, that in which the redexes are independent,  as
+characterised by having PC(p,q)  = 'I'. The other  cases are harder  (apart
+from the trivial p=q case).
+
+<p>Proposition LC1 did not depend on any properties of the substitution
+operation, only assuming it is a function. [Note - we'd better make
+sure it <em>is</em> by being more precise about our specification of
+<em>w</em> in S6].
+
+<p>The
+case in which PC(p,q) = '>' is symmetric with that in which <em>PC(p,q) =
+'<'</em>, so we need only consider one of them.
+
+<p>Essentially, if <em>PC(p,q) = '<'</em>, then the redex addressed by
+<em>p</em>(if any) contains that addressed by <em>q</em>(if any).
+
+However we need to worry about where <em>E[q]</em> is to be found in
+<em>E[p] = ((<img src=lambda.gif> u. D) G) - it could be in either
+<em>D</em> or in <em>G</em>.
+
+
+
+
+
+
+<h3> NOTES</h3>
+<hr>
+
+<a name=combinators> </a>
+<h4>Shonfinkel Combinators</h4>
+<p>It is possible to translate from the
+<img src=lambda.gif>-calculus to  Shonfinkel combinators, <b>S,K,I</b>
+More on these later.
+<hr>

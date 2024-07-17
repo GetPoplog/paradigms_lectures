@@ -1,0 +1,1269 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Constructive Proof Rules - CMPSCI 287</TITLE>
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.0Gold (X11; I; OSF1 V4.0 alpha) [Netscape]">
+</HEAD>
+<BODY bgcolor = "white">
+
+<H1>Implementing Constructive Proof Rules for SML in MetaSML</h1>
+
+This report describes the use of the MetaSML extension of the  SML core
+language as an implementation medium for a system for the verification of a
+purely-functional subset of SML programs.
+
+
+<p>This system has a strong,  and non-accidental resemblance to the  system
+for mechanising proofs  in Higher Order  Logic, HOL. But  whereas HOL  is a
+system for proving mathematical theorems, whose domain of interpretation is
+a universe  of  infinite  sets,  and, which,  in  particular,  treats  each
+lambda-expression as  denoting a  mathematical function,  our system  deals
+with the  result of  evaluating  expressions in  SML <em>restricted  to  the
+functional subset of ML</em>.
+
+<p>As compared  with  the work  of  Boyer  and Moore,  we  are  providing a
+proof-checker, not a  proof-finder. However,  we would  anticipate that  it
+would  be  possible  to  incorporate  HOL-style  conversions,  tactics  and
+tacticals to ease the process of generating proofs.
+
+<p>As a consequence of our domain being SML, our proof rules are weaker
+than those of HOL. For example, HOL contains a proof rule that allows the
+user unconditionally to create the theorem <tt> |- <em>t = t</em></tt>
+for any well-typed term <em>t</em>.  Our system puts the interpretation on
+<em>t=t</em> that, as a conclusion of a  theorem,
+it is a type-correct SML expression that will run to completion  yielding
+the result <tt>true</tt> under conditions determined by the hypotheses of the
+theorem in which it occurs.
+There are two restrictions inherent in this requirement. Firstly
+if <em>t</em> is a function, then <em>t = t</em> is not well-typed, and
+so is not a valid inference. Secondly the code must run to completion,
+so that <em>t=t</em> is only valid if <em>t</em> engenders a computation
+that terminates normally for all type-correct values of its free variables.
+
+<p>So, for example, if <tt>fact</tt> is the factorial function as usually
+defined,  <tt> fact = fact </tt> is not well-typed, and so <tt> |-
+fact=fact</tt> is not admissable as a theorem of our system;
+neither is
+<tt>fact n = fact n</tt>  unconditionally valid in our system,
+for it is not the case that the evaluation of <tt> fact n </tt> will
+terminate normally for a negative integer argument.
+In fact, the appropriate theorem
+is  <tt> 0<=n |- fact n = fact n </tt>
+
+<h2> MetaSML </h2>
+
+<p>The prover is implemented in MetaSML [Sheard...] which is derived from SML
+by providing a quasi-quotation mechanism. If  <em>e</em> is an SML
+expression of type <em>t</em>, then  <em>&lt;e></em> is a MetaSML expression
+of type <em>&lt;t></em>. Thus the angle brackets <tt>&lt...></tt> act to
+support a form of quotation, which resembles quasi-quotation in Scheme in
+that there is a local escape mechanism, using the tilde operator.
+
+
+<p>Note
+that MetaSML's handling of variables that are  free in an expression
+but bound in the environment in which the expression was created avoids
+a variable capture problem arising from a sequence like the following:
+
+<pre>
+fun twice x = 2*x;
+
+(*
+code to create a theorem about twice
+*)
+
+fun twice f = f(f x)
+
+(*
+code which uses the earlier theorems about twice in the context
+of the new definition.
+*)
+
+</pre>
+
+We need to say something about e.g. the status of + in <3 + 4>  I've
+used the term "name" - the "+" is the name of the addition function.
+
+<h2>Theorems say things about the result of computation</h2>
+
+In our system we adopt the basic  idea of HOL, which was due originally  to
+Robin Milner, that a theorem is an abstract data-type of MetaSML whose only
+constructors are proof-rules; if these rules are sound, it is only possible
+for the user to construct theorems. So the validity of the theorems
+depends constructed by the user depends only on whether or not the
+proof-rules correctly capture the semantics of SML.
+
+<p>Given this repetoire of proof-rules, and given that a user has the
+ability to discover (but not change) the fine structure of theorems by
+using selector functions and patterns of MetaSML, it is possible to build
+systems which can partially automate the process of proof.
+
+
+<p> The logically significant components of the <em>theorem</em>
+data-type are a list of <em>hypotheses</em> and a <em>conclusion</em>.
+The data-type <tt>theorem</tt> might thus concretely be declared as
+
+<pre>
+datatype theorem = Thm of &lt;bool> list * &lt;bool> list;
+</pre>
+
+Thus each hypothesis is a MetaSML term of type <tt>&lt;bool></tt>, that is  to
+say it is a quoted SML expression, which when evaluated, will yield a
+truth-value. Likewise a conclusion is also a MetaSML list term of type
+<tt>&lt;bool></tt>.
+
+
+<h4> Notation for theorems </h4>
+
+If  H is a set of hypotheses, represented as a list (without repetitions) then
+we use the notation
+<pre>
+            H |- t
+</pre>
+for the theorem  <tt>Theorem(G,t)</tt>. When writing theorems we will drop
+the angle-brackets around the hypotheses and conclusions. Incidentally, the
+hypotheses of a theorem are conceptually a sequence, rather than a set. Certain
+proof rules operate on the first hypothesis of that sequence.
+
+<h4>Consonantly typed environments</h4>
+
+<p>By a consonantly-typed  environment for  an expression is  meant a  mapping
+from variables  to values  whose domain  includes the  free variables  of  the
+expression and in which the  image of each variable  under the map belongs  to
+the type ascribed to that variable by the SML type inference system.
+
+
+<p>
+Our proof rules will be sound if they can only generate theorems that satisfy
+the following data-invariant
+
+<h4> The Theorem Invariant</h4>
+For every
+consonantly-typed environment in for which each hypothesis of the theorem
+evaluates to <tt>true</tt>,   the conclusion  will also evaluate  to
+<tt>true</tt>.
+
+
+
+<p>We use the notation <tt> t<sub>1</sub> ==> t<sub>2</sub> </tt> as an abbreviation for
+<tt>&#160;  if t<sub>1</sub> then t<sub>2</sub> else true</tt>, so that <tt>t<sub>2</sub></tt> is only
+evaluated if <tt>t<sub>1</sub></tt> evaluates to <tt>true</tt>.
+Thus <tt> ==> </tt> is <em>not</em> defined  as
+an infix operator  in ML,  since that  would imply  a different  evaluation
+rule.
+
+<h2> Proof Rules are abstract constructors for theorems</h2>
+
+The actual concrete constructor <tt>Theorem</tt> for theorems is not
+available to the user of the system. Instead she must employ proof rules.
+These are MetaSML functions which evaluate to a theorem, or occasionally,
+to a list of theorems.
+
+<p>We adopt the HOL convention of capitalising the names of the
+MetaSML functions which implement proof rules.
+
+
+<p>For exposition it is convenient to adopt the usual notation for proof
+rules
+
+<pre>
+     thm<sub>1</sub>,  thm<sub>2</sub> ... thm<sub>n</sub>
+    ______________________
+
+       thm
+</pre>
+
+which expresses the fact that <tt>thm</tt> is a sound deduction from
+<tt>thm<sub>1</sub>,thm<sub>2</sub>...thm<sub>n</sub></tt>. This captures
+the basic pattern of deduction, which may be qualified by additional
+conditions expressed in the text. Further explanation is needed as
+to how the corresponding MetaSML function is used.
+
+<p>It is a consequence of our concept of soundness that we need more proof
+rules than HOL. This arises from the fact that the DISCH rule in HOL
+
+<pre>
+        g, H |- t
+    ______________
+
+        H |- g ==> t
+</pre>
+
+is not sound in our system, for <tt>g</tt> might not halt unconditionally.
+HOL makes great use of this rule to move terms from the hypotheses to the
+conclusion, wherein they are transformed and then moved back by the
+<tt>UNDISCH</tt> rule. We, by contrast, need rules that will allow us to
+operate directly on the hypotheses of a theorem.
+
+
+<p>In addition to the proof-rules
+there is a set of <em>axioms</em> which are pre-created
+theorems expressing basic facts about SML, for example that addition over
+the <tt>int</tt> type is commutative.
+
+
+
+<h2> Halting </h2>
+
+The concept of <em>halting</em> is central to our system. We define
+the SML function
+
+<pre>
+    fun halts t = true;
+</pre>
+
+Clearly, if we have a  theorem  <tt> |- halts <b>e</b></tt>, for some
+expression <b>e</b>, then under the interpretation rules given above,
+the eager evaluation of the  expression <b>e</b> must always terminate
+without exception. [In a lazy language, this would not be the case.]
+
+<p>However, this treatment means that we may <em>not</em> apply the usual
+rules of instantiation. For example, while for any variable <tt>x</tt>
+there is a  theorem    <tt> |- halts x </tt>,  it is not permissable
+to substitute an arbitrary expression for <tt>x</tt>. Otherwise, for
+example, we could "prove" <pre> |- halts(fact n) </pre>  Thus, in
+particular, many of our proof-rules will require extra termination
+conditions as compared with HOL.
+
+<p>The following basic rules are sound for <tt>halts</tt>:
+
+<h4>HALTS_EVAL : term -> theorem </h4>
+
+<pre>
+     _____________
+
+      |-  halts t
+</pre>
+
+provided that  <tt>t</tt> is a term with no free variables which evaluates
+without exception.
+
+<p><b>Justification</b>
+Having no free variables, <tt>t</tt> evaluates without exception in every
+consonantly typed environment. From the definition of <tt>halts</tt>,
+<tt>halts t</tt> evaluates to <tt>true</tt>. Hence <tt> halts t</tt>
+is universally valid, and so the rule is sound.
+
+
+
+<p>For example
+
+<pre>
+    HALTS_EVAL <2+3>  =  |- halts 2+3
+</pre>
+
+<h4>HALTS_VAR : term -> theorem </h4>
+
+<pre>
+     _______________
+
+        |- halts v
+</pre>
+
+provided that  <tt>v</tt> is a variable.
+
+<p><b>Justification</b>
+Any environment whose domain includes <tt>v</tt> is consonantly typed, and
+is an environment in which the evaluation of <tt>v</tt> terminates without
+exception.  From the definition of <tt>halts</tt>,
+<tt>halts t</tt> evaluates to <tt>true</tt>. Hence <tt>halts t</tt>
+is universally valid and so the rule is sound.
+
+
+
+<h2> Paths, Patterns  Substitution and Matching</h2>
+
+
+<p>We use  <tt>  t<sub>1</sub>[x:=t<sub>2</sub>]  </tt>  to  denote  the  term
+<tt>t<sub>1</sub></tt> with every free  occurrence of the variable  <tt>x</tt>
+replaced by <tt>t<sub>2</sub></tt>, with suitable alpha-renaming to avoid free
+variable capture.
+
+Likewise, we use
+<pre>
+ t[x<sub>1</sub>..x<sub>n</sub> := a<sub>1</sub>..a<sub>n</sub>]
+</pre>
+
+to denote the term  <tt>t<sub>1</sub></tt> with every  free occurrence of  the
+variables  <tt>x<sub>i</sub></tt>  replaced  by  <tt>a<sub>i</sub></tt>,  with
+suitable alpha-renaming to avoid free variable capture.
+
+<p>We use the concept of a path to identify a particular sub-expression of
+an expression.
+<pre>
+type path = int list
+</pre>
+
+<p>  We write  <tt>t[p]</tt> to mean the sub-term of <tt>t</tt>
+addressed by the path <tt>p</tt>.
+
+We write  <tt>t[p:=t']</tt> to mean the result of replacing the
+sub-term of <tt>t</tt> addressed by the path <tt>p</tt> by <tt>t'</tt>.
+
+
+
+<h4>Matching a Pattern against an Expression</h4>
+
+<p>We write <tt>p[x<sub>1</sub>..x<sub>n</sub>]</tt> to denote a pattern whose free variables are <tt>x<sub>1</sub>..x<sub>n</sub></tt>.
+
+<p>Deduction
+in of our system could be treated by eliminating patterns from the
+discourse, translating everything into he lambda calculus. While this approach
+has the virtue of simplicity, it is achieved at the cost of moving the
+discourse significantly away form the source language, making it
+harder for the user to follow what is happening, and also making
+proofs longer.
+
+
+<p>There
+are  three possible  cases which  arise if  we try  to match  a  pattern
+<tt>p</tt> against an expression <tt>t</tt>.
+
+
+<ul>
+
+<li> There can never be a match
+<li> There is always a match
+<li> There is sometimes a match.
+
+</ul>
+
+For example  the pattern <tt>[]</tt> can never match the expression
+<tt>x::l</tt>, whereas the pattern <tt>0</tt> can sometimes match the
+expression <tt>n</tt> (when <tt>n</tt> evaluates to <tt>0</tt>).
+
+<b> TIM HELP! </b>
+
+<p>The idea of a match can then be expressed as
+
+
+<pre>
+datatype match = Match of (&lt; var > * &lt; val > list) * &lt;bool> list
+</pre>
+
+
+Our approach is thus to define a function
+<pre>
+match : <pattern> -> <term> -> match option
+</pre>
+
+
+<pre>
+fun BETA (x as &lt;(fn #p => ~(f #p) | ~y) ~a>) =
+       (case match p a of
+          SOME sub => Thm([<halts ~a>], < ~x = ~(f a) >)
+        | NONE => BETA <~y ~a>)
+  | BETA _ = error
+
+p : ('a,X) pattern
+f : X substitution -> <'b>
+match : ('a,'b) pattern -> <'a> -> 'b substitution
+y : <'a -> 'b>
+</pre>
+
+
+
+<h2> Using Definitions in Proofs </h2>
+
+It is  a great convenience to allow definitions, made in the core-SML
+subset of MetaSML, to be used in proofs.
+
+<p>This requires some care, since it is a consequence of our concept of
+<em>validity</em> that a definition such as
+
+<pre>
+    fun double x = x*2;
+</pre>
+
+cannot in general be made into the theorem
+
+<pre>
+    |- double x = x*2
+</pre>
+
+since in general a function won't terminate. Instead, we introduce
+rules that allow a definition to be used directly in a proof.
+For the purposes of explication of the definitional rules, we
+write a definition
+<pre>
+val v = t
+</pre>
+
+as
+
+<pre>
+  |-<sub>DEF</sub>  v = t
+</pre>
+
+Since MetaSML keeps a firm hold on the scope of definitions, the following
+definitional-substitution rule preserves validity.
+
+<p>No problem is raised by recursive definitions. For example
+
+<pre>
+    fact 0 = 1 | fact n = n*fact(n-1)
+</pre>
+
+is converted into the definition
+
+<pre>
+    |-<sub>DEF</sub> fact = fn 0 => 1 | n => n*fact(n-1)
+</pre>
+
+Here the occurrence of <tt>fact</tt> in the <pre>fn...</pre> expression
+is not a free variable but is instead the name of the factorial function.
+
+<h4>DEF_RIGHT: path -> theorem -> theorem </h4>
+
+DEF_RIGHT allows us to use a definition to replace a defined-name
+occurring in the conclusion of a theorem by its value.
+
+<pre>
+        |-<sub>DEF</sub>  v = t ,  H |- t<sub>1</sub>
+   ___________________________________
+
+            H |-  t<sub>1</sub>[p:=t]
+
+ </pre> provided <tt>t<sub>1</sub>[p] = v</tt>
+
+<p>As a MetaSML function,
+we provide <tt>DEF_RIGHT</tt> with a path to the occurrence of a
+name that is to be replaced by its definition, and a theorem in whose
+conclusion the replacement is to be done.
+
+<h4>Justification</h4>
+This rule expresses the fact that in evaluating an expression <tt>t<sub>1</sub>
+</tt> containing <tt>v</tt>, the value <tt>t</tt> of <tt>v</tt> will be
+used. Therefore   <tt>t<sub>1</sub></tt> and <tt>t<sub>1</sub>[p:=t]</tt>
+will evaluate to equal values.
+
+<p>In effect, DEF is unfolding the definition of <tt>v</tt>.
+
+
+<h4>DEF_LEFT : path -> theorem -> theorem </h4>
+
+<pre>
+        |-<sub>DEF</sub>  v = t ,  g,G |- t<sub>1</sub>
+   ___________________________________
+
+        g[p:=t], H |- t<sub>1</sub>
+</pre>
+
+provided <tt>g[p] = v</tt>.
+
+
+<p>As a MetaSML function
+we provide DEF_LEFT with a path to the occurrence of a
+name that is to be replaced by its definition, and a theorem in whose
+first hypothesis the replacement is to be done.
+
+
+<h4>Justification</h4>
+Essentially the same as for the previous rule.
+
+
+<h2> The Main Inference Rules </h2>
+
+These inference rules differ quite a lot from those of HOL, mostly because
+of the requirement that the conclusion of a valid theorem must represent a
+computation that terminates normally when the hypotheses all evaluate to
+<tt>true</tt>.  The general effect of this is to require more rules.
+
+<p>In particular, we lose the reflexive rule of equality ( <tt> |- t = t
+</tt>). Instead, this has to be proved in every case. It is (perhaps
+conditionally) true for combinations of the language primitives, but must
+be proved for user-defined functions.
+
+<p>Moreover, the classical <em>reductio ad absurdam</em> rule
+does not hold. From
+<pre>
+                not t |- false
+</pre>
+we cannot conclude  <tt> |- t </tt>. The first theorem says
+"whenever <tt>t</tt> terminates normally, it must evaluate to <tt>true</tt>",
+whereas the second says "<tt>t</tt> always evaluates to <tt>true</tt>".
+
+
+<p>Thus we are much more constrained in moving terms
+from the hypotheses to the conclusions of theorems than we are in HOL. As a
+consequence, our proof-rules require us to operate on hypotheses as well as
+conclusions.
+
+<p>The following are our basic rules.
+
+<hr><h4>PROMOTE : int -> theorem -> theorem;</h3>
+
+PROMOTE serves to select a hypothesis to be operated on by a proof rule.
+
+<pre>
+g<sub>0</sub>...g<sub>i</sub>...g<sub>n</sub> |- t
+__________________________
+
+g<sub>i</sub>,g<sub>0</sub>...g<sub>i-1</sub> g<sub>i+1</sub>...g<sub>n</sub> |- t
+</pre>
+
+
+
+<b>Justification</b>
+Clearly changing the order of the hypotheses of a theorem does not violate
+its data-invariant.
+
+
+<hr><h4>ASSUME : term -> theorem;</h3>
+<pre>
+
+           ________
+
+            t |- t
+
+</pre>
+
+<b>Justification</b>
+In any environment in which the hypothesis evaluates to <tt>true</tt>, the
+conclusion also evaluates to <tt>true</tt>
+
+<p>The soundness of this rule depends upon the fact
+that our terms are restricted to the functional subset of SML, in which the
+value of an expression is determined solely by the constant objects
+(including function closures) embodied in it and by the values that its
+free variables have in the environment in which it is evaluated.
+
+
+
+
+<hr><h4>SUBST : path -> term -> thm -> thm </h4>
+
+
+<pre>
+        H<sub>1</sub>  |- t<sub>1</sub> = t<sub>1</sub>'          H |- t
+        _________________________________________
+
+             H<sub>1</sub> union H |- t[p:=t<sub>1</sub>']
+</pre>
+
+provided the structural identity t[p] = t<sub>1</sub> holds.
+
+<p><b>Justification</b>
+<p>
+The first theorem expresses the fact in any environment in which  each
+expression  in  H<sub>1</sub>  evaluates  to  <tt>true</tt>,  then  t<sub>1</sub>  and
+t<sub>1</sub>' evaluate to equal values in the same environment. The second
+theorem expresses the fact that in any environment in which each expression
+in  H  evaluates  to  <tt>true</tt>,  <em>t</em>  also  evaluates   to
+<tt>true</tt>.
+
+The rule states that in any environment in which all the hypotheses in H<sub>1</sub> and
+H evaluate  to <tt>true</tt>,  the term  <em>t</em> with  an occurrence  of
+<em>t<sub>1</sub></em>  replaced  by   <em>t<sub>1</sub>'</em>  will   also
+evaluate to <tt>true</tt>
+
+
+<p>This rule expresses the fact that objects which SML judges to be equal
+are indistinguishable by any SML program. It would not apply to a language
+such as Scheme, where it is possible to distinguish between objects that
+are structurally equivalent (using <tt>equal?</tt>) and those which are
+identical (using <tt>eq?</tt>).
+
+
+
+<hr><h4>SUBST_LEFT : path -> term -> thm -> thm </h4>
+
+In the light of our discussion about the need for rules that operate
+on hypotheses, we also need the following:
+
+
+<pre>
+        H<sub>1</sub>  |- t<sub>1</sub> = t<sub>1</sub>'          t<sub>2</sub>,G |- t<sub>3</sub>
+        _________________________________________
+
+           t<sub>2</sub>[p:=t<sub>1</sub>],  H<sub>1</sub> union H |- t<sub>3</sub>
+</pre>
+
+provided t<sub>2</sub>[p] = t<sub>1</sub>.
+
+
+<p><b>Justification</b>
+
+Similar to that for SUBST.
+
+
+<hr><h4>RESOLVE : theorem -> theorem -> theorem </h4>
+
+<pre>
+    H |- t      H' |- t'
+___________________________
+
+     (H - t') union H' |- t
+
+</pre>
+
+<p><b>Justification</b>
+Suppose all the terms of
+<pre>
+     (H - t') union H'
+</pre>
+
+evaluate to <tt>true</tt>. Then <tt>t'</tt> evaluates to true, by the
+second input theorem. Therefore all the terms of <tt>H</tt> evaluate to
+<tt>true</tt>. Thus <tt>t</tt> evaluates to <tt>true</tt>.
+
+
+
+<hr><h4>DISCH : term -> theorem ->theorem -> theorem </h4>
+
+Discharging an assumption proves to be more complex than it does in HOL,
+because we have to allow for the possibility of a computation not
+terminating.
+
+
+<pre>
+            H |- t<sub>2</sub>
+_________________________________________
+
+   halts t<sub>1</sub>,  (H - {t<sub>1</sub>}) |-  t<sub>1</sub> ==> t<sub>2</sub>
+
+</pre>
+
+
+
+<p><b>Justification</b>
+
+The theorem <tt>G |- t<sub>2</sub> </tt>
+requires that in any environment in which all the expressions
+of H evaluate to <tt>true</tt>, then <em>t<sub>2</sub></em> also evaluates
+to <tt>true</tt>.
+
+<p>Now suppose we have an environment in which all the expressions of
+
+<pre>
+   halts t<sub>1</sub> ( H - {t<sub>1</sub>} )
+</pre>
+evaluate to <tt>true</tt>. In these circumstances we know that
+t<sub>1</sub>  halts. There are thus two cases to consider:
+
+<ul>
+<li> t<sub>1</sub> evaluates to <tt>true</tt>: hence all
+the  hypotheses
+in H also evaluate to <tt>true</tt>. Hence t<sub>2</sub> also evaluates  to
+<tt>true</tt>,   and   therefore   <tt>not</tt>   t<sub>1</sub>
+<tt>==></tt> t<sub>2</sub> evaluates to <tt>true</tt>.
+
+<p><li> t<sub>1</sub> evaluates to <tt>false</tt>: <tt>not
+t<sub>1</sub> </tt> evaluates to <tt>true</tt>, and hence by the
+short-circuit rule for the evaluation of <tt>==></tt>,  t<sub>1</sub>
+==> t<sub>2</sub> evaluates to <tt>true</tt>.
+
+</ul>
+
+<hr><h4> MP : theorem -> theorem -> theorem </h4>
+
+MP implements the modus ponens rule of logic.
+
+<pre>
+
+    H<sub>1</sub> |- t<sub>1</sub> ==> t<sub>2</sub>,    H<sub>2</sub> |- t<sub>1</sub>
+    __________________________________
+
+        H<sub>1</sub> union H<sub>2</sub>  |-  t<sub>2</sub>
+</pre>
+
+
+<p><b>Justification</b>
+<p>In an environment in which all the expressions of H<sub>1</sub> union H<sub>2</sub> evaluate
+to <tt>true</tt>, t<sub>1</sub> will  evaluate to <tt>true</tt>. In such an
+environment,
+<pre>
+    t<sub>1</sub> ==> t<sub>2</sub>
+</pre>
+has the same value as  t<sub>2</sub>. But, since all  the hypotheses in H<sub>1</sub>  also
+evaluate  to  <tt>true</tt>,  it   follows  that
+<tt> t<sub>1</sub> ==> t<sub>2</sub> </tt> also evaluates to <tt>true</tt>, so
+t<sub>2</sub>
+evaluates to <tt>true</tt>.
+
+<hr><h4>BETA : term -> thm;</h4>
+Our equivalent of the BETA rule of HOL is complicated by our supporting patterns.
+
+
+<pre>
+
+  ____________________________________________________________
+
+    halts t<sub>2</sub> |-  (fn p[x<sub>1</sub>..x<sub>n</sub>] => t<sub>1</sub>|f) t<sub>2</sub> = t<sub>1</sub>[x<sub>1</sub>..x<sub>n</sub> := a<sub>1</sub>..a<sub>n</sub>]
+
+</pre>
+provided
+<pre>
+    match p t<sub>2</sub> = SOME(Match([(x<sub>1</sub>,a<sub>1</sub>)..(x<sub>n</sub>,a<sub>n</sub>)],[]))
+</pre>
+(that is the match is unconditionally successful)
+
+<pre>
+
+  ____________________________________________________________
+
+    halts t<sub>2</sub> |-  (fn p[x<sub>1</sub>..x<sub>n</sub>] => t<sub>1</sub>|f) t<sub>2</sub> = f t<sub>2</sub>
+</pre>
+
+provided
+<pre>
+    match p t<sub>2</sub> = NONE
+</pre>
+(that is the match is unsuccessful)
+
+
+<pre>
+
+  ____________________________________________________________
+
+    halts t<sub>2</sub>, e<sub>1</sub>...e<sub>m</sub> |-  (fn p[x<sub>1</sub>..x<sub>n</sub>] => t<sub>1</sub>|f) t<sub>2</sub> = t<sub>1</sub>[x<sub>1</sub>..x<sub>n</sub> := a<sub>1</sub>..a<sub>n</sub>],
+    halts t<sub>2</sub>, not(e<sub>1</sub>)...not(e<sub>m</sub>) |-  (fn p[x<sub>1</sub>..x<sub>n</sub>] => t<sub>1</sub>|f) t<sub>2</sub> = f t<sub>2</sub>
+
+
+</pre>
+
+when
+<pre>
+    match p t<sub>2</sub> = SOME(Match([(x<sub>1</sub>,a<sub>1</sub>)..(x<sub>n</sub>,a<sub>n</sub>)],[ e<sub>1</sub>...e<sub>m</sub>]))
+</pre>
+
+
+
+<hr><h4>INSTANTIATE variable -> expression -> theorem -> theorem</h4>
+
+<pre>
+                H |- t
+        ___________________________
+
+        halts e, H[v:=e] |- t[v:=e]
+</pre>
+
+INSTANTIATE allows us to replace a free variable in a theorem by
+an expression. However we have to add the additional hypothesis that
+the evaluation of the expression halts.
+
+<p><b>Justification:</b>
+<p>The input theorem says that for
+any type-correct mapping from its free variables to values under which all
+expressions of H evaluate to <tt>true</tt>, the expression <tt>t</tt> also
+evaluates to <tt>true</tt>.  Now suppose we have an environment rho under
+which
+the expression <tt>e</tt> terminates normally, so that <tt>eval rho e</tt>
+is defined and
+<pre>
+eval rho g[v:=e] = true
+</pre>
+Then
+<pre>
+eval rho g[v:=e] = eval rho[v:=eval e rho] g = true
+</pre>  for g in G.
+Hence
+<pre>
+eval rho t[v:=e] = eval rho[v:=eval e rho] t = true
+</pre>
+
+
+
+<h2> Axioms </h2>
+
+We regard axioms as being pre-defined theorems which express facts about an
+implementation of SML idealised in the sense that it implements the integers.
+Note that the axioms of our system are not minimal: rather than taking a
+reductionist stance, we regard our axioms as a convenient way of
+characterising how an idealised version of SML behaves.
+
+<p>We will use axioms subject to the instantiate rule, which, as you will
+recall, introduces a halting requirement when an expression is substituted
+for a variable.
+
+
+<h3> The axioms for the members of the type <tt>int</tt></h3>
+
+
+
+<h4> The members of the type <tt>int</tt> form a commutative ring with
+identity</h4>
+
+<p> members of <tt>int</tt> form an abelian group
+<pre>
+I1      |-  x+y = y+x
+I2      |-  x+(y+z) = (x+y)+z
+I3      |-  x+0 = x
+I4      |-  x+ (~x) = 0
+I5      |-  x-y = x+(~y)
+</pre>
+
+
+<p> members of <tt>int</tt> form an abelian semi-group
+<pre>
+I6      |-  x*y = y*x
+I7      |-  x*(y*z) = (x*y)*z
+I8      |-  x*1 = x
+</pre>
+
+
+<p> to complete the ring axioms we have
+<pre>
+I9      |-  x*(y+z) = x*y + x*z
+I10     |-  x*0 = 0
+</pre>
+
+Note that I10 follows from the other axioms.
+
+<p>Note also that   these  ring   axioms  are   <em>not</em>  satisfied   by   any
+implementation of SML, for each axiom states that a particular  computation
+will terminate normally. However, many implementations of SML will raise  an
+overflow exception  when asked,  for example,  to multiply  a million  by a
+million using  integer  arithmetic. Even  implementations  of SML  such  as
+POPLOG SML will run  out of heap in  attempting to perform computations  on
+big enough integers.
+
+<p>Our system is complementary  to the type-theory of  SML. That is  sound,
+but  weak.  Our  system  is,  in  the  last  analysis,  only  sound   for a
+mathematically-ideal model  of the  language, but  is logically  much  more
+powerful.
+
+<h4> The members of the type <tt>int</tt> form an integral domain</h4>
+
+<pre>
+I11   x*y = 0 |- x=0 orelse y=0
+</pre>
+
+<h4> The members of the type <tt>int</tt> form a totally ordered set.</h4>
+
+The axioms for them to form a partially-ordered set are:
+<pre>
+I12   x<=y, y<=x   |-   x=y
+I13   |- x<=x
+I14   |- x<=y, y<=z  |- x<=z
+</pre>
+And to obtain total order, we add:
+<pre>
+I15  |- x<=y orelse y<=x
+
+I16  |- x<=x+1
+</pre>
+
+<h4> Induction over the integers and structures </h4>
+
+Since structural induction can be used to shorten proofs, we support
+it as well as induction over the integers.
+
+
+
+
+
+The axiom of induction for the natural numbers has to be written as a
+proof-rule in our system. Now, SML does not have an explicit representation
+of the natrual numbers. We have two choices: we could construct them as a
+data-type, or we could regard them as a subset of the integers.
+Constructing them as a data-type has some advantages: it means that we are
+free to treat the -int- datatype in the way that most SML implementations
+treat it, as a fixed-precision representation of a subset of the integers.
+
+<p>However, working with user-defined natural numbers would be clumsy
+notationally, so we prefer to treat them as a subset of <tt>int</tt>. With
+this approach, the axiom of induction becomes:
+
+<pre>
+INDUCTION_int : (<'a> -> bool) -> theorem -> theorem -> theorem;
+</pre>
+
+<pre>
+
+        H |- p 0              G, p(n) |- p(n+1)
+       ________________________________________________
+
+          0<=n, H |- p(n)
+
+</pre>
+
+It should be noted that this form admits non-standard models of the
+integers.
+
+
+<h3> Axioms and rules for lists. </h3>
+We have a choice available here. Are we to include a structural-induction
+axiom for lists, or are we going to conduct all proofs about lists in terms
+of induction over the natural numbers? Structural induction is more
+convenient for many proofs. Moreover, if we don't have a rule for
+structural induction we will need an axiom which says that the
+<tt>length</tt> function is well-defined.
+
+
+<p>The list axioms are
+<pre>
+|- halts(x::l)
+|- [] <> x::l
+
+WRONG!!!
+|- l = [] orelse l = hd(l)::tl(l)
+|- hd(x::l) = x
+|- tl(x::l) = l
+ x<sub>1</sub>::l1 = x2::l2 |- x<sub>1</sub>=x2
+ x<sub>1</sub>::l1 = x2::l2 |- l1=l2
+
+</pre>
+
+
+
+<h4>INDUCTION_LIST
+(&lt;list> -> &lt;bool>)  -> theorem -> theorem -> theorem
+</h4>
+<pre>
+H |- p []         H',  p l  |-  p x::l
+______________________________________
+
+       H union H' |- p l
+</pre>
+Where <tt>x</tt> and <tt>l</tt> are not free in G.
+
+
+
+<h2> What we can't talk about </h2>
+Our system does not allow us to manipulate type expressions. So, for example,
+there is no way of saying in our system that the integers form a ring, for
+example:
+<pre>
+    Ring(int)
+</pre>
+Neither can say, for example, that addition is commutative
+<pre>
+    commutative(op +)
+</pre>
+
+We could get round this problem by introducing the notion of a
+<em>generator</em>. A generator  <tt>g</tt> for a type <b>T</b> is a
+function  <tt>g:int -> <b>T</b></tt> which always returns an unspecified
+member of <b>T</b> (though of course, being a function, it always returns the
+same result for a given argument). With a generator, we could say:
+<pre>
+fun commutative f g
+    f(g 1, g 2) = f(g 2, g 1);
+</pre>
+
+
+
+<h2> The Halting Rules </h2>
+The interpretation that we put upon  <tt>halts(e)</tt> is that the expression
+<tt>e</tt> terminates without raising an exception. This, of course, rules
+out a treatment of programs which use exceptions "creatively", as a means of
+specifying what is regarded as the normal flow of control.
+
+
+
+
+<pre>
+    H |- t<sub>1</sub> = t<sub>2</sub>
+_____________________
+
+   H |- halts t<sub>1</sub>
+</pre>
+
+
+
+<p>For f in { +,-,*,'&lt;', '<=', '>', '>=',min,max,sign,sameSign,<> }
+
+<pre>
+    H<sub>1</sub> |- halts(t<sub>1</sub>)      H<sub>2</sub>  halts(t<sub>2</sub>)
+   ______________________________________
+
+    H<sub>1</sub> union H<sub>2</sub> |-  halts f(t<sub>1</sub>,t<sub>2</sub>)
+
+</pre>
+
+<pre>
+
+   H |- t<sub>2</sub><>0     H<sub>1</sub> |- halts(t<sub>1</sub>)       H<sub>2</sub> |- halts(t<sub>2</sub>)
+   _______________________________________________________
+
+   H union H<sub>1</sub> union H<sub>2</sub> |-  halts t<sub>1</sub> rem t<sub>2</sub>
+
+
+</pre>
+
+
+<h2> Some Examples </h2>
+
+<pre>
+fun length [] = 0 | length(x::l) = 1 + length l;
+</pre>
+
+<h4>Theorem</h4>
+
+<tt> |- halts length l </tt>
+
+<pre>
+halts length [] |- halts length []                            ASSUME
+
+halts (fn [] => 0
+        | x::l => 1+length l) []      |- halts length []      LEFTDEF
+
+|- halts []                                                   EVAL
+
+halts [] |- (fn [] => 0 | x::l => 1+length l) [] = 0          BETA
+
+
+ |- (fn [] => 0 | x::l => 1+length l) [] = 0                  MP
+
+
+halts 0 |- halts length []                                    SUBST_LEFT
+
+|- halts 0                                                    EVAL
+
+|- halts length []                                            MP
+
+</pre>
+
+Concluding the base case.
+
+
+<pre>
+halts(length(x::l)) |- halts(length(x::l))                    ASSUME
+
+|- halts (x::l)                                               AXIOM
+
+halts(x::l) |-  (fn [] = 0 | x::l => 1+length l) (x::l)
+                    = 1+length l                              BETA
+
+|-  (fn x::l => 1+length l) (x::l) = 1+length l               MP
+
+halts (fn [] =>  0
+        | (fn x::l => 1+length l) (x::l))
+                |- halts(length (x::l))                       LEFTDEF
+
+
+halts(1 + length l) |- halts(length(x::l))                    SUBST_LEFT
+
+|- halts 1                                                    EVAL
+
+|- halts (1+y)                                                SUBST
+
+halts length l |- halts length l                              ASSUME
+
+halts length l |- halts(1 + length l)                         SUBST
+
+halts l |- halts(length(x::l))                                MP
+
+|- halts l                                                    INDUCE_LIST
+
+</pre>
+Quid Erat Demonstrandum
+
+
+<h4> Theorem  <tt>halts(a@b)</tt> </h4>
+
+
+
+<p>Proof:
+
+Base Case. We must try and show that <tt>halts([]@b)</tt>. So let's
+assume it, and see if we can rid ourselves of the hypothesis.
+<pre>
+halts([]@b) |- halts([]@b)                                  ASSUME    (1)
+</pre>
+
+If we unfold the <tt>halts</tt> on the left, we may be able to massage
+the resulting expression out of existence.
+<pre>
+halts(fn ([],b) => b
+      | (a::l,b) => a::(l@b) ([],b) |- halts([]@b)          DEF_LEFT  (2)
+
+halts ([],b) |-
+    fn ([],b) => b | (a::l,b) => a::(l@b) ([],b) = b        BETA      (3)
+
+</pre>
+
+So now we have to show that the expression <tt>([],b)</tt> halts
+for every variable <tt>b</tt>.
+<pre>
+|- halts []                                                 EVAL_HALTS (4)
+
+|- halts b                                                  HALTS_VAR  (5)
+
+|- halts ([],b)                                             HALTS_PAIR (6)
+
+</pre>
+
+We can now get rid of our halting condition by resolution with (3)
+
+<pre>
+|- (fn ([],b) => b | (a::l,b) => a::(l@b)) ([],b) = b       RESOLVE (7)
+
+</pre>
+So let's use this equation to simplify the hypothesis of (2).
+
+<pre>
+halts b |- halts([]@b)                                      SUBST_LEFT (8)
+</pre>
+And now we can trundle (5) into use, to obtain
+
+<pre>
+|- halts([]@b)                                                RESOLVE (9)
+</pre>
+Which concludes our base case.
+
+
+<p><b>Inductive Step</b></p>
+We proceed in much the same way, assume what we want to prove,
+and try to massage the hypothesis, by unfolding it.
+
+<pre>
+halts(x::l@b) |- halts(x::l@b)                                ASSUME  (10)
+
+
+halts(
+  (fn ([],b) => b
+      | (a::l,b) => a::(l@b))(x::l,b))
+                    |- halts(x::l@b)                         DEF_LEFT (11)
+
+</pre>
+
+And, as before, we'll apply BETA and get rid of the halting condition.
+<pre>
+halts(x::l,b) |-
+    (fn ([],b) => b
+      | (a::l,b) => a::(l@b)) (x::l,b) = x::(l@b)             BETA    (12)
+
+</pre>
+
+But it's a rather more complicated halting condition. No matter,
+we can use the halting rules for cons and pair-creation.
+<pre>
+|- halts x                                                 HALTS_VAR (13)
+
+|- halts l                                                 HALTS_VAR (14)
+
+|- halts (x::l)                                            HALTS_CONS (15)
+
+|- halts b                                                 HALTS_VAR  (16)
+
+|- halts (x::l,b)                                          HALTS_PAIR (17)
+
+</pre>
+
+Whence, resolution with (12) gets us:
+
+<pre>
+|- (fn ([],b) => b
+      | (a::l,b) => a::(l@b)) (x::l,b) = x::(l@b)          RESOLVE (18)
+
+</pre>
+We can now substitute back in (11), obtaining
+<pre>
+halts(x::(l@b)) |- halts(x::l@b)                           SUBST_LEFT (19)
+</pre>
+And use the fact that list-construction halts
+
+<pre>
+halts(l@b) |- halts(l@b)                                   ASSUME (20)
+
+|- halts x                                                 HALTS_VAR (21)
+
+halts(l@b) |- halts(x::(l@b))                              HALTS_CONS (22)
+</pre>
+Resolution now gains us what we need for structural induction:
+
+<pre>
+halts(l@b) |- halts((x::l)@b)                              RESOLVE (23)
+
+</pre>
+So, finally, from induction on (9) and (23) we conclude:
+<pre>
+|- halts(l@b)                                              INDUCE_LIST (24)
+</pre>
+
+<h4>Theorem</h4>
+<tt>length(a@b) = length(a)+length(b)</tt>
+
+<p>Proof
+
+<pre>
+halts([]@b) |- length([]@b) = length([]@b)                 SYMMETRIC  (26)
+</pre>
+
+By resolution with (9) above
+<pre>
+   |- length([]@b) = length([]@b)                          REDUCE (27)
+</pre>
+
+Unfolding the right-hand call of <tt>@</tt>
+<pre>
+   |- length([]@b) = length(fn ([],b) => b |
+        (a::l,b) => a::(l@b)) ([],b))
+</pre>
+
+....
+
+
+Theorem
+
+length l = 0 ==> l = []
+
+Proof
+
+Base Case
+
+[] = []
+
+length [] = 0
+
+
+
+
+
+sorted a, sorted b |- sorted(merge a b)
+
+
+length(a) + length(b) = 0 |- a = []
+
+
+|- length(a)>=0
+
+length(a) + length(b) = 0 |- length a + length b = 0
+
+a>c, b>=d |- a+b>c+d
+
+
+x+y = 0, x>=0, y>=0 |- x=0
+
+
+x>=0 |- x=0 orelse x>0
+
+
+
+
+
+
+
+<h3>HOL Rules not Treated </h3>
+
+
+<p>Note that the <em>Abstraction</em> rule of HOL is not present in our
+system, because it introduces equality between functions, and this is not
+well typed in SML. We could introduce function-equality as a
+meta-construct like <tt>halts</tt>, but since we can always express
+<em>f=g</em> by saying that
+<em>f x<sub>1</sub>...x<sub>n</sub> = g x<sub>1</sub>...x<sub>n</sub></em>
+we see no need to introduce this particular meta-construct.
+
+<p>The status of the INST_TYPE rule is not clear.
+
+<h2>Type Correctness of Our Rules </h2>
+
+
+<h2>Discussion</h2>
+The axioms could be weaker.
+
+<p>Using patterns would make life a lot easier.
+
+<pre>
+bnd = matches patt arg, halts arg |-  (fn patt => e | rest)arg =  e[bnd]
+</pre>
+
+matches p1 e1 [] =  b1, matches p2 e2 b1 = b2   |- matches p1::p2 e1::e2 b2
+
+<b>NOTE</b> The HOL manual has simultaneous substitution, of multiple
+variables, and I need to check the Meyer paper re. models of the lambda
+calculus on this matter.

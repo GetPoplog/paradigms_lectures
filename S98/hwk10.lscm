@@ -1,0 +1,35 @@
+
+         --------------------------------------------------------
+         | CS287 HOMEWORK 10 Spring 98  Due 11.59pm  THU 7MAY97 |
+         --------------------------------------------------------
+
+[1] Using the unify function discussed in the lectures, write a function
+to perform resolution in the Predicate Calculus. The function call:
+
+    (resolve C1 C2)
+
+will take two clauses C1 and C2 and will form the first resolvent it can
+find. Recall that a clause is a disjunction of literals
+
+    (or L1 L2 L3....Ln)
+
+where each literal is a predicate applied to arguments  (P A1..An) ,
+or the negation of such, (not (P A1...An)).
+
+You can find the unify function in $cs287/public_html/lecture20.lscm
+You'll also need an multi_subst function to consummate the resolution.
+There's a suitable function in lecture 17
+
+[2] Express in clausal form the following statements:
+
+Bill is the owner of Socks
+
+Socks killed Mouse
+
+If x kills y, then  y is the victim of x
+
+If x owns y, and z is the victim of y, then z is the victim of x.
+
+
+[3] Using the clauses you have written for [2], and the resolution function
+you have written for [1], prove that  Mouse is the victim of Bill.

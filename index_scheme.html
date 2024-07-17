@@ -1,0 +1,140 @@
+
+<html><head><title>
+Index to Scheme Constructs
+</title></head>
+<BODY bgcolor = "white">
+
+
+<h1>  Index to Scheme Functions and Special Forms
+</h1>
+
+
+
+
+<hr>
+<p>Note that this index provides references to places in the 287 lecture notes relating to standard Scheme functions,
+special forms and also functions which we define for the purposes of the class. The descriptions of the standard
+facilities of Scheme are not definitive, but serve to characterise the behaviour of these facilities adequately
+for the purposes of the class.</p>
+
+<p>A definition of Scheme emanating from  MIT is on-line in the UMASS Scheme system. It is close to the IEEE Standard.</p>
+
+<p>This index is under construction. See $popscheme/examples.scm for further examples. Section 6.6 onwards has lacunae.</p>
+<hr>
+
+
+<h2> Index to topics covered in the course. </h2>
+
+ L:abstract <a href="lecture6.html#abstract">   The need for abstraction </a><br>
+ L:higher-order functions  <a href = "lecture8.html#higher_order"> How can we understand functions which return functions as results?</a><br>
+ L:parsers  <a href = "lecture8.html#makers"> Making parser-building functions</a><br>
+
+
+
+<h2> Index to functions and special forms </h2>
+
+
+ ->string              <a href="lecture6.html#tostring">Converts any Scheme object to a string</a><br>
+ ()                    <a href="lecture3.html#nil">  The empty list</a><br>
+ and &#160;&#160;        <a href="lecture5.html#and"> The construct <tt> (and expr-1....expr-n) </tt> is a special form. </a><br>
+ append &#160;&#160;     <a href="lecture5.html#append"> The <tt>append</tt>&#160; function joins two lists together to make one.</a><br>
+ apply                 <a href="lecture10.html#apply"> Evaluating <tt>(apply f list)</tt> function explicitly applies a function <tt>f</tt> to a list of arguments</a><br>
+ assoc                 <a href="lecture9.html#assoc"> <tt>(assoc x alist)</tt>finds entry for <tt>x</tt> in <tt>alist</tt> </a><br>
+ assq                  <a href="lecture9.html#assq"> <tt>(assq x alist)</tt>finds entry for <tt>x</tt> in <tt>alist</tt>, using <tt>eq?</tt> </a><br>
+ assv                  <a href="lecture9.html#assv"> <tt>(assv x alist)</tt>finds entry for <tt>x</tt> in <tt>alist</tt> </a><br>
+ atom                   (atom <b>obj</b>) is true if <b>obj</b> is not a pair<br>
+ average &#160;&#160;    <a href="lecture4.html#average"> Writing <tt> average </tt> to find the average value of a list.</a><br>
+ begin &#160;&#160;      <a href="lecture4.html#begin"> <tt>(begin <b>expr<sub>1</sub>..expr<sub>n</sub></b>)</tt> evaluates the expressions in sequence</a><br>
+ boolean?              <a href="lecture3.html#types">   recognises if an object is a boolean </a><br>
+
+ cadr              <a href="lecture3.html#cadr">  (cadr l) = (car (cdr l)) is the second member of l </a><br>
+ car              <a href="lecture3.html#car">  (car l) is the first member of the list l </a><br>
+ case              <a href="lecture5.html#case">  (case <b>expr cases</b>) chooses a <b>case</b> depending on the value of <b>expr</b>  </a><br>
+ cddr              <a href="lecture3.html#cadr">  (cdr (cdr l)) is a list of all members of the list l except the first two</a><br>
+ cdr              <a href="lecture3.html#car">  (cdr l) is a list of all members of the list l except the first </a><br>
+ char?              <a href="lecture3.html#types">   recognises if an object is a character </a><br>
+ cond &#160;&#160;       <a href="lecture5.html#cond"> The <tt>cond</tt>&#160; special-form is more convenient than nested if's</a><br>
+ cons                  <a href="lecture3.html#cons">  Making Lists.</a><br>
+ cons_parse            <a href="lecture7.html#cons_parse"> <tt>(cons_parse tree rest)</tt> builds a parse-record </a><br>
+ cos                   The cosine function. Call (cos t) where the angle t is in <i>radians</i>.<br>
+ count_occurrences     <a href="lecture9.html#count_occurrences"> <tt>(count_occurrences a l)</tt> finds if atom <tt>a</tt> occurs in list structure<tt>l</tt> </a><br>
+ define                <a href="lecture3.html#define"> (define  <b>form expr</b>) is a shorthand way of defining a function </a><br>
+ define &#160;&#160;     <a href="lecture2.html#define"> (define variable <b>expr</b>) declares and binds a variable </a><br>
+ display &#160;&#160;    <a href="lecture4.html#display"> <tt>(display obj)</tt> outputs an object to the terminal</a><br>
+ do <br>
+ equal? <br>
+ eqv?  <br>
+ eq?   <br>
+ example &#160;&#160;    <a href="lecture5.html#example"> The <tt>example</tt>&#160; function allows you run tests on functions as you compile</a><br>
+ factorial             <a href="lecture10.html#factorial"> Recursive and iterative processes for factorial.</a><br>
+ factorial             <a href="lecture3.html#factorial">  The factorial function - an example of recursion</a><br>
+ fib                   <a href="lecture10.html#fib"> The Fibonacci Numbers - A simple definition gives exponential complexity </a><br>
+ flatten               <a href="lecture9.html#flatten"> <tt>(flatten tree)</tt> makes a list of all the objects stored in nodes of <tt>tree</tt>. </a><br>
+ if                    <a href="lecture3.html#if">  The (if <b>condition expr1 expr2</b>) construction</a><br>
+ lambda &#160;&#160;     <a href="lecture2.html#lambda"> An expression (lambda<b>(v1..vn) expr</b>) denotes a function .</a><br>
+ lambda &#160;&#160;     <a href="lecture5.html#lambda"> <tt> lambda </tt>&#160; expressions which take a variable number of arguments </a><br>
+ last<br>
+ length            (length l) is the number of elements in list l<br>
+ let &#160;&#160;        <a href="lecture4.html#let"> <tt>(let (<b>binding<sub>1</sub>..binding<sub>n</sub>)body)</b></tt> introduces local variables </a><br>
+ let* &#160;&#160;       <a href="lecture4.html#let*"> <tt>(let* (<b>binding<sub>1</sub>..binding<sub>n</sub>)body)</b></tt> also introduces local variables </a><br>
+ letrec &#160;&#160;     <a href="lecture4.html#letrec"> <tt>(letrec (<b>binding<sub>1</sub>..binding<sub>n</sub>)body)</b></tt> lets you write local recursions</a><br>
+ list &#160;&#160;       <a href="lecture5.html#list"> The <tt>list</tt>&#160; function is more convenient than <tt>cons</tt>&#160; for building longer lists.</a><br>
+ list-tail <br>
+ load &#160;&#160;       <a href="lecture2.html#load">The function <tt>load</tt> loads a file of Scheme code.</a><br>
+ lookup                <a href="lecture9.html#lookup"> <tt>(lookup x alist)</tt>finds value for <tt>x</tt> in <tt>alist</tt> </a><br>
+ map                   <a href="lecture5.html#map"> The <tt>map</tt>&#160; function is built-in, resembles <tt>map_list</tt>&#160;. </a><br>
+ map_list              <a href="lecture4.html#map_list"> The "<tt>map_list</tt>" function transforms a list in a general way.</a><br>
+ map_list&#160;&#160;    <a href="lecture5.html#map_list"> Some examples of the use of map_list</a><br>
+ member &#160;&#160;     <a href="lecture5.html#member"> The expression <tt>(member x list) </tt>&#160;  finds an object <tt>x</tt> in the <tt>list</tt>. </a><br>
+ member? &#160;&#160;    <a href="lecture5.html#member_query"> The <tt> member? </tt>&#160; function asks whether an object belongs to a list</a><br>
+ memq    This is like member but uses eq? for comparison<br>
+ memv    This is like member but uses eqv? for comparision<br>
+ mk_builder            <a href="lecture8.html#mk_builder"> <tt>(mk_builder label)</tt></a> makes a builder for abstract syntax</a><br>
+ mk_parser_seq         <a href="lecture8.html#mk_parser_seq"> <tt>(mk_parser_seq p1 p2 b)</tt></a> combines two parsers in sequence</a><br>
+ mk_parser_singleton   <a href="lecture8.html#mk_parser_singleton">   makes a parser to recognise 1-element sequences </a><br>
+
+ not                   (not <b>expr</b>) is the logical negation of the value of <b>expr</b>. <br>
+ nth-cdr <br>
+ null?              <a href="lecture3.html#types">   recognises if an object is the null object '() </a><br>
+ number?              <a href="lecture3.html#types">   recognises if an object is a number </a><br>
+ occurs_atom?          <a href="lecture9.html#occurs_atom"> <tt>(occurs_atom? a l)</tt> finds if atom <tt>a</tt> occurs in list structure <tt>l</tt> </a><br>
+ or &#160;&#160;         <a href="lecture5.html#or"> The construct <tt> (or expr-1...expr-n) </tt> is a special form. </a><br>
+ pair?              <a href="lecture3.html#types">   recognises if an object is a pair </a><br>
+ parse_determiner      <a href="lecture7.html#parse_determiner"> <tt>(parse_determiner ltoks)</tt> recognises if <tt>ltoks</tt> starts with a <b>determiner</b> </a><br>
+ parse_noun            <a href="lecture7.html#parse_noun"> <tt>(parse_noun ltoks)</tt> recognises the grammatical class "noun" </a><br>
+ parse_noun_phrase     <a href="lecture7.html#parse_noun_phrase"> <tt>(parse_noun_phrase ltoks)</tt> recognises the grammatical class "noun_phrase" </a><br>
+ parse_sentence        <a href="lecture7.html#parse_sentence"> <tt>(parse_sentence ltoks)</tt> recognises the grammatical class "sentence" </a><br>
+ parse_verb            <a href="lecture7.html#parse_verb"> <tt>(parse_verb ltoks)</tt> recognises the grammatical class "verb" </a><br>
+ parse_verb_phrase     <a href="lecture7.html#parse_verb_phrase"> <tt>(parse_verb_phrase ltoks)</tt> recognises the grammatical class "verb_phrase" </a><br>
+ procedure?              <a href="lecture3.html#types">   recognises procedure objects, that is functions </a><br>
+ quote                 <a href="lecture3.html#quote">  Quoted Expressions are Compound Data.</a><br>
+ record-class          <a href="lecture6.html#record-class"> Using <tt>record-class</tt> to create opaque records.</a></br>
+ reduce &#160;&#160;     <a href="lecture5.html#reduce"> The <tt>reduce</tt>&#160; function further generalises <tt>map_list</tt>&#160;.</a><br>
+ rest_parse            <a href="lecture7.html#rest_parse"> <tt>(rest_parse tree rest)</tt> selects the unparsed list of tokens from a parse-record </a><br>
+ reverse               <a href="lecture9.html#reverse"> <tt>(reverse l)</tt> makes a list of the objects of l in reverse order</a><br>
+ select_set            <a href="lecture5.html#select_set"> The <tt>select_set</tt>&#160; function lets you choose members out of a list </a><br>
+ set!                  <a href="lecture11.html#setbang">(set! <b>variable expr</b>) evaluates the expression and binds the variable to have the value.</a><br>
+ set!                   <a href="lecture11.html#updater"(set! <b>expr1 expr2</b>) evaluates the expr2 and updates the appropriate component of expr1 [non-standard]</a><br>
+ set-car!              (set-car! <b>list expr</b>) sets the first element of <b>list</b> to be the value of <b>expr</b> <br>
+ set-cdr! <br>
+ sin                   The sine function. Call (sin t) where the angle t is in <i>radians</i>.<br>
+ sqrt                  The square-root function. Call (sqrt t). Result may be a complex number.<br>
+ string?              <a href="lecture3.html#types">   recognises if an object is a string such as "hello" </a><br>
+ subst                 <a href="lecture9.html#subst"> <tt>(subst x y l)</tt> replaces all occurrences of atom <tt>x</tt> by <tt> y </tt> in list structure<tt>l</tt> </a><br>
+ symbol?              <a href="lecture3.html#types">   recognises if an object is a symbol such as 'x </a><br>
+ symbol->string<br>
+ trace &#160;&#160;      <a href="lecture5.html#trace"> The <tt>trace</tt>&#160; function allows you to see what a program is doing.</a><br>
+ tree_parse            <a href="lecture7.html#tree_parse"> <tt>(tree_parse tree rest)</tt> selects the parse-tree from a parse-record </a><br>
+ vector?              <a href="lecture3.html#types">   recognises if an object is a vector </a><br>
+ unify                <a href="lecture20.html#unification"> sees if two expressions can be made the same</a><br>
+ updater              <a href="lecture11.html#updater"> supports (set! (f x) val)  etc...</a><br>
+ write &#160;&#160;      <a href="lecture4.html#write"> <tt>(write obj)</tt> outputs an object read to be read back into Scheme</a><br>
+ zero?                   (zero? n) determines whether a number is zero.
+
+
+
+
+
+
+
+</html>

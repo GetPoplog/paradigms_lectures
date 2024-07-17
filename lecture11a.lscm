@@ -1,0 +1,518 @@
+
+
+
+Course 287 - Lecture 11a
+Implementing Java-style Object Orientation in Scheme
+-----------------------------------------------------
+
+---------------------------------------------------------------------------
+
+
+Implementing Java-style Object Orientation in Scheme
+----------------------------------------------------
+We now have to hand enough tools to start to build an implementation
+of object-orientation in Scheme, along the same lines as Java. We will
+base this on the record-class capability of UMASS Scheme.
+
+    # We will use the capabilities of record-class to allow to represent
+    _________instances of O-O classes. Essentially, all the instances of a particular
+    class of objects will be records of a particular record-class created
+    by Scheme.
+    # However we will also need to represent the classes themselves with
+    a more descriptive apparatus than is provided directly by record-class.
+    This we will do by introducing records which themselves represent
+    _______classes_ __of_ _______objects.
+
+
+Representing a class of objects
+-------------------------------
+Firstly, we need a data-structure to represent a class of objects.
+The record-class facility supports aspects of object-classes (for example
+their opacity), but it does not directly support other aspects such
+as inheritance. To get round this problem we'll use record-class to
+create a class of records, class_class, each instance of which holds
+the information necessary to support those aspects of Object Orientation
+that we will implement including method-call with inheritance.
+
+For those familiar with Java, our class_class record will hold information
+such as is present in "*.class" files. Note that we shall not be constructing
+a ________________statically-typed object-oriented system, so that the type information
+present in "*.class" files will not be present in our representation.
+[Note also that the "*.class" files are a linearised form suitable
+for transmission across the net].
+
+In Java methods can be ______static_ _______methods or ________________instance-methods. A static
+method is one whose meaning does not require knowing about which instance
+of a class we are dealing with, but just the class itself. We shall
+implement static methods as functions which do not take a class-instance
+as a specific argument. For example, if class_point is the class-record
+for points, then we might have a static-method which returns a count
+of how many point-objects have been created.
+
+    (send class_point 'how_many)
+
+This is contrasted with an instance-method
+
+    (send p1 'x)
+
+Here the 'x method for point is going to be a lambda-expression which
+is passed the actual point-instance as a parameter. The attributes
+to be held with a class are:
+
+    # Each class has a ____name,
+    # it normally _______extends_ _a_ ___________super-class
+    # it may _________implement_ __________interfaces
+    # it has static methods
+    # it has non-static methods
+    # it has static fields
+    # the instances of the class have non-static fields.
+We can provide for all these capabilities by defining the class of
+classes as follows.
+
+(define class_class (record-class 'class
+    '(object         ; the class name
+      object         ; its super-class
+      object         ; its interfaces
+      object         ; an association list for finding static methods.
+      object         ; an association list for non-static methods.
+      object         ; the static fields of the class
+      object         ; the non-static fields of the class
+    )))
+
+Consider for example how a class to represent a Student object might
+be defined in Java
+
+    class Student extends Person implements Examinable, Feedable
+        {int attendances = 0;              // a field
+         void attend_class()              // a method
+            {attendances = attendances+1}
+
+        }
+
+
+Here Student is the name of the class, Person is the super-class, Examinable
+and Feedable are interfaces which the class implements. The class-record
+for Student will have
+
+    # the class-name slot filled in with the symbol 'student,
+    # the super-class slot will be filled with a pointer to the class
+    record for the person class
+    # and the interfaces slot will contain a list of the representations
+    of the Examinable and Feedable interfaces.
+    # The instance-method attend_class will be represented by an entry
+    in the association list for non-static methods - an entry such
+    as:
+
+
+(list 'attend_class
+    (lambda (this)
+        (set! (send this 'attendances) (+ (send this 'attendances) 1))))
+
+
+
+Note that in a language like Java, the class-record is not explicitly
+available to the user of the language [see ___The_ ____Java_ _______Virtual_ _______Machine
+_____________Specification]. Now we shall need to unpack the constructors and selectors
+of the class of classes.
+
+(define cons_class              (car class_class))
+(define sel_class               (caddr class_class))
+(define name_class              (car sel_class))
+(define super_class             (cadr sel_class))
+(define interfaces_class        (caddr sel_class))
+(define static_methods_class    (cadddr sel_class))
+(define methods_class           (caddddr sel_class))
+(define static_fields_class     (cadddddr sel_class))
+(define non_static_fields_class (caddddddr sel_class))
+(define is_class              (cadddr class_class))
+
+
+Here the name of the class just serves the purpose of labelling members
+of the class for our own purposes. The super_class field serves to
+implement the idea of a _______________class-hierarchy - we'll adopt the convention
+that every class _______extends a top-level class, the ______object class.
+
+
+
+The object class
+----------------
+It's useful to have a class which is the ancestor of all other classes
+in the class-hierarchy. Following Java, we'll call it the "object"
+class. It needs to have rather few properties.
+
+(define class_object
+    (cons_class
+        'object                          ; The class is called "object"
+        #f                               ; it has no super-class
+        '()                              ; it has no interfaces
+        '()                              ; no static methods
+        (list                            ; it has a "->string" method
+            (list '->string ->string     ; which is the ->string
+                ))                       ; function
+        '()                              ; no static fields.
+        '()                              ; no non-static fields
+        )
+    )
+
+
+
+Defining Our Own Classes
+------------------------
+We agreed above that we will use the record-class capability of UMASS
+Scheme to create the instances of an object-oriented class of objects.
+Let's consider how we would implement a "person" class. Suppose we
+want a person object to have _____name,_ ___age_ ___and_ ___sex as fields. With the
+older concept of a data-structure, we would use a call like:
+
+(define info_person (record-class 'person '(object object object)))
+
+to create a class. However the info_person variable now holds a list-structure
+which has useful goodies for getting at the fields of a person, but
+offers no support for modern O-O features like inheritance.
+
+We also agreed that we would use a class-record to hold information
+about the O-O features. How are we to combine these requirements, namely
+to have opaque records for instances of classes, but to have effective
+access to the class-record that defines the place of the class in the
+hierarchy? Well... we can use the fact that the first argument of record-class
+does not have to be a symbol. Instead we can make it be a class-record.
+So, let's try making a class-record for a person:
+
+(define class_person
+    (cons_class
+        'person         ; the class is called "person"
+        class_object    ; its super-class is the object class
+        #f              ; it implements no interfaces
+       '()              ; it has (initially) no static methods
+       '()              ; it has (initially) no non-static methods
+       '()              ; it has (initially) no static fields
+       '(name age sex)  ; the non-static fields
+     ))
+
+We can use the imperative paradigm later to add in methods to the class.
+
+
+Now let's get the capability for making class-instances. (define person_info
+(record-class 'person '(object object object))) This gives us a bundle
+of capabilities for creating person records and accessing their fields.
+However, in the Object-Oriented paradigm, we would like these capabilities
+to be available in the class-record. Since they are all functions,
+they should appear as methods. Let's consider the constructor:
+
+(define cons_person (car info_person))
+
+This should appear as a method in the class_person record. Let us call
+it the "new" method. And we can achieve this thus: (set! (static_methods_class
+class_person) (list (list 'new cons_person)))
+
+Let's just discuss the difference between static and non-static methods.
+Essentially, a non-static method needs to have available an instance
+of the class of which it is a member, while a static method does not.
+In Java, the class-instance available to a non-static method is called
+this. In our case we will, by convention, call it this, but it will
+be passed explicitly as the first argument of a non-static method.
+Our constructor function is a static method, because it is creating
+an instance of the class which instance does not yet exist [in this
+we differ from Java "constructors" which are really non-static methods
+acting as construction-helpers, typically filling in the values of
+fields of a class-instance already allocated as part of the new mechanism
+of Java]
+
+By contrast, the selector functions are non-static methods.
+
+(define sel_person             (caddr info_person))
+(define name_person            (car sel_person))
+(define age_person             (cadr sel_person))
+(define sex_person             (caddr sel_person))
+
+
+
+    (set!  (methods_class class_person)
+                (list
+                    (list 'name name_person)
+                    (list 'age  age_person)
+                    (list 'sex  sex_person)
+                )))
+
+So, we have now created a representation of our class of persons. Later,
+we might like to add a ->string method.
+
+It's all very well having our methods in place in the class-record.
+How are we to use them? Recall that we discussed a formalism like
+
+    (send p 'age)
+
+as a means of getting hold of the value of the age-field of a person-record
+p. How would we implement this? To do this we need one more facility
+of UMASS Scheme, namely the capability of accessing, from a record,
+the object that was passed in as first argument of record-class. If
+r is a record then
+
+    (props_record r)
+
+is that object.
+
+How will we invoke methods?
+---------------------------
+We are now ready to write the function send. First let's note that
+we don't know how many arguments send will have. For example, to create
+a new person record we do:
+
+    (send class_person 'new "Jeremiah Jolt" 101 "male")
+
+so that send takes extra arguments sufficient to construct the class-instance
+required. Thus (1) we use the (lambda msg..) form which allows us to
+handle a variable number of arguments. Given the message, we next find
+ (2-3) what object is the recipient of the message, and (4) the name
+of the method to be invoked.
+
+There are (5) two possible kinds of recipient. If the recipient is
+a class-record, then the method-name must be the name of a static-method,
+So (6) we search for it. If (7) we find it, we apply it to the remaining
+arguments, and we're done. Otherwise (8) our method-call fails, and
+we have an error.
+
+For any other kind of recipient (9) we try to find an instance-method.
+If (10) we are successful, then we apply the instance-method to a list
+of arguments which begins with the recipient.
+
+(define send
+    (lambda msg                                      ;(1) variadic
+        (let                                         ;(2) get
+            ((recipient    (car msg))                ;(3) who should do it
+             (command  (cadr msg))                   ;(4) what to do
+             (args     (cddr msg))
+             )
+            (if (is_class recipient)                 ;(5) if its a class
+                (let                                 ;
+                    ((m (find_static_method          ;(6) must be static
+                            command
+                            recipient)))
+                    (if m (apply m args)             ;(7) use method
+                        (error "no static method"    ;(8) if it exists
+                            command "for" recipient)
+                        ))                           ; end if, let
+
+                (let ((m (find_instance_method       ;(9) try non-static
+                            command
+                            recipient)))
+                    (if m (apply m                   ;(10) use method
+                            (cons recipient args))
+                        (error "no instance method"  ;(11) if it exists
+                            command "for" recipient)
+                        ))                           ; end if, let
+                )                                    ; end if
+            )
+        )
+    )                                                ; end let,lambda,def
+
+
+Finding a static method is not too difficult:
+
+(define (find_static_method command recipient)
+    (let* (
+         (alist (static_methods_class recipient) )
+         (pair  (assoc command alist))
+         )
+        (if pair
+            (cadr pair)
+            #f)))
+
+[But we have some more work to do to handle inheritance]
+
+Finding an instance method requires us to use the props_record capability.
+In this case the recipient is a class-instance, so we have to use props_record
+to access the class-record.
+
+(define (find_instance_method command recipient)
+    (let* (
+         (class-record (props_record recipient))
+         (alist (methods_class class-record))
+         (pair (assoc command alist))
+         )
+        (if pair (cadr pair) #f)
+        )
+    )
+
+
+
+Automatically Building Our Classes
+-----------------------------------
+We saw above how to create an object-oriented class using the record-class
+capability of UMASS Scheme. However there were several steps that we
+had to do manually, such as taking the selector functions returned
+by record-class and converting them into a methods in the class-record.
+It would be nice to be able to do something like:
+
+    (define class_person
+            (make_class 'person class_object '()  '(name age sex))
+        )
+
+
+The definition of make_class is shown below. We begin (1) by making
+a class record, which has the basic information about the name of the
+class (1.2), the super-class (1.3) and the interfaces (1.4) put into
+it. The slots for the method-lookup alists and the static members are
+left unfilled, but we put the names of instance-variables in the slot
+allocated for their description (1.6).
+
+Next (2) we call record-class to build us the capabilities to make
+instances of our O-O class. The class record (2.1) is passed into record-class
+as its "name" - in effect this will give us access to the class-description.
+Each field is given one slot (2.2).
+
+Finally (3) we fill in those method definitions that we can deduce
+from the description. At (3.1) the new method is put in as a static
+method. At (3.2) the field-selectors are put in as instance-methods,
+each with its name. And, at (3.3) the instanceof method (which recognises
+an instance of this class, is put in.
+
+(define (make_class name super interfaces fields)
+    (let* (
+         (class                                   ; (1) make class record
+             (cons_class                          ; (1.1)
+                 name                             ; (1.2)
+                 super                            ; (1.3)
+                 interfaces                       ; (1.4)
+                 '() '() '()                      ; (1.5)
+                 fields))                         ; (1.6)
+         (info
+             (record-class                        ; (2)
+                 class                            ; (2.1)
+                 (map                             ; (2.2)
+                     (lambda (f) 'object)
+                     fields)
+                 )
+             ))                                           ; end let binding
+        (begin                                                    ; (3)
+            (insert_static_method  class 'new (car info))         ; (3.1)
+            (insert_instance_methods class fields (caddr  info))  ; (3.2)
+            (insert_instance_method  class                        ; (3.3)
+                'instanceof (cadddr info))
+            class
+            )
+        )
+    )
+
+
+
+The code to put in the methods makes use of the following definition
+of the insert_any_method function. Here where is a selector-function
+for the class-record, so it can be either methods_class or static_methods_class.
+
+
+At (1) we use where to extract the appropriate association list of
+methods, and at (2) we look up the name of the method in this list.
+We check, (3) if a method of that name is already defined. If it is,
+then (4) we warn the user and (5) update the entry in the alist.
+
+If the method is not already defined, we make a new entry in the alist,
+and update the class-definition to contain the new alist.
+
+
+
+(define (insert_any_method class name_method body_method where)
+    (let* (
+         (alist (where class))                      ; (1)
+         (pair  (assoc name_method alist))          ; (2)
+         )
+        (if pair                                         ; (3)
+            (begin
+                (display "redefining method")            ; (4)
+                (set! (car(cdr pair)) body_method))          ; (5)
+            (set! (where class)                                  ;(6)
+                (cons (list name_method body_method) alist))
+            )
+        )
+    )
+
+
+With this under our belt, it's easy to define code to insert an instance
+method, and a static method.
+
+(define (insert_instance_method class name_method body_method)
+    (insert_any_method class name_method body_method methods_class)
+    )
+
+
+(define (insert_static_method class name_method body_method)
+    (insert_any_method
+        class name_method body_method static_methods_class)
+    )
+
+
+We also need to define the function which inserts several instance
+methods. This is straightforward recursion.
+
+(define (insert_instance_methods class names methods)
+    (if (null? methods) '()
+        (begin
+            (insert_instance_method class (car names) (car methods))
+            (insert_instance_methods class (cdr names) (cdr methods))
+            )
+        )
+    )
+
+
+Now, at last, we're ready to try it out.
+
+
+(define class_person
+    (make_class 'person class_object '()  '(name age sex))
+    )
+
+
+We can make new person thus:
+
+(define p1 (send class_person 'new "fred" 34 "male"))
+
+Note that we have rolled the new construct of Java, and what Java would
+call a "constuctor" into one facility, which is a ______static method. Java's
+constructors are instance methods which are called to perform a user-defined
+initialisation on a newly-allocated instance.
+
+And we can try out our person:
+
+(example '(send p1 'age) 34)
+(example '(send p1 'name) "fred")
+
+However this won't work:
+
+    (send p1 '->string)
+
+will fail, because we haven't yet implemented inheritance, so that
+the ->string method of the Object class will not be found (more work
+for us to do!).
+
+We can however define our own ->string method:
+
+(insert_instance_method class_person '->string
+    (lambda (self)
+        (append_string
+            " name:"  (send self 'name)
+            " age:"   (send self 'age)
+            " sex:"   (send self 'sex)
+            )
+        )
+    )
+
+
+
+(send p1 '->string)
+
+" name:fred age:34 sex:male"
+
+Implementing Inheritance
+-------------------------
+So, how do we implement inheritance? This isn't too hard. What we've
+got to do is to extend our method-search. More about this later.
+
+
+
+++++++++++++++++++++++ANCHOR+++INFO+++++++++++++++++++++++++++++++++++
+SOURCE ''
+HREF
+'http://www.javasoft.com/docs/books/vmspec/html/VMSpecTOC.doc.html' = 114
+NAME
+IMG
+END

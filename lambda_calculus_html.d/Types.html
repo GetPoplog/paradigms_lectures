@@ -1,0 +1,789 @@
+
+
+
+
+<html> <head> <title>
+
+Types
+
+</title> </head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+                           Computer Science 591i<br>
+
+Types  from an Algebraic Standpoint
+</center>
+
+</h1>
+
+<h2>The Aim of this Approach</h2>
+
+Type theory is usually seen as being distinct from the ideas of evaluation
+that we have explored previously. There certainly are
+<em>similarities</em>, for example ascribing a type to an expression makes
+use of the concept of <em>environment</em> as does ascribing a value.
+Here, however, I want to explore the possibility of an identification in
+which a system of types <em>is</em> a combinatorial model, that a
+type-theory <em>is</em> a kind of Lambda theory, and that ascribing a type
+to an expression <em>is</em> evaluation.
+
+<p>The utility of type models is that they are <em>smaller</em> than models
+in which a general computation can be supported. This means that they can
+serve a useful purpose in predicting whether an error will occur.
+
+
+<h2>Types of Object, Type Errors.</h2>
+
+<p> In Computer Science, types serve two major purposes:
+
+<ul>
+<li>They serve to detect errors in code before it is run.
+<li>They support the generation of efficient code by predicting which
+particular type a polymorphic operator will actually be applied to.
+</ul>
+
+<p>In their first role, type-systems can be regarded as a kind of weak
+logic, capable of inferring that certain events, called
+<em>type-errors</em> cannot occur. The most important property of a type
+system is that type-correctness of a program <em>must be decidable</em>.
+From this requirement, it is clear that not all errors are type-errors,
+since failure of a program to terminate should clearly be regarded as
+an error, but the halting problem is undecidable.
+
+<p> If we want to examine the idea of a type-system from the point of view
+of Combinatory Models, the natural approach is to introduce the idea of
+a set of <em>exceptions</em> in the model. If an expression can evaluate
+to an exception, then it should be regarded as erroneous.
+
+<hr>
+
+<h4>Definition</h4>
+A applicative algebra with exceptions is a triple
+<img src=calD.gif>  =  &lt;D, <img src=dot.gif> <img src=Bottom.gif> >
+
+<ul>
+
+<p>EX1<img src=space.gif>
+(<img src=bottom.gif> <img src=dot.gif> d) = <img src=bottom.gif>
+for  <img src=bottom.gif> <img src=in.gif> <img src=Bottom.gif>
+
+<p>EX2<img src=space.gif>
+(d <img src=dot.gif> <img src=bottom.gif>) = <img src=bottom.gif>
+for  <img src=bottom.gif> <img src=in.gif> <img src=Bottom.gif>
+</ul>
+
+Here EX1 takes precedence over EX2, so that
+(<img src=bottom.gif> <sub>1</sub> <img src=dot.gif>
+<img src=bottom.gif> <sub>2</sub>)
+= <img src=bottom.gif> <sub>1</sub>.
+
+
+<h4>Definition</h4>
+A combinatory algebra with exceptions is a quintuple
+<img src=calD.gif> =
+&lt;D,<img src=dot.gif>,<b>S</b>, <b>K</b>, <img src=Bottom.gif> >
+which is an applicative algebra with exceptions, and
+where <b>S</b>, <b>K</b> are Shonfinkel combinators obeying:
+
+<ul>
+<p><b>K</b> c x = c
+<p><b>S</b> f g x = (f x) (g x)
+</ul>
+
+<hr>
+<h3>Discussion - A Calvinistic View of Exceptions</h3>
+The above concept of exception clearly  amounts to treating an
+exception as a fatal error in a computation, from which there is no
+recovery. This "Wee Free" view of the matter stands in contrast to the
+general practice of programming language design, in which a computation
+may be snatched from a free fall occasioned by an exception by the
+intervention of a <em>handler</em>. Clearly we could develop a concept
+of exception handlers, which transform an exception to a non-exception.
+However it would complicate our system unduly.
+
+
+<hr>
+
+<h4>Definition</h4>
+Let <img src=calD.gif>
+be a combinatory algebra, with exception set <img src=Bottom.gif>. We say that p in <img
+src=calD.gif>
+is
+a <em>procedure</em> if for some
+<em>d <img src=in.gif> | <img src=calD.gif> |</em>
+, the application <em>(p <img src=dot.gif> u)</em>
+is not in <img src=Bottom.gif>.
+
+<p>
+We denote the type of procedures of <img src=calC.gif>
+by Proc(<img src=calC.gif>).
+
+<p>
+
+<hr>
+
+
+<h4>Definition</h4>
+Let <img src=calD.gif> be an applicative algebra. Then a type
+<em>T<img src=leq.gif> <img src=calD.gif> </em> is a subset of
+<img src=calD.gif>.
+
+<hr>
+
+<h4> Discussion</h4>
+The above definition of type is non-constructive. It will serve nevertheless
+to establish some basic attributes of types. Naturally we will have to
+find a way of constructively specifying a range of types sufficiently
+diversified as to support worthwhile discovery of erroneous code. However our
+investigation of non-constructive types will identify operations that we need
+to perform constructively.
+
+
+<hr>
+
+<h4>Definition</h4>
+
+If <img src=calD.gif> is a combinatory model
+and T<sub>D</sub> and T<sub>R</sub> are types of <img src=calD.gif>, then
+<em>T<sub>D</sub><img src=rightharpoonup.gif> T<sub>R</sub></em> is the type
+
+<ul>
+    {d |
+    <img src=forall.gif> d', d' <img src=in.gif> T<sub>D</sub>
+    <img src=Rightarrow.gif>
+    (d <img src=dot.gif> d') <img src=in.gif> T<sub>R</sub> }
+</ul>
+
+<hr>
+
+<p>
+If <i>d <img src=in.gif> <img src=calD.gif> </i>,
+we say that <i>d</i> has the (weak) type
+T<sub>D</sub> <img src=rightharpoonup.gif> T<sub>R</sub> if
+<i>d</i> <img src=in.gif> T<sub>D</sub> <img src=rightharpoonup.gif> T<sub>R</sub>.
+
+
+<h3>The Functional Scheme Model</h3>
+A particular combinatory model which is of interest is the <em>Functional
+Scheme Model (FSM)</em> which implements the basic functional components
+of the Scheme language. We shall denote types of the FSM by upper-case bold
+identifiers, and particular elements of the FSM by lower-case bold
+identifiers or signs (<b>+, -, *, /, </b> . . .)
+
+<ul>
+<li> <b>Boolean</b> This
+type has two members, <b>true</b> and <b>false</b>.
+<li> <b>Number</b> This type has a number of sub-types
+<ul>
+<li> <b>Integer</b>
+<li> <b> Rational</b> this has <b>Integer</b> as a sub-type.
+<li> <b>Float</b>
+</ul>
+<li> <b>String</b>
+<li> <b>Character</b>
+</ul>
+
+<p>It should be noted that given our existing type-descriptive
+apparatus
+<em>no unique  procedure-type can  be ascribed  to a  procedure</em>.  For a
+given procedure object <i>d</i> it  is possible that <i>p <img  src=in.gif>
+T<sub>D</sub><sub>1</sub> <img  src=rightharpoonup.gif> T<sub>R</sub><sub>1</sub>  </i> and  also  <i>p
+<img src=in.gif> T<sub>D</sub><sub>2</sub> <img src=rightharpoonup.gif> T<sub>R</sub><sub>2</sub>  </i>
+where there is  way of expressing  these two relationships  in the form  of
+<i>p <img src=in.gif> T<sub>D</sub><sub>3</sub> <img src=rightharpoonup.gif>  T<sub>R</sub><sub>3</sub>
+</i> without losing useful discriminatory power. For example, the  absolute
+value procedure in the FSM has among its types:
+
+<ul>
+<b>abs <img src=in.gif> Integer <img src=rightharpoonup.gif> Integer <br>
+abs <img src=in.gif> <b>Number</b> <img src=rightharpoonup.gif> <b>Number</b> </b>
+</ul>
+
+<p>But the second of these statements does
+not subsume the first, because the first statement
+tells us the relevant fact that if we give <b>abs</b> an integer as
+argument it returns an integer as result.
+
+
+
+
+<p>
+
+<hr>
+
+<h4>Lemma (contravariance of domain, covariance of range)</h4>
+
+
+
+<p>
+If <em>T<sub>D</sub><sub>1</sub>, T<sub>D</sub><sub>2</sub>, T<sub>R</sub><sub>1</sub>, T<sub>R</sub><sub>2</sub>,</em>
+are types for which
+<em>T<sub>D</sub><sub>2</sub> <img src=leq.gif> T<sub>D</sub><sub>1</sub></em> and
+<em>T<sub>R</sub><sub>1</sub> <img src=leq.gif> T<sub>R</sub><sub>2</sub></em>,
+then
+<ul>
+T<sub>D</sub><sub>1</sub> <img src=rightharpoonup.gif> T<sub>R</sub><sub>1</sub>
+<img src=leq.gif> T<sub>D</sub><sub>2</sub> <img src=rightharpoonup.gif> T<sub>R</sub><sub>2</sub>
+</ul>
+
+<h4>Proof</h4>
+
+<p>
+Let <i>p <img src=in.gif> T<sub>D</sub><sub>1</sub> <img src=rightharpoonup.gif>
+T<sub>R</sub><sub>1</sub> </i>.
+
+Then <i>(p <img src=dot.gif> d<sub>1</sub>)</i>
+<img src=in.gif> <i>T<sub>R</sub><sub>1</sub> </i>
+for all <i>d<sub>1</sub> <img src=in.gif> T<sub>D</sub><sub>1</sub> </i>.
+
+<p>But T<sub>D</sub><sub>2</sub> <img src=leq.gif> T<sub>D</sub><sub>1</sub>. Hence
+for all
+d<sub>2</sub> <img src=in.gif> T<sub>D</sub><sub>2</sub>,
+(p <img src=dot.gif> d<sub>2</sub>)
+<img src=in.gif> T<sub>R</sub><sub>1</sub>.
+Since however <i>T<sub>R</sub><sub>1</sub> <img src=leq.gif> T<sub>R</sub><sub>2</sub> </i>,
+we see that
+<i>(p <img src=dot.gif>
+d<sub>2</sub>) <img src=in.gif> T<sub>R</sub><sub>2</sub> </i>.
+
+<p> Thus we have shown that any
+<i>p <img src=in.gif> T<sub>D</sub><sub>1</sub> <img src=rightharpoonup.gif> T<sub>R</sub><sub>1</sub>
+</i>
+maps <em>T<sub>D</sub><sub>2</sub> to T<sub>R</sub><sub>2</sub></em>, thus establishing our lemma.
+
+
+<hr>
+
+<p> A consequence of the contravariance rule is that, for example,  despite
+the fact  that <b>Integer</b>  <img  src=leq.gif> <b>Number</b>,  the  type
+<b>Integer</b> <img src=rightharpoonup.gif> <b>Integer</b> is not contained  in
+the type <b>Number</b>  <img src=rightharpoonup.gif>  <b>Number</b>. Thus,  for
+example, the intersection
+<ul>
+    (<b>Integer</b> <img src=rightharpoonup.gif> <b>Integer</b>)
+    <img src=cap.gif>
+   (<b>Number</b> <img src=rightharpoonup.gif> <b>Number</b>)
+</ul>
+<p>
+is non-redundant.
+
+
+<p>
+A simple converse of these two lemmas  is clearly not true of all  combinatory algebras.
+for   consider   a   combinatory algebra   without   procedure   objects.   Then
+<em>T<sub>D</sub><img src=rightharpoonup.gif> T<sub>R</sub></em> is always the  empty-set for
+any <em>T<sub>R</sub></em> which contains no exceptions, so that
+T<sub>D</sub><sub>1</sub>  <img
+src=rightharpoonup.gif>  T<sub>R</sub><sub>1</sub>  <img  src=leq.gif>  T<sub>D</sub><sub>2</sub>  <img
+src=rightharpoonup.gif> T<sub>R</sub><sub>2</sub>  is  true  for  any  combinatory algebras  and  ranges
+whatever.</p>
+
+
+
+<hr>
+
+
+
+<h3> The Type of Shonfinkel Combinators. </h3>
+
+<p>Since the combinators are denizens of every combinatory algebra, let's
+start with their type.
+
+
+<hr>
+<h4>Lemma</h4>
+
+If T is a type, then
+<b>I</b> <img src=in.gif> T<img src=rightharpoonup.gif>T
+
+
+<h4>Proof</h4>
+
+<p>
+Let t <img src=in.gif> T. Then
+<b>I</b> <img src=dot.gif> t
+= t. Thus <b>I</b> <img src=in.gif> T<img src=rightharpoonup.gif>T.
+
+<hr>
+<h4>Lemma</h4>
+
+If T<sub>1</sub> and T<sub>2</sub> are types, then
+<b>K</b> <img src=in.gif>
+T<sub>1</sub> <img src=rightharpoonup.gif>T<sub>2</sub>
+<img src=rightharpoonup.gif>T<sub>1</sub>
+
+<h4>Proof</h4>
+
+Let t<sub>1</sub> <img src=in.gif> T<sub>1</sub>, consider
+(<b>K</b> <img src=dot.gif>
+t<sub>1</sub>). For all t<sub>2</sub> <img src=in.gif> T<sub>2</sub>,
+(<b>K</b> <img src=dot.gif>
+t<sub>1</sub>)  <img src=dot.gif> t<sub>2</sub> = t<sub>1</sub>. Thus
+(<b>K</b> <img src=dot.gif>
+t<sub>1</sub>) <img src=in.gif> T<sub>2</sub> <img src=rightharpoonup.gif>T<sub>1</sub>. Hence <b>K</b> <img src=in.gif> T<sub>1</sub> <img src=rightharpoonup.gif>(T<sub>2</sub> <img src=rightharpoonup.gif>T<sub>1</sub>)
+
+<hr>
+
+<h4>Lemma</h4>
+
+If <i>T<sub>1</sub>,
+T<sub>2</sub>, T'<sub>2</sub> </i> and <i>T<sub>3</sub> </i> are types
+of  a  combinatory algebra  <i> <img src=calD.gif> </i>   where
+<i>T'<sub>2</sub> <img src=leq.gif> T<sub>2</sub> </i>,
+then
+<ul>
+<b>S</b>   <img src=in.gif>
+<i>(T<sub>1</sub> <img src=rightharpoonup.gif>T<sub>2</sub> <img src=rightharpoonup.gif> T<sub>3</sub>) <img src=rightharpoonup.gif>
+(T<sub>1</sub> <img src=rightharpoonup.gif>T'<sub>2</sub>)  <img src=rightharpoonup.gif>  T<sub>1</sub>   <img src=rightharpoonup.gif>
+T<sub>3</sub> </i>
+</ul>
+
+<h4>Proof</h4>
+
+<p> It is sufficient to show that if <i>f</i> <img src=in.gif>
+<i>T<sub>1</sub> <img src=rightharpoonup.gif>T<sub>2</sub>
+<img src=rightharpoonup.gif>T<sub>3</sub> </i>
+then <i>(<b>S</b> <img src=dot.gif> f)</i> <img src=in.gif>
+<i>(T<sub>1</sub> <img src=rightharpoonup.gif>T'<sub>2</sub>)
+<img src=rightharpoonup.gif>T<sub>1</sub>
+<img src=rightharpoonup.gif>T<sub>3</sub> </i>
+
+<p> Hence it suffices to show that if, in addition,  <i>g</i> <img src=in.gif>
+<i>T<sub>1</sub> <img src=rightharpoonup.gif>T'<sub>2</sub> </i> then
+<i>(<b>S</b> <img src=dot.gif> f <img src=dot.gif> g)</i>
+<img src=in.gif> <i>T<sub>1</sub> <img src=rightharpoonup.gif> T<sub>3</sub> </i>.
+
+<p> Hence it suffices to show that if, in addition,
+<i>x</i> <img src=in.gif>  <i>T<sub>1</sub> </i> then
+<i> <b>S</b>  <img src=dot.gif> f  <img src=dot.gif>
+g <img src=dot.gif> x</i> <img src=in.gif> <i>T<sub>3</sub> </i>.
+
+<p>  But  <i> <b>S</b> <img src=dot.gif>
+f <img src=dot.gif>
+g  <img src=dot.gif>
+x  =  (f <img src=dot.gif>
+x) <img src=dot.gif>  (g  <img src=dot.gif>
+x)</i>.  Since  <i>x</i>  <img src=in.gif>
+<i>T<sub>1</sub> </i>,             and              <i>f</i>
+<img src=in.gif>
+<i>T<sub>1</sub> <img src=rightharpoonup.gif>T<sub>2</sub>
+<img src=rightharpoonup.gif>T<sub>3</sub> </i>, it follows  that (f  <img
+src=dot.gif>
+x)
+<img src=in.gif> T<sub>2</sub> <img src=rightharpoonup.gif>T<sub>3</sub>.
+Likewise  (g  <img src=dot.gif> x)  <img src=in.gif>  T'<sub>2</sub>.
+But
+<i>T'<sub>2</sub> <img src=leq.gif>T<sub>2</sub> </i>,
+so that <i>((f <img src=dot.gif>
+x) <img src=dot.gif>
+(g <img src=dot.gif> x))</i> <img src=in.gif> <i>T<sub>3</sub> </i>. Hence
+<i>(<b>S</b> <img src=dot.gif>  f   <img src=dot.gif>
+g  <img src=dot.gif>  x)</i>  in   <i>T<sub>3</sub> </i>,
+hence  <i>(<b>S</b>  <img src=dot.gif>  f  <img src=dot.gif>  g)</i>   in
+<i>T<sub>1</sub> <img src=rightharpoonup.gif>T<sub>3</sub> </i>,
+hence        <i>(<b>S</b>    <img src=dot.gif>
+f)</i>        <img src=in.gif>
+<i>(T<sub>1</sub> <img src=rightharpoonup.gif>T'<sub>2</sub>)
+<img src=rightharpoonup.gif>T<sub>1</sub>
+<img src=rightharpoonup.gif>T<sub>3</sub> </i>,
+hence
+<ul>
+<b>S</b>
+<img src=in.gif>
+<i>(T<sub>1</sub> <img src=rightharpoonup.gif> T<sub>2</sub>
+<img src=rightharpoonup.gif>T<sub>3</sub>)<img src=rightharpoonup.gif>
+(T<sub>1</sub> <img src=rightharpoonup.gif>T'<sub>2
+</sub>) <img src=rightharpoonup.gif> T<sub>1</sub>
+<img src=rightharpoonup.gif> T<sub>3</sub> </i>
+</ul>
+
+<p>
+One interpretation of the above results is that a <em>particular</em> type
+for one of the combinators is as an intersection. For example, for any two
+types T1 and T2:
+
+<ul>
+   <b>I</b>
+<img src=in.gif>
+(T<sub>1</sub> <img src=rightharpoonup.gif> T<sub>1</sub>)
+<img src=cap.gif>
+( T<sub>2</sub> <img src=rightharpoonup.gif> T<sub>2</sub>)
+</ul>
+
+<p> And in general, for any family <em>(T<sub>j</sub>)</em> of types:
+<ul>
+   <b>I</b>
+<img src=in.gif> <img src=cap.gif> <sub>j <img src=in.gif> J</sub>
+( T<sub>j</sub> <img src=rightharpoonup.gif> T<sub>j</sub>)
+</ul>
+
+<hr>
+
+
+
+<h2>Quotient Algebras</h2>
+
+To an  algebraist, the  natural approach  to  types is  to regard  them  as
+defining a <em>congruence</em> on an algebra. If two elements of an algebra
+belong to the same type, then they ought to be congruent - they ought to be
+mapped into the elements of an identical type (possibly different from  the
+first) by the operation(<img src=sigma.gif>)  of the algebra. This  allows the algebraist  to
+<em>project</em> the  original algebra  onto a  <em>quotient  algebra</em>,
+which she hopes  will be sufficiently  simple to allow  her to make  useful
+predictions about the big algebra.
+
+<p>This is quite easily realised in a simple applicative algebra. For
+example, consider an algebra which has the Scheme integers and floats,
+together with the <b>abs</b> procedure, which takes the absolute
+value of a number. Then
+we can take <b>Integer</b>,
+<b>Float</b>, {<b>abs</b>}, <img src=Bottom.gif>
+as separate types, obtaining a finite applicative algebra:
+
+<ul>
+<p>
+
+(<b>Integer</b> <img src=dot.gif> <b>Integer</b>) = <img src=Bottom.gif>
+<br>
+(<b>Integer</b> <img src=dot.gif> <b>Float</b>) = <img src=Bottom.gif>
+<br>
+(<b>Float</b> <img src=dot.gif> <b>Float</b>) = <img src=Bottom.gif>
+<br>
+(<b>Float</b> <img src=dot.gif> <b>Integer</b>) = <img src=Bottom.gif>
+<br>
+({<b>abs</b>} <img src=dot.gif> <b>Integer</b>) = <b>Integer</b>
+<br>
+({<b>abs</b>} <img src=dot.gif> <b>Float</b>)   = <b>Float</b>
+<br>
+({<b>abs</b>} <img src=dot.gif> {<b>abs</b>})   = <img src=Bottom.gif>
+<br>
+</ul>
+
+<p>A projection mapping <img src=theta.gif>
+always induces a <em>partition</em> of its
+domain into pairwise disjoint sets whose union is the whole domain.
+
+
+
+<h3>Definition CP</h3>
+
+Let <img src=calC.gif> = &lt;D, <img src=dot.gif> >,be a
+applicative
+algebra.
+
+Suppose we have a family of types
+<em>T<sub>1</sub>, T<sub>2</sub>, . . . </em> which form a partition
+of <em>D</em>, that is, they are non-empty, pairwise disjoint
+[that is <em>T<sub>i</sub> <img src=cap.gif>
+T<sub>j</sub> = <img src=emptyset.gif> </em>   for
+all <em>i <img src=not_eq.gif> j</em>] and the union
+<em>T<sub>1</sub> <img src=cup.gif> T<sub>2</sub>, . . . = D </em>. Suppose also
+that, for all <em>T<sub>i</sub></em>
+
+<ul>
+HM1 <img src=space.gif>
+d, d' <img src=in.gif> T<sub>i</sub>  <img src=Rightarrow.gif> (
+<img src=forall.gif> p <img src=in.gif> D,
+(p <img src=dot.gif> d) <img src=in.gif> T<sub>j</sub>
+<img src=Rightarrow.gif>
+(p <img src=dot.gif> d') <img src=in.gif> T<sub>j</sub>)
+<p>
+</ul> for some <em>j</em>, and also
+
+
+<ul>
+HM2 <img src=space.gif>
+p, p' <img src=in.gif> T<sub>i</sub>  <img src=Rightarrow.gif> (
+<img src=forall.gif> d <img src=in.gif> D,
+(p <img src=dot.gif> d) <img src=in.gif> T<sub>j</sub>
+<img src=Rightarrow.gif>
+(p' <img src=dot.gif> d) <img src=in.gif> T<sub>j</sub>)
+<p>
+</ul> for some <em>j</em>.
+
+Then we say that <em>T<sub>1</sub>, T<sub>2</sub>, . . .</em> form
+a <em>congruence partition</em> of  <img src=calC.gif>.
+
+<hr>
+
+<h3>Lemma</h3>
+
+
+Let
+<img src=calC.gif> = &lt;D,<img src=dot.gif> >
+be an applicative algebra with a congruence partition
+
+<em>T<sub>1</sub>, T<sub>2</sub>, . . .</em>.
+Define (<em>T<sub>i</sub> <img src=dot.gif> T<sub>j</sub>)</em> to be
+<em>T<sub>k</sub></em> where for some
+<em>t<sub>i</sub> <img src=in.gif> T<sub>i</sub>,
+t<sub>j</sub> <img src=in.gif> T<sub>j</sub></em> we have
+(<em>t<sub>i</sub> <img src=dot.gif> t<sub>j</sub>) <img src=in.gif>
+T<sub>k</sub></em>. Then the types
+<em>T<sub>1</sub>, T<sub>2</sub>, . . .</em>.
+form an applicative algebra.
+
+<h4>Proof</h4>
+We  need to show that the <img src=dot.gif> operation on the
+types is well defined.
+
+<p>
+Let <em>t<sub>i</sub>, t'<sub>i</sub> <img src=in.gif> T<sub>i</sub></em>
+and
+<em> t<sub>j</sub>, t'<sub>j</sub> <img src=in.gif> T<sub>j</sub></em>
+Let (<em>t<sub>i</sub> <img src=dot.gif> t<sub>j</sub>) <img src=in.gif>.
+T<sub>k</sub></em>. Then  (<em>t<sub>i</sub> <img src=dot.gif>
+t'<sub>j</sub>) <img src=in.gif> T<sub>k</sub></em> by HM1, and hence
+(<em>t'<sub>i</sub> <img src=dot.gif> t'<sub>j</sub>) <img src=in.gif>.
+T<sub>k</sub></em> by HM2. Thus the <img src=dot.gif> operation is
+well-defined.
+
+<hr>
+
+<p>Given a congruence partition of an applicative algebra, where
+<em>d<img src=in.gif> T<sub>i</sub></em>
+we write <em> [[d]] </em> for <em>T<sub>i</sub></em>.  Thus from
+definition CP we see that
+<ul>([[d<sub>1</sub>]] <img src=dot.gif> [[d<sub>2</sub>]]) =
+[[(d<sub>1</sub> <img src=dot.gif> d<sub>2</sub>)]]
+</ul>
+
+
+
+<p>Suppose our applicative algebra is a <em>combinatory algebra</em>. Then
+it is easy enough to extend the above lemma to show that a congruence
+partition of our combinatory algebra is itself a combinatory algebra.
+Since <b>K</b> and <b>S</b> are defined equationally, the
+following lemma is an instance of a well known theorem of Universal
+Algebra. However, we give here an elementary proof.
+
+<hr>
+<h3>Lemma</h3>
+
+
+Let
+<img src=calC.gif> = &lt;D,<img src=dot.gif>, <b>S</b>, <b>K</b>>
+be a combinatory algebra with a congruence partition
+<em>T<sub>1</sub>, T<sub>2</sub>, . . .</em>.  Then the
+types of the partition form a combinatory algebra under the
+operation defined above.
+
+<h4>Proof</h4>
+<ul>
+([[<b>K</b>]] <img src=dot.gif> [[d<sub>1</sub>]] <img src=dot.gif>
+[[d<sub>2</sub>]])  =
+
+[[(<b>K</b> <img src=dot.gif> d<sub>1</sub> <img src=dot.gif>
+d<sub>2</sub>)]]  =  [[d<sub>1</sub>]]
+
+<p>
+([[<b>S</b>]] <img src=dot.gif> [[d<sub>1</sub>]] <img src=dot.gif>
+[[d<sub>2</sub>]] <img src=dot.gif> [[d<sub>3</sub>]]) =
+
+[[(<b>S</b> <img src=dot.gif> d<sub>1</sub> <img src=dot.gif>
+d<sub>2</sub> <img src=dot.gif> d<sub>3</sub>) ]]
+
+<p>
+
+= [[(d<sub>1</sub> <img src=dot.gif> d<sub>3</sub>) <img src=dot.gif>
+(d<sub>2</sub> <img src=dot.gif> d<sub>3</sub>)  ]]
+
+
+= [[((d<sub>1</sub> <img src=dot.gif> d<sub>3</sub>) <img src=dot.gif>
+(d<sub>2</sub> <img src=dot.gif> d<sub>3</sub>))]]
+
+<p>
+= (([[d<sub>1</sub>]] <img src=dot.gif> [[d<sub>3</sub>]])
+<img src=dot.gif>
+([[d<sub>2</sub>]] <img src=dot.gif> [[d<sub>3</sub>]]))
+
+</ul>
+
+<hr>
+
+<p>To extend these ideas to a combinatorial model we need to meet the
+"<img src=epsilon.gif> conditions" of the combinatory model. But these are not
+equational, and so are not automatically satisfied by the
+idea of congruence as defined, just as for example the quotient
+of an integral domain by an ideal is not necessarily an integral domain.
+Saying "there are no divisors of zero" is not an equational statement.
+Thus while the integers form an integral domain, the ring of integers
+modulo six has divisors of zero, namely [[3]] and [[2]].
+
+<p>We can approach this problem from another point of view. Let's
+introduce the idea of <em>monomorphic procedure types</em>
+
+
+<hr>
+
+<h3>Definition</h3>
+
+If <img src=calD.gif> is an applicative algebra with exceptions,
+and T<sub>D</sub> and T<sub>R</sub> are types of <img src=calD.gif>, then the monomorphic procedure
+type <em>T<sub>D</sub><img src=rightarrow.gif> T<sub>R</sub></em> is the type
+
+<ul>
+    {d |
+    <img src=forall.gif> d', d' <img src=in.gif> T<sub>D</sub>
+    <img src=Rightarrow.gif> (d <img src=dot.gif> d')
+<img src=in.gif> T<sub>R</sub>
+    & d' <img src=not_in.gif> T<sub>D</sub>
+    <img src=Rightarrow.gif> (d <img src=dot.gif> d')
+<img src=in.gif> <img src=Bottom.gif>
+    }
+</ul>
+
+<hr>
+<h3>Discussion</h3>
+The above definition captures well the idea of monomorphic procedure types,
+as found for example in SML. In SML the <tt>sin</tt> procedure is
+monomorphic, that is  the expression  <tt>(sin t)</tt> is defined only
+for <tt>real</tt> <tt>t</tt> - it is erroneous to apply it to any other
+type of argument.  In Scheme, if we regard the numbers as constituting one
+single type, then <tt>sin</tt> is likewise monomorphic.
+
+<p>The concept is of course too restrictive to serve to characterise
+all of the types of SML procedure, which are <em>parametrically
+polymorphic</em>. It'<img src=sigma.gif> also too restrictive to characterise the
+<b>S, K, I</b> combinators which are likewise parametrically polymorphic.
+But it does give us a start in letting us create an applicative algebra
+of types with a simple definition of the <img src=dot.gif> operator, and
+which is extensional with respect to its procedure-types.
+
+<hr>
+
+<h3>Definition</h3>
+
+An applicative  algebra  with  exceptions is  said  to  be  monomorphically
+partitioned   by    <br>    (<em><img    src=Bottom.gif>,    T<sub>1</sub>,
+T<sub>2</sub>,  .  .  .</em>)  if  the  <em>T<sub>i</sub></em>  are  either
+monomorphic procedure types or consist of non-procedures.
+
+<hr>
+
+<h3>Lemma</h3>
+Let <img src=calD.gif> be a partitioned applicative algebra.
+Then, if <em>T<sub>D</sub>, T<sub>R</sub></em> and <em>(T<sub>D</sub> <img src=rightarrow.gif> T<sub>R</sub>)</em>
+are members of the partition,
+<em>((T<sub>D</sub> <img src=rightarrow.gif> T<sub>R</sub>) <img src=dot.gif> T<sub>D</sub>) = T<sub>R</sub></em>.
+
+<h4>Proof</h4>
+
+Let <em>(p <img src=dot.gif> d) <img src=in.gif> ((T<sub>D</sub> <img
+src=rightarrow.gif> T<sub>R</sub>) <img src=dot.gif> T<sub>D</sub>)</em>, where <em>p <img
+src=in.gif> (T<sub>D</sub> <img src=rightarrow.gif> T<sub>R</sub>)</em>.
+Hence <em>(p <img src=dot.gif> d) <img src=in.gif> T<sub>R</sub></em>. But, by
+definition of application in the quotient algebra, ((T<sub>D</sub> <img
+src=rightarrow.gif> T<sub>R</sub>) <img src=dot.gif> T<sub>D</sub>)</em> is a member of
+the partition, as is <em>T<sub>R</sub></em>, by hypothesis.
+Hence, having <em>p <img src=dot.gif> d</em> in common, they are
+the <em>same</em> member of the partition.</p>
+
+<hr>
+<h3>Lemma</h3>
+
+Let  <img src=calD.gif> be a monomorphically partitioned applicative algebra.
+Suppose for all <em>T</em> in the partition
+<ul>
+((T<sub>D</sub><sub>1</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>1</sub>)
+<img src=dot.gif> T) =
+
+((T<sub>D</sub><sub>2</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>2</sub>)
+<img src=dot.gif> T)
+</ul>
+where the monomorphic functional types
+<em>T<sub>D</sub><sub>1</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>1</sub></em>
+and
+<em>T<sub>D</sub><sub>2</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>2</sub></em>
+are members of the partition as are the non-exceptional <em>T<sub>D</sub><sub>1</sub>,
+T<sub>D</sub><sub>2</sub>, T<sub>R</sub><sub>1</sub>, T<sub>R</sub><sub>2</sub></em>.
+
+Then
+
+
+<ul>
+(T<sub>D</sub><sub>1</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>1</sub>)
+=
+
+(T<sub>D</sub><sub>2</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>2</sub>)
+
+</ul>
+
+
+<h4>Proof</h4>
+By the previous lemma,
+<ul>
+((T<sub>D</sub><sub>2</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>2</sub>)
+<img src=dot.gif> T<sub>D</sub><sub>2</sub>) = T<sub>R</sub><sub>2</sub>
+= ((T<sub>D</sub><sub>1</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>1</sub>)
+<img src=dot.gif> T<sub>D</sub><sub>2</sub>)
+</ul>
+
+
+
+Let <em>(p <img src=dot.gif> d) <img src=in.gif>
+((T<sub>D</sub><sub>1</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>1</sub>)
+<img src=dot.gif> T<sub>D</sub><sub>2</sub>) </em>, where  <em>p <img src=in.gif>
+T<sub>D</sub><sub>1</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>1</sub>,
+d <img src=in.gif> T<sub>D</sub><sub>2</sub></em>.
+
+Now <em>p</em> is a member of the monomorphic procedure type
+<em>T<sub>D</sub><sub>1</sub> <img src=rightarrow.gif> T<sub>R</sub><sub>1</sub> </em>
+Hence <em>d <img src=in.gif> T<sub>D</sub><sub>1</sub></em>, for <em>T<sub>R</sub><sub>2</sub></em>
+contains no exceptions, and <em>p</em> raises an exception for every
+argument not in <em>T<sub>D</sub><sub>1</sub></em>.
+
+<p>Thus <em>T<sub>D</sub><sub>1</sub></em> and <em>T<sub>D</sub><sub>2</sub></em> have an element
+in common,  and being members of the partition, <em>T<sub>D</sub><sub>1</sub>=
+T<sub>D</sub><sub>2</sub></em>
+
+<p>Also
+<em>p <img src=dot.gif> d <img src=in.gif> T<sub>R</sub><sub>1</sub></em>
+and
+<em>p <img src=dot.gif> d <img src=in.gif> T<sub>R</sub><sub>2</sub></em>,
+since .
+<em> d <img src=in.gif> T<sub>D</sub><sub>1</sub></em>
+and
+<em>d <img src=in.gif> T<sub>D</sub><sub>2</sub></em>.
+
+Thus
+<em>T<sub>R</sub><sub>1</sub>, T<sub>R</sub><sub>2</sub></em> have an element in common, and
+being members of the partition, <em>T<sub>R</sub><sub>1</sub>= T<sub>R</sub><sub>2</sub></em>
+
+<P>Hence the result.</p>
+</ul>
+
+<hr>
+
+<h3>Discussion</h3>
+We have shown above that a monomorphically-partitioned quotient algebra
+<em><img src=calD.gif>/(<img src=Bottom.gif> T<sub>1</sub> . . .)</em>
+has part of the requisite extensional property to render it a combinatorial
+model, assuming it contains the necessary combinators. However we have
+problems still.
+
+<p>It is not hard to construct monomorphically partitioned applicative algebras
+with a finite collection of procedure objects, and a finite partition.
+But adding combinators gives rise to an infinite collection of procedure
+objects, which require an extension of the idea of monomorphic functional types.
+Consider for example, the <b>I</b> combinator. It can take as its argument
+<em>any</em> object. However our requirement that objects be
+<em>partitioned</em> into distinct types does not allow us to have the
+idea of type-union, and indeed, a characterisation of <b>I</b>
+in terms of type-union is too imprecise. For, while <b>I</b> has the (weak)
+type <em>T<sub>D</sub> <img src=rightarrow.gif> T<sub>D</sub></em> where <em>T<sub>D</sub></em> is the
+carrier set of <img src=calC.gif>, this does not capture the fact that
+<em>I <img src=in.gif> T <img src=rightharpoonup.gif> T</em> for all types
+<em>T</em>, that is to say, that
+
+<em>I <img src=in.gif> <img src=cap.gif><sub>i</sub>
+(T<sub>i</sub> <img src=rightharpoonup.gif> T<sub>i</sub>)</em>
+for any family of types <em>(T<sub>i</sub>)</em>.
+
+<h4>Note on exceptions</h4>
+What we are dealing with here are essentially type exceptions. Non-type
+"exceptions" (e.g. division overflow) have to be included as objects in the
+appropriate type (e.g. a numeric type).

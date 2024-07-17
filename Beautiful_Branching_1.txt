@@ -1,0 +1,62 @@
+
+
+                Beutiful Branching Proposal (Discussion 1)
+
+
+Welcome to beautiful branching, purveyor of excellent searching
+products based on efficient AVL trees.
+
+Our products grow as you grow, without a tremendous loss of
+speed - an amazing O(log n) search speed. Less sophisticated
+hash tables get bogged down as they grow larger - with those,
+as you grow, you get slow.
+
+We also offer exctremely compact usage of disk space compared
+to B-trees, which deliberately waste your precious resources.
+In addition, B-trees are extremely hardware-specific - when
+you upgrade, there is no guarantee that the disks will have the
+same page size.
+
+We will adapt our software to whatever OS or network server
+you have.
+
+
+Minimum Requirements (standalone machine):
+    386 PC (or Macintosh)
+    mono-chrome monitor
+    25 MB free disk space*
+     2 MB RAM**
+
+Recommended (because we love fast machines):
+    1 Gig free disk space
+    128 MB RAM
+    Pentium II running a network server
+    LAN connection
+
+We at Beautiful Branching look forward to telling you more
+about our fast, efficient AVL products.
+
+Sincerely,
+
+    Adam Black
+    Henry Chiu
+    Steve Clare
+    Saqqaf Malik
+    Christopher Naugle
+    Dana Pohlson
+    Jonathan Reed
+    Josh Shaul
+    Lisa Tohline
+
+
+**(no need to store ALL data in RAM, merely keys)
+
+* a single letter is roughly 1 BYTE
+  a record may be more than name and phone
+    => a record is at most 200 bytes ~ .2 K
+    => 100,000 records at .2K = 20,000 K
+    => 20,000 K ~ 20 Megs
+
+ This makes sense if you think about the little hand-held
+ phone number units that have only 128K memory but store
+ pages of names and addresses all the same.

@@ -1,0 +1,431 @@
+
+
+
+<html><head><title>
+
+Unification
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+
+A mathematical model for our discussion.
+
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+
+
+We shall regard <em>computation</em> as taking place in a countably
+infinite <em>universe</em> of <em>objects</em>. This universe is created from
+a certain set of <em>base objects</em> by using a single function,
+<em>Apply</em>.
+
+The universe contains at least the following <em>base objects</em>
+
+
+<ul>
+<li>  There is a zero object 0.
+<li>  There is an object 1.
+<li>  There is a "null object", denoted by []
+<li>  There is a "false object", denoted by false
+<li>  There is a "true object", denoted by true.
+</ul>
+
+<h2>Types of Object</h2>
+
+A type  T is a subset  T<=Universe.  In particular there are the following
+<em>base types</em>
+
+
+<ul>
+<li> Boolean.   This consists of the two objects  true and false
+
+<li> Null       This consists of the single object, [].
+
+<li> Procedure  Procedures provide the way of building our infinite universe.
+                If p is a procedure, and x is an object of the Universe, then
+                Apply p x is another object.
+
+<li> Exception  An exception is the result of a "failed" application of a
+                procedure. If e is an exception, then, for any object x
+                (Apply x e) is an exception, as is (Apply e x).
+
+<li> Integer
+
+<li> Ratio
+
+<li> Float
+
+<li> Pair
+
+<li> Symbol
+
+<li> CompoundTerm
+
+<li> LambdaAbstraction
+
+<li> Theorem
+
+</ul>
+
+The (non-base) type Rational = Integer \/  Ratio
+The (non-base) type Number =  Rational \/ Float
+
+<p>
+These base-types are mutually exclusive - any object belongs to at most one
+base-type.
+
+<h2> The MayBe and CouldBe type constructors.</h2>
+Let T <= Universe be a type of which false is not a member. Then MayBe(T)
+denotes the type<br> T \/ {false}
+
+
+<p>
+Let T <= Universe be a type. Then CouldBe(T)
+denotes the type T\/Exception.
+
+
+
+<h2> Function Types </h2>
+
+<p>
+
+
+<h3>Definition</h3>
+
+If D and R are types then D->R is the type
+
+<pre>
+    {p | p of Procedure & !d. d of D ==> (Apply p d) of R }
+</pre>
+
+<p>
+Thus if p is a procedure, we say that p has the type D->R if p of D->R. It
+should be noted that in general, <em>no unique type can be ascribed to a
+procedure</em>.
+
+
+<p>
+Unfortunately, it is not practicable to insist that our functions run without
+exception. Consider the problem with division. Division by zero raises an
+exception. We might think that we could elaborate our type-system to avoid the
+possibility of well-typed expressions raising an exception, but this can
+rapidly be seen to be impossible -  consider the rational function:
+
+<pre>
+                 P[x]
+    R[x]   =   --------
+                 Q[x]
+</pre>
+
+<p>
+to know whether R[x] will raise an exception, we have to know the zeros of the
+polynomial Q[x], which is a-trivial problem (and indeed in a certain sense,
+insoluble) problem. Even if we relaxed our requirement to "f(a) evaluates
+without exception almost everywhere in A", we still have problems, since to
+know that this statement is true of R[x] requires knowledge, if not of
+the Fundamental Theorem of Algebra, at least of the fact that a polynomial can
+have at most n roots, which, if not exactly a profound theorem, is certainly
+beyond the scope of knowledge that it is reasonable to expect a type-system to
+possess.
+
+<pre>
+    /  : Rational->Rational->CouldBe(Rational)
+</pre>
+
+<p>
+The following basic lemmas hold for function types.
+
+
+<h3>Lemma (contravariance of domain)</h3>
+
+<p>
+If D<sub>1</sub>, D<sub>2</sub>, R are types for which D<sub>1</sub><=D<sub>2</sub>, then  D<sub>2</sub>->R <= D<sub>1</sub>->R
+
+
+<h4>Proof</h4>
+
+<p>
+Let p of D<sub>2</sub>->R. Then Apply(p d<sub>2</sub>) of R for all d<sub>2</sub> of D<sub>2</sub>. But D<sub>1</sub><=D<sub>2</sub>. Hence
+for all d1 in D<sub>1</sub>, Apply(p,d1) of R. Hence result.
+
+
+<h3>Lemma (covariance of range) </h3>
+
+
+<p>
+If D, R<sub>1</sub>,R<sub>2</sub> are types for which R<sub>1</sub><=R<sub>2</sub>, then D->R<sub>1</sub> <= D->R<sub>2</sub>
+
+<h4>Proof</h4>
+
+<p>
+Let p of D->R<sub>1</sub>. Then Apply(p,d) of R<sub>1</sub> for all d of D. But R<sub>1</sub><=R<sub>2</sub>
+Hence Apply(p,d) of R<sub>2</sub> for all d of D.
+
+
+<p>
+A consequence of the contravariance rule is that, for example, despite the
+fact that  Integer<=Number, the type Integer->Integer is not contained
+in the type Number->Number.   Thus the union
+
+    (Integer->Integer) \/ (Number->Number)
+
+<p>
+is non-redundant.
+
+
+<p>
+A simple converse of these two lemmas is clearly not true of all domains.
+for consider a domain without procedure objects. Then D->R is always the
+empty-set, so that D<sub>1</sub>->R<sub>1</sub><=D<sub>2</sub>->R<sub>2</sub> is true for any domains and ranges whatever.
+So, discussion of the converse of these lemmas will have to wait until we have
+established how richly populated our Procedure type needs to be.
+
+
+
+
+
+<h3>Lemma</h3>
+
+Let p of D<sub>1</sub>->R<sub>1</sub>\/D<sub>2</sub>->R<sub>2</sub>...Dn->Rn. Let d in D<sub>1</sub>/\D<sub>2</sub>..Dn. Then (Apply p d) of
+R<sub>1</sub>/\R<sub>2</sub>...Rn.
+
+<h4>Proof</h4>
+
+<p>
+For all i of 1..n, d of Di. Now p of Di->Ri. Hence (Apply p d) of Ri for all
+i of 1..n.
+
+<p>
+This lemma suggests how we can ascribe a type to a function-application, where
+the function belongs to a type-union of the above kind.
+
+
+<h3>Lemma</h3>
+
+(D<sub>1</sub>\/D<sub>2</sub>) -> (R<sub>1</sub>/\R<sub>2</sub>) = (D<sub>1</sub>->R<sub>1</sub>)/\(D<sub>2</sub>->R<sub>2</sub>).
+
+
+<p>
+Let p of (D<sub>1</sub>\/D<sub>2</sub>) -> (R<sub>1</sub>/\R<sub>2</sub>). Then, for all d1 in D<sub>1</sub>, (Apply p d1) of
+(R<sub>1</sub>/\R<sub>2</sub>), so (Apply p d1) of R<sub>1</sub>. Hence p of (D<sub>1</sub>->R<sub>1</sub>)
+Likewise for all d<sub>2</sub> in D<sub>2</sub>, (Apply p d<sub>2</sub>) of R<sub>2</sub>. Hence p in (D<sub>1</sub>->R)/\(D<sub>2</sub>->R).
+
+
+<p>
+Conversely, let p of (D<sub>1</sub>->R<sub>1</sub>)/\(D<sub>2</sub>->R<sub>2</sub>).  Consider d in (D<sub>1</sub>\/D<sub>2</sub>).
+
+<p>
+If  d in D<sub>1</sub>, (Apply p d) of R<sub>1</sub>, since p of (D<sub>1</sub>->R<sub>1</sub>).
+Likewise if  d in D<sub>2</sub>, (Apply p d<sub>2</sub>) of R<sub>2</sub>.
+Hence p of (D<sub>1</sub>\/D<sub>2</sub>)->(R<sub>1</sub>/\R<sub>2</sub>).
+
+
+<p>
+Henceforward, we shall adopt the convention that juxtaposition denotes
+application. Thus if p is a procedure object, and x is an object, then p x
+denotes Apply(p,x).
+
+<p>
+We can now complete the definition of our universe.
+
+<p>
+There are 3 procedure objects  S K I, for which the following conditions hold:
+
+<ul>
+<li> (K c) x = c , for any objects c and x in Universe.
+<li> (I x)  = x , for any object x in Universe.
+<li> S f g x = (f x) (g x) for any f,g in Procedure, x in Universe
+</ul>
+
+<pre>
++ : (Number->Number->Number)  \/ (Integer->Integer->Integer) \/
+    (Rational->Rational->Rational) \/ (Float->Float->Float)
+
+- : (Number->Number->Number)  \/ (Integer->Integer->Integer) \/
+    (Rational->Rational->Rational) \/ (Float->Float->Float)
+
+
+* : (Number->Number->Number)  \/ (Integer->Integer->Integer) \/
+    (Rational->Rational->Rational) \/ (Float->Float->Float)
+
+
+/ : (Rational->Rational-> (CouldBe Rational))
+        \/ (Number->Number->(CouldBe Number)
+
+</pre>
+
+For any types T1,T2
+
+cons : T1 -> T2 -> Prod(T1,T2)
+front: Prod(T1,T2) -> T1
+back:  Prod(T1,T2) -> T2
+
+
+
+
+<h2> Types of the Shonfinkel Combinators</h2>
+
+<h4>Lemma</h4>
+
+If T is a type, then I:T->T
+
+
+<h4>Proof</h4>.
+
+<p>
+Let t in T. Then I t = t. Thus I in T->T.
+
+
+<h4>Lemma</h4>
+
+If T1 and T2 are types, then K in T1->T2->T1
+
+<h4>Proof</h4>.
+
+Let t1 in T1, consider (K t1). For all t2 in T2, (K t1) t2 = t1. Thus
+(K t1) in T2->T1. Hence K in T1->(T2->T1)
+
+<h4>Lemma</h4>
+
+If T1, T2 and T3 are types, and f in T1->T2->T3, g in T1->T4, where T4<=T2,
+then  S in (T1->T2) -> (T1->T4) -> T1 -> T3
+
+<h4>Proof</h4>.
+
+<p>
+We have to show that if  f in T1->T2 then S f in (T1->T4)->T1->T3
+
+<p>
+Consider S f, and let g in T1->T4 - we have to show that S f g in T1 -> T3.
+
+<p>
+Consider S f g - and let x in T1 - we have to show that S f g x in T3.
+
+<p>
+But S f g x = (f x) (g x). Since X in T1, and f in T1->T2->T3, it follows that
+(f x) in T2->T3. Likewise (g x) in T4. But T4<=T2, so that ((f x) (g x))
+in T3. Hence (S f g x) in T3, hence (S f g) in T1->T3, hence S f in
+(T1->T4)->T1->T3, hence S in (T1->T2)->(T1->T4)->T1->T3.
+
+
+<h2> Terms and their Denotation </h2>
+
+<p>
+In this section we will show how we can characterise any computation as
+<em>evaluating</em> an expression in the Universe. An expression can consist
+of
+
+<ul>
+<li>
+    a variable    v
+<li>
+    an abstraction  \v.e
+<li>
+    an application   (e1 e2)
+</ul>
+
+<p>
+Now one question arises "what does a variable standing by itself mean?".
+Generally, we think of variables as standing for something else. It is
+reasonable therefore to require our expressions to contain only bound
+variables.
+
+<p>
+First let us consider abstractions. We would like the abstraction
+
+    \x.(+ x 3)
+
+<p>
+to "mean" the function "add 3". so that
+
+    (\x.(+ x 3) 7)   ==> 10
+
+
+<p>
+Thus we get to understanding the meaning of the application
+of a lambda-abstraction to arguments in terms of <em>substitution</em>.
+However we shall adopt a different approach here, motivated by the fact that
+the concept of a <em>variable</em> and its scope can be tricky to handle.
+
+<p>
+We define a denotation mapping from Universe->Universe as
+
+    Den[(\v.v)]   =  I
+    Den[(\v.u)]   =  (E `free variable`)
+    Den[(\v.c)]   =  K c
+    Den[(e1 e2)]  =  (S Den[e1] Den[e2])
+
+
+
+
+
+
+
+
+<p>
+Any object O in Universe can play the role of being a <em>term</em>.
+Let us define a <em>denotation function</em> Den:Universe->Universe as
+follows:
+
+Den(\x.x) = I
+Den(\x.c) = K c
+Den(\x. e1 e2) = S (Den e1) (Den e2)
+
+
+
+
+
+<h4>Lemma</h4>
+
+If D<sub>1</sub>, D<sub>2</sub>, R<sub>1</sub>, R<sub>2</sub> are types, and D<sub>1</sub> is a recognisable type, with recogniser
+is_D1, then  D<sub>1</sub>->R<sub>1</sub> <= D<sub>2</sub>->R<sub>2</sub> ==> D<sub>2</sub><=D<sub>1</sub> and R<sub>1</sub><=R<sub>1</sub>.
+
+<h4>Proof</h4>. Suppose D<sub>2</sub> is not included in D<sub>1</sub>. Then there is a d<sub>2</sub> in D<sub>2</sub>, d<sub>2</sub> not in
+D<sub>1</sub>. Consider  f = \x. if (is_D1 x) instance(D<sub>1</sub>)
+
+
+
+
+
+
+<h2>Environments and Evaluation.</h2>
+
+
+<p>
+An environment is a representation of a finite mapping from symbols to
+objects.
+
+<pre>
+Eval (f a) e =
+    Apply((Eval f e)  (Eval a e)
+
+
+Eval (if x y z) e = if (Eval x e) then (Eval y e) else (Eval z e)
+
+Eval c  = c
+
+Eval (\x. t)  e  = (Closure x t e)
+
+Eval (Closure x t e) = (Closure x t e)
+
+Eval (quote t) e = t
+
+
+Apply p x e                   = PrimApply p x
+Apply (Closure x t1 e1) t2 e2 = Eval t1  e1[x|t2]
+
+</pre>
+
+
+
+
+</html></body>

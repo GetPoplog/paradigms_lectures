@@ -1,0 +1,374 @@
+
+
+
+          -----------------------------------------------------------
+          |                                                         |
+          |                                                         |
+          |    LECTURE 20   Unification - A key algorithm           |
+          |                                                         |
+          |                                                         |
+          |                                                         |
+          -----------------------------------------------------------
+
+
+
+         CONTENTS - (Use <ENTER> g to access required sections)
+
+  1   Representing the Predicate Calculus in Scheme
+
+  2   Representing clauses in Scheme.
+      2.1   Distinguishing Variables from Constants
+
+  3   Implementing the Unification Algorithm
+      3.1   Binding variables to values; making frames
+      3.2   The function unify
+      3.3   The unify_var function unifies a variable with a term
+      3.4   Implementing the occurs check with freefor?
+      3.5   Examples of the use of unify
+
+
+------------------------------------------------------------------------------
+|                                _______________Acknowledgement                             |
+|         Note that the Scheme code used in this lecture is drawn from       |
+|         the book "Structure and Interpretation of Computer Programs"       |
+|                            by Abelson and Sussman.                         |
+------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+1  Representing the Predicate Calculus in Scheme
+-----------------------------------------------------------------------
+
+In the propositional calculus we have seen that we can perform inference using
+the resolution principle  of "cancelling out"  positive and negative  literals
+occurring in the same  clause. In this lecture  we will develop the  _________Predicate
+________Calculus  and  extend  the  resolution  principle  to  it  by  developing  the
+___________unification _________algorithm to  allow us  to find  out the  most general  conditions
+under which two literals can be made the same.
+
+In the Predicate Calculus we replace the unstructured propositional  variables
+of the propositional calculus by __________predicates applied to __________arguments. A  predicate
+can be thought of as expressing a relation between its arguments. For  example
+using the standard notation:
+
+    loves(John,Mary)
+
+expresses  the  fact  that  an  individual,  John,  is  enamoured  of  another
+individual, Mary.
+
+As well as  constants such  as the  aforementioned lovers,  we need  _________variables
+which are  subject to  ___________quantifiers. The  universal quantifier,  which I  shall
+write ForAll allows us to state that a fact is true for all individuals.  Thus
+it allows us to express the fact that all humans are mortal as:
+
+    ForAll x. human(x) -> mortal(x)
+
+The effect  of  the  universal  quantifier  is  that  we  may  substitute  any
+individual for x in the statement governed by the quantifier. For example,  we
+may substitute Socrates, obtaining:
+
+    human(Socrates) -> mortal(Socrates)
+
+If we also know that Socrates is human, that is
+
+    human(Socrates)
+
+we may infer, according to the rules of Propositional Logic, that Socrates  is
+mortal:
+
+    mortal(Socrates)
+
+Universal quantifiers are not enough of themselves to allow us to express  all
+the ideas necessary  for normal logical  discourse. To express  the fact  that
+everybody has a  mother, we may  use an ___________existential  __________quantifier which I  shall
+write Exists. Thus we would write:
+
+    ForAll p.  Exists m. parent(m,p) & female(m)
+
+The  Predicate  Calculus  as  described  above,  with  predicates,  constants,
+variables and quantifiers  is adequate  for logical discourse.  However it  is
+convenient to introduce ________function _______symbols as well. For example, one might  have
+a function mother for which mother(p) is understood to denote the mother of an
+individual p.
+
+In fact, for the  formulation of logic  that is normally  used to support  the
+Logic Paradigm, we put our logical statements in a conjunctive normal form  in
+which all use of the  existential quantifier has been  replaced by the use  of
+function symbols, and in which the scope of each universal quantifier is  that
+of the clause  in which  it occurs. This  being so,  we are able  to drop  the
+explicit presence of universal quantifiers,  the understanding being that  all
+variables are implicitly quantified universally.
+
+We can begin to see how we  might do resolution in the Predicate Calculus.  We
+represent the fact that all humans are mortal by
+
+
+     ~ human(x) \/ mortal(x)
+
+and the fact that Socrates is human as before by
+
+    human(Socrates)
+
+Now we cannot immediately use  the propositional principle of resolution,  for
+human(x)  is  not  the  same  as  human(Socrates).  Thus  we  have  to  make a
+substitution of Socrates for x as we  did before. However, it is obvious  that
+this substitution will work;  indeed it is  so obvious that  we will write  an
+algorithm to find the best possible substitution for the circumstances, called
+the ___________unification __________algorithm.
+
+
+-----------------------------------------------------------------------
+2  Representing clauses in Scheme.
+-----------------------------------------------------------------------
+However, it is desirable to  think about how we  can represent clauses in  the
+Scheme language so  that we  are not at  a loss  if we want  to implement  our
+algorithm.
+
+The representation of clauses is quite straightforward. We can adopt the usual
+rule of Scheme that or is variadic - i.e. takes a variable number of arguments
+- and represent a  clause as (or l_1....l_n)  where l_1...l_n are  literals. A
+literal is  a  predicate  applied  to  arguments,  possibly  negated.  So  the
+allowable forms of a literal are:
+
+       (p t_1....t_n)
+       (not (p t_1....t_n))
+
+And the arguments are _____terms each of which may be a variable, a constant or a
+function-symbol applied to arguments. In the _____first _____order _________predicate ________calculus,
+function and predicate variables are not allowed.
+
+2.1  Distinguishing Variables from Constants
+--------------------------------------------
+
+The range  of possible  constants can  include Scheme  symbols, so  we  have a
+problem in  distinguishing  between a  symbol  acting  as a  constant  and  as
+variable, just as  we did in  Scheme itself. In  the logic paradigm,  however,
+rather than use quotation  to distinguish symbols acting  as constants, it  is
+more common to use some  other convention. In the  Lisp community it has  been
+common to use a prefixed question mark. In this implementation we will treat a
+variable as a list (? v ) where v is (conventionally) a symbol.
+
+(define (var? e)
+    (and (pair? e) (eq? (car e) '?))
+    )
+
+This means that any Scheme atom is a ________constant in our representation of logic:
+
+(define constant? atom?)
+
+and we may use equal? to determine if two constants are the same:
+
+(define =_constant? equal?)
+
+
+-----------------------------------------------------------------------
+3  Implementing the Unification Algorithm
+-----------------------------------------------------------------------
+
+
+3.1  Binding variables to values; making frames
+-----------------------------------------------
+
+To unify two terms t1 and t2 we must ___________determining _a _______mapping f ____from _________variables __to
+_________constants _____under _____which f(t1)  = f(t2). We will  refer to our representation  of
+such a mapping  as a  ______frame. However  let us  take an  abstract approach,  and
+suppose that we have the following operations:
+
+make_binding      Makes a "binding" that is a pair associating a variable with
+                  a value.
+
+binding-in-frame  Finds a binding for a given variable in a frame
+
+binding-value     Extracts the value component of a binding.
+
+extend            Adds a new variable-value binding to a frame.
+
+We may implement these operations using a-lists for frames as follows:
+
+(define make-binding cons)
+
+(define binding-in-frame assoc)
+
+(define binding-value cdr)
+
+(define (extend var val frame)
+    (cons (make-binding var val) frame))
+
+3.2  The function unify
+-----------------------
+
+To unify  two  terms  p1 and  p2  we  write the  function  unify.  It  takes 3
+arguments, p1, p2 frame. Here the frame serves the same role as a frame in the
+environment in our Scheme interpreter - it remembers what variables have  been
+bound to and so  avoids having to perform  excessive substitution. However  in
+the case of unification  there are extra possibilities  that have to be  taken
+into account
+
+    Unification may not be possible. For example if we cannot unify 2 with 3
+    To deal with this possibility, we allow the frame to take the value #f.
+    This should be distinguished from the empty frame '() which binds no
+    variables. For example we may unify 2 with 2, and the resulting frame is
+    '(). Note that here we are depending on the use of Scheme being
+    implemented to the IEEE standard in which the empty list and the false
+    truth value are distinct.
+
+    Variables may be bound to variables. Thus (? x) unifies with (? y) as
+    specified in the frame ( ((? x) . (? y))).
+
+So let  us  consider  the  unification function.  Essentially  there  are  the
+following cases to consider
+
+[1] frame may be #f. This case  can arise because the unification has  already
+failed but the code has not yet checked that this had happened. Checking  here
+simplifies case [5] below. (As well as it being good practice to check for all
+types of values an argument can have)
+
+[2] p1 may be a variable. This  case turns out to be quite complicated,  since
+p1 may actually be bound in  the frame and so is  not free to be rebound.  For
+example if we try to unify  (+ (? x) (? x)) with  (+ 2 3) we will first  unify
+the variable (? x) with 2 obtaining the frame (((? x) . 2)). Then we will need
+to unify (? x) with  3. At this point the  unification must fail. So we  "pass
+the buck" to an auxiliary function unify_var.
+
+[3] p2  may be  a variable.  Again we  call unify_var,  but with  its
+arguments reversed. This means that  the first argument of  unify_var
+is always guaranteed to be a variable, simplifying its implementation.
+
+[4] If p1 is a constant, then p2 must  also be a constant, and it must be  the
+____same constant.
+
+[5] If p2 is a constant then p1 could not have been a constant, so unification
+fails.
+
+[6] Otherwise both p1 and p2 must  be lists which represent complex terms  and
+not variables.  So we  call unify  recursively on  the car  and cdr  of  both.
+However we have to treat frame as a kind of accumulator, in much the same  way
+as we needed  an accumulator  when we  were making a  list of  the nodes  of a
+ordered tree. So we call unify on the car's of the two terms [6.2] obtaining a
+new frame which embodies any variable  bindings necessary to unify the  cdr's,
+and then we pass this frame to  another call of unify [6.1] which proceeds  to
+unify the cdr's, keeping the unification consistent with the bindings made  in
+the car's.
+
+(define (unify p1 p2 frame)
+    (cond
+        ((eq? frame #f) #f)                             ;[1]
+        ((var? p1) (unify_var p1 p2 frame))             ;[2]
+        ((var? p2) (unify_var p2 p1 frame))             ;[3]
+        ((constant? p1)                                 ;[4]
+         (if (constant? p2)
+             (if (=_constant? p1 p2) frame #f)
+             #f))
+        ((constant? p2) #f)                             ;[5]
+        (else                                           ;[6]
+            (unify (cdr p1)                             ;[6.1]
+                (cdr p2)
+                (unify                                  ;[6.2]
+                    (car p1)
+                    (car p2)
+                    frame)))))
+
+3.3  The unify_var function unifies a variable with a term
+----------------------------------------------------------
+
+Now we come  to the definition  of unify_var.  There is a  subtlety here  that
+needs to be dealt with. What happens if we try to unify a variable with a term
+that _______already ________contains ___the _________variable. Suppose we want to unify a variable (?  x)
+with the term (f (? x)); we can only do this if we systematically replace  the
+variable (? x) with  (f (? x))  everywhere in our terms, including ______inside  the
+term (f (? x)).  But this involves  an infinite amount  of work generating  an
+infinite term. This kind of thing can happen if we try to unify:
+
+    (g (? x) (f (? x)))
+    (g (? y) (? y))
+
+Standard logic does not allow such  a circular substitution to happen, and  so
+we have to put an ______occurs _____check into unify_var which makes sure that we do  not
+unify a variable with a term in which it occurs. [It should be noted that  the
+best known computer  language based on  the Logic Paradigm,  Prolog, does  not
+perform the occurs check because it is computationally expensive].
+
+So let us now  consider the definition  of unify_var. Firstly  [1] we have  to
+allow for  the possiblity  that val  is a  variable, and  indeed is  the  same
+variable as var. In this case, unification is trivial with the existing  frame
+[1.1].
+
+Otherwise we find the value-cell  for the value of  the variable in the  frame
+[2].
+
+If [3] it does not exist, then we may  bind var to be val in a new frame  made
+by extend [3.2]. However this is only legal if the "occurs-check"  implemented
+by freefor? succeeds [3.1] - otherwise unification fails [3.3].
+
+If [4] the variable var ___was bound in  the frame, then we call unify to see  if
+the value of var in frame and val can be unified.
+
+
+(define (unify_var var val frame)
+    (if (equal? var val)                                    ;[1]
+        frame                                               ;[1.1]
+        (let ((value-cell (binding-in-frame var frame)))    ;[2]
+            (if (not value-cell)                            ;[3]
+                (if (freefor? var val frame)                ;[3.1]
+                    (extend var val frame)                  ;[3.2]
+                    #f)                                     ;[3.3]
+                (unify (binding-value value-cell)           ;[4]
+                    val
+                    frame)))))
+
+3.4  Implementing the occurs check with freefor?
+------------------------------------------------
+
+Finally let us  look at  freefor?. We write  this with  an internal  recursive
+function freewalk to save  us the trouble of  passing more than one  argument.
+So, we are  asking, is  exp free  of occurrences  of var?  We recurse  through
+freewalk, examining the various possible types of the expression e.
+
+    [1]  If e is a constant, then var does not occur in it!
+    [2]  If e is a variable, and is the same variable as var then
+         [2.1] var does occur in e,  so we return #f. Othewise, we look up
+         e in frame [2.2]. If e is not bound, then we conclude that e is free
+         of var, so we return #t [2.3]. If it is bound, then we look to see
+         if var occurs in the value to which e was bound [2.4].
+    [3]  Otherwise e must be a complex term, so we look to see if the car
+         of e is free of var. If it is, the cdr of e must also be free of e.
+    [4]  Finally, if (car e) was not free of var then e itself is not free
+         of var.
+
+(define (freefor? var exp frame)
+    (letrec
+        (
+         (freewalk
+             (lambda (e)
+                 (cond
+                     ((constant? e) #t)                              ;[1]
+                     ((var? e)                                       ;[2]
+                      (if (equal? var e) #f                          ;[2.1]
+                          (let ((b (binding-in-frame e frame)))      ;[2.2]
+                              (if (not b) #t                         ;[2.3]
+                                  (freewalk (binding-value b))))))   ;[2.4]
+                     ( (freewalk (car e)) (freewalk (cdr e)))        ;[3]
+                     (else #f))                                      ;[4]
+                 )  ;end lambda
+             ) ; end freewalk binding
+         ) ;end letrec bindings
+        (freewalk exp)
+        ) ;end letrec
+    )
+
+3.5  Examples of the use of unify
+---------------------------------
+
+And here are some examples of the use of unify and associated functions.
+
+(example '(freefor? '(? x) '(f (? x)) '()) #f)
+(example '(unify 'Liz 'Phil '()) #f)
+(example '(unify '(+ a b) '(+ a b) '()) '())
+(example '(unify '(+ a 2) '(+ a b) '()) #f)
+(example '(unify '(+ (? a) 4) '(+ b 4) '()) '(((? a) . b)))
+(example '(unify '(+ (? a) (? a)) '(+ b b) '()) '(((? a) . b)))
+(example '(unify '(+ (? a) (? a)) '(+ 4 3) '()) #f)
+(example '(unify '(+ (? a) 7) '(+ 4 (? b)) '()) '(((? b) . 7) ((? a) . 4)))
+(example
+    '(unify '(+ (? a) 4 ) '(+ 5 (? b)) '())
+    '(((? b) . 4) ((? a) . 5))
+    )

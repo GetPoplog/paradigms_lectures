@@ -1,0 +1,79 @@
+
+
+
+Java class hierarchies were  discussed. One approach would  be for a  class
+P2KObj, a subclass of the generic  Java class Object. P2KObj in turn  would
+have subclasses  P2KNum  and  P2KFun, representing  numbers  and  functions
+respectively. Clearly, some new type classes (such as Rational) would  need
+to be developed; others (such  as integers of arbitrary precision,  similar
+to Java's BigInteger class) could be used as they currently exist.
+
+Extensive use  of currying  will  no doubt  be  necessary. There  are  some
+questions about how  this will  be implemented. Specifically,  it is  worth
+discussing further whether each method should have a single "apply"  method
+(in a  fashion  analogous to  the  one-function-one-argument style  of  the
+lambda calculus),  or whether  "apply2", "apply3"  etc. methods  should  be
+used, for dyadic  and tryadic  functions, in the  interests of  efficiency.
+Both approaches were discussed;  I'm not aware that  any firm decision  was
+reached.
+
+As an initial step toward implementation of the basic class structure,  the
+following sample code was written:
+
+
+class Plus extends P2KFun
+{
+  public Object apply (Object x)
+  {
+    Number nx = (Number) x;
+    return new Curried(this, nx);
+  }
+}
+
+
+class Curried extends P2KFun
+{
+  private P2KFun f;
+  private Object left;
+  public Curried(P2KFun f, Object left)   {this.f = f; this.left = left;}
+  public apply(Object r)                  {return f.apply2(left,r);}
+}
+
+
+The apply method above passes the buck to an apply2 method in P2KFun, for
+the implementation of Plus (by implication a dyadic function).
+
+Another piece of sample code reads as follows:
+
+
+class Plus extends P2KFun
+{
+  public Object apply (Object x)
+  {
+    return new Curried(this, x, 2);
+  }
+}
+
+class Curried
+{
+  private P2KFun f;
+  private Object left[];
+  private int depth;
+
+  public Object apply(Object x)
+  {
+    if    (depth == left.length)
+          f.doit(left)
+    else  return new Curried(f, left, x, depth)
+  }
+}
+
+
+The constructor for a Curried object as given here would need to curry an additional argument to the function, by adding it to the left[] array.  We discussed briefly whether it was worth allocating a new array for each new curried argument, or whether maintaining pointers to old left[] arrays would be better.  (My vote went for allocation of new arrays; memory is cheaper these days than debugging time.)  This issue, too, was left unresolved.
+
+
+
+Once at a social gathering, Gladstone said to Disraeli:  "I predict,
+Sir, that you will die either by hanging or of some vile disease".
+Disraeli replied: "That all depends, sir, upon whether I embrace your
+principles or your mistress."

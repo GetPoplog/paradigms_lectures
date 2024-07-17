@@ -1,0 +1,415 @@
+
+
+
+
+
+
+1 Implementing the Substitutional Model.
+
+2  Treating   recursion  in   a   purely
+substitutional way.
+
+3   Building   an   interpreter    for a
+functional Scheme-like language
+
+4 Shonfinkel's Combinators
+
+
+
+    ( (lambda (x y) (+ x (* 2 y))) 4 5)
+
+    ==> (+ 4 (* 2 5))
+
+    ==> (+ 4 10)
+
+    ==> 14
+
+This model  assumes that  there is  some
+built-in code for  recognising the  what
+to do with primitives such as + *.
+
+
+
+ Compare
+
+
+(define  double (lambda (x) (* 2 x)))
+
+with
+
+(define sum
+    (lambda (l)
+        (if (null? l) 0
+        (+  (car l) (sum (cdr l))))) )
+
+
+In the case of double what we are  doing
+can be regarded  as binding a  variable.
+Indeed we could write a program like:
+
+
+We could write
+
+    (define  double (lambda (x) (* 2 x)))
+
+    (double 3)
+
+
+As
+
+
+    ((lambda (double) (double 3))
+        (lambda (x) (* 2 x)))
+
+
+
+
+All Scheme programs which do not involve
+recursion  and  which  do  not  redefine
+functions can be systematically  treated
+in this way. That is  to say, we do  not
+need to regard  define  as  any
+special   construct,   but   merely   as
+something that can be transformed into a
+lambda construct.
+
+
+
+However the definition of sum is not  so
+simple, since sum occurs recursively  in
+the lambda expression. Consider:
+
+
+ (
+  (lambda (sum) (sum '(1 2 3)))
+  (lambda (l)
+      (if
+          (null? l)
+          0
+          (+ (car l) (sum (cdr l)))
+          )
+      )
+  )
+
+
+           _________Recursion _________Equations
+
+  (sum x) =
+    (if (null? x) 0
+        (+ (car l) (sum (cdr x))))
+
+
+
+The  Y  combinator   is  a   fixed-point
+operator.
+
+
+
+     (Y e) = (e (Y e))
+
+We say that Y is a _____fixed ____point ________operator
+
+ The concept  of  a fixed  point  is  an
+important   one   in   mathematics   and
+physics.
+
+A  rotation  can   be  considered   as a
+mapping from where  a rotating body  was
+originally to where it is now.
+
+The fixed point of  this mapping is  the
+____axis __of ________rotation
+
+In Linear Algebra,  we have the  concept
+of an ____________eigenvector.
+
+
+In engineering generally, the design  of
+a process  for making  an artefact  very
+often consists of  finding an  operation
+whose fixed point is the artefact, or at
+least a feature  of it.  Thus the  fixed
+point of the  operation of planing  is a
+planed surface. So, if  we need a  plane
+surface we think of planing as a way  of
+achieving it. Likewise  the fixed  point
+of the operation  of screw-cutting  is a
+threaded surface.
+
+
+So, it  is  not surprising  in  Computer
+Science that a  fixed-point operator  is
+important in constructing the  artefacts
+that we produce - computer programs.
+
+
+You might also say that e is a  symmetry
+of (Y e), and this  is a clue to why  it
+works. Observe that the  data-structures
+we construct in Scheme are ____self ________similar,
+or in  a  sense,  symmetric.  When,  for
+example, you take the <tt>cdr</tt>  of a
+list, you still  have a list.  Recursion
+works by exploiting this symmetry.
+
+
+
+Y can be written as a lambda expression!
+
+
+ (lambda (h)
+     (
+      (lambda (x) (h (x x)))
+      (lambda (x) (h (x x)))
+      )
+     )
+
+
+
+(Y e) ==> [use value for Y given above]
+
+   (
+     (lambda (h)
+         (
+          (lambda (x) (h (x x)))
+          (lambda (x) (h (x x)))
+          )
+         ) e)
+
+==>
+         (
+          (lambda (x) (e (x x)))
+          (lambda (x) (e (x x)))
+          )
+
+==>
+    (e (
+        (lambda (x) (e (x x)))
+        (lambda (x) (e (x x))))
+        )
+
+
+
+
+The Y combinator  is used  in theory  to
+create recursive functions by  providing
+a binding for the unbound recursive call
+that plagued us above.
+
+  (lambda (sum)
+    (lambda (l)
+        (if
+            (null? l)
+            0
+            (+ (car l) (sum (cdr l))))
+        )
+    )
+
+<pre>
+ (Y
+   (lambda (sum)
+       (lambda (l)
+           (if
+               (null? l)
+               0
+               (+ (car l) (sum (cdr l))))
+           )
+       )
+   )
+
+
+
+
+ (
+  (Y
+     (lambda (sum)
+         (lambda (l)
+             (if
+                 (null? l)
+                 0
+                 (+ (car l)
+                    (sum (cdr l))))
+             )
+         ) ; end of E
+     )     ; end of (Y E) = sum
+  '(1 2))  ; the argument of (Y E)
+
+
+
+
+    (
+     (                                         ; start of (E (Y E))
+      (lambda (sum)                            ; start of E
+          (lambda (l)
+              (if
+                  (null? l)
+                  0
+                  (+ (car l) (sum (cdr l))))
+              )
+          )                                     ; end of E
+      (Y                                        ; start of         (Y E)
+         (lambda (sum)
+             (lambda (l)
+                 (if
+                     (null? l)
+                     0
+                     (+ (car l) (sum (cdr l))))
+                 )
+             )                                   ; end of E
+         )                                       ; end of (Y E)
+      )                                          ; end of (E (Y E))
+     '(1 2))                                     ; the argument of (E (Y E))
+
+
+
+
+
+    (
+     (lambda (l)
+         (if
+             (null? l)
+             0
+             (+ (car l)
+                (                           ; (Y E) replaces sum
+                 (Y                         ; start of         (Y E)
+                    (lambda (sum)
+                        (lambda (l)
+                            (if
+                                (null? l)
+                                0
+                                (+ (car l) (sum (cdr l))))
+                            )
+                        )                                  ; end of E
+                    )                                      ; end of (Y E)
+                 (cdr l)))                                 ;
+             )                                             ; end if
+         )                                                 ; end (lambda(l)..)
+
+     '(1 2))                                 ; the argument of (lambda (l)...)
+
+
+
+
+
+
+    (if
+        (null? '(1 2))
+        0
+        (+ (car '(1 2)) (
+            (Y (lambda (sum)         ; start of  (Y E)
+                   (lambda (l)
+                       (if
+                           (null? l)
+                           0
+                           (+ (car l) (sum (cdr l))))
+                       )
+                   )
+
+               (cdr '(1 2)))))
+        )
+    )
+
+
+
+  (+ 1 (
+    (Y (lambda (sum)
+           (lambda (l)
+               (if
+                   (null? l)
+                   0
+                   (+ (car l) (sum (cdr l))))
+               )
+           )
+
+       '( 2))))
+        )
+
+
+
+  (+ 1
+    (if
+        (null? '( 2))
+        0
+        (+ (car '( 2)) (
+            (Y (lambda (sum)
+                   (lambda (l)
+                       (if
+                           (null? l)
+                           0
+                           (+ (car l) (sum (cdr l))))
+                       )
+                   )
+
+               (cdr '( 2)))))
+        )
+    )
+  )
+
+
+
+  (+ 1
+   (+ 2
+      (if
+          (null? '())
+          0
+          (+ (car '()) (
+              (Y (lambda (sum)
+                     (lambda (l)
+                         (if
+                             (null? l)
+                             0
+                             (+ (car l) (sum (cdr l))))
+                         )
+                     )
+
+                 (cdr '()))))
+          )
+      )
+   )
+
+
+
+  (+ 1
+   (+ 2 0))
+
+    ==> 3
+
+
+
+Note that, while the definition of the Y
+combinator can be written in Scheme,  we
+cannot  get  it  to  work  correctly  in
+Scheme itself, since  Scheme uses  eager
+evaluation  and   will  give   rise   to
+recursive   run-away   We   treat    the
+application of  Y to  its argument  in a
+lazy way to obtain a correct reduction.
+
+
+(define Y
+    (lambda (h)
+        (
+         (lambda (x) (h (x x)))
+         (lambda (x) (h (x x)))
+         )
+        )
+    )
+
+And try to  evaluate [paste this  into a
+file 'temp.scm']
+
+
+(Y (lambda (sum)
+       (lambda
+           (l)
+           (if (null? l) 0
+               (+ (car l)
+                  (sum (cdr l)))))))
+
+
+
+Error: rle: RECURSION LIMIT (pop_callstack_lim) EXCEEDED
+In file: /users/users3/fac/pop/temp.scm
+</pre>
+
+

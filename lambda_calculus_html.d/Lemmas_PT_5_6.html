@@ -1,0 +1,361 @@
+
+
+<hr>
+<h3> Lemma PT5</h3>
+If <em>E,F</em> are terms of the <img src=lambda.gif>-calculus, and
+<em>v</em> is a variable of the aforementioned, and <em>p</em> is a
+path which properly addresses <em>E</em>
+and <b>not</b> <em>seen(v,E,p)</em> then there is an <em>E'</em> which is
+<img src=alpha.gif>-congruent to <em>E</em> for which
+<ul>
+E'[v:=F][p] = E'[p]
+</ul>
+
+
+<h4>Proof</h4>
+
+<img src=hand.gif>
+Let <em>E'</em> be formed from <em>E</em> by <img src=alpha.gif>-converting
+any <img src=lambda.gif>-abstraction found on <em>p</em> whose bound
+variable is a member of <em>FV(F)</em> to an abstraction whose bound
+variable is not a member of <em>FV(F)</em>.
+
+<p>We now proceed by induction on <em>visible(v,p)</em>
+
+<h4>Base Case</h4>
+In the  base-case <em>visible(v,p)=0</em>, so that <em>E = \v.H</em>. Hence
+<em>E'[v:=F][p] = E'[p]</em>
+by S5.
+
+<h4>Inductive Step</h4>
+
+Suppose for some natural number  <em>n</em> that
+<em>visible(v,p) <img src=leq.gif> n</em>   implies that
+<ul>
+    E'[v:=F][p]  =  E'[p]
+</ul>
+
+
+Consider a path <em>p</em> for which <em>length(p) =  n+1</em>
+Then <em>p = s::p'</em>, where <em>p'=tl(p)</em>, and
+<em>length(p')=n</em>.
+
+<ul>
+
+<li>Case 1-2  <em>E'=v</em>, a variable, or  <em>E'=c</em>, a constant.
+Since <em>p</em> properly addresses <em>E'</em>, these cases don't occur.
+
+
+<p><li>Case 3:      E' = (C D), an application.
+
+We have 2 sub-cases,
+<em>s=0</em> and <em>s=1</em></p>
+
+<ul>
+<p><li>Sub-case 3.1, <em>s=0</em>
+<ul><p>
+E'[p][v:=F]  =  C[p'][v:=F] = C[v:=F][p']
+</ul>
+    <p>The last step above uses the inductive hypothesis, justified because
+<em>length(p') = n</em>, and <em>seen(v,C,p')</em> by
+SC3. On the other hand, using S5</p>
+<ul>
+E'[v:=F][p] = (C[v:=F] D[v:=F])[p] = C[v:=F][p']
+</ul>
+<p>Hence the result holds in this sub-case.
+
+<p><li>Sub-case 3.2, <em>s=1</em>
+This is similar to 3.1
+</ul>
+
+<p><li>Case 4:  <em>  E' = <img src=lambda.gif>x . H</em>, an abstraction.
+
+We have 2 sub-cases,
+<em>s=0</em> and <em>s=1</em></p>
+
+<ul>
+<p><li>Sub-case 4.1, <em>s=0</em>
+
+<p> <ul>
+
+    E'[p][v:=F]  =   (<img src=lambda.gif>x . H)[p][v:=F]
+        =  (<img src=lambda.gif>x . H)[v:=F]<br><br>
+        =   (<img src=lambda.gif>x . H)[v:=F][p]
+</ul>
+<p>Since substitution converts an abstraction into an abstraction.
+So the result holds for this sub-case.
+
+<p><li>Sub-case 4.2, <em>s=1</em>
+<ul>
+<p> E'[p][v:=F]  =   (<img src=lambda.gif>x . H)[p][v:=F]<br><br>
+        =  H[p'][v:=F]<br><br>
+        =  H[v:=F][p']
+</ul>
+<p>using the inductive hypothesis.
+On the other hand, we have our very favourite can of worms when we come to
+<ul> <p>
+E'[v:=F][p]
+</ul>
+<p>because we have to consider cases S5-S7 of the definition of
+substitution.
+
+<ul>
+<p><li>Sub-sub-case 4.2.1, <em>x=v</em>
+<p> In this sub-sub-case, <em>v</em> goes out of scope, so, by <em>ex falsa
+libet</em> the result holds.
+
+<p><li>Sub-sub-case 4.2.2, <em> x <img src=not_eq.gif> v</em>
+     and either <em>x <img src=not_in.gif> FV(F)</em>
+         or v  <img src=not_in.gif> FV(H)</em>
+
+Here
+<p><ul>
+E'[v:=F][p] = (<img src=lambda.gif>x. H)[v:=F][p]
+ = (<img src=lambda.gif>x. H[v:=F])[p]
+ =  H[v:=F][p']
+</ul>
+<p>So the result holds in this sub-sub-case
+
+<p><li>Sub-sub-case 4.2.3, <em> x <img src=not_eq.gif> v</em>
+     and <em>x <img src=in.gif> FV(F)</em>
+         or v  <img src=in.gif> FV(H)</em>
+
+<p>This
+sub-case can't occur because of the way we have defined <em>E'</em>.
+
+</ul>
+</ul>
+</ul>
+
+
+<hr>
+<h3> Lemma PT6</h3>
+If <em>E,F,G</em> are terms of the <img src=lambda.gif>-calculus, and
+<em>v</em> is a variable of the aforementioned, and <em>p</em> is a
+path which properly addresses <em>E</em>
+and <em>seen(v,E,p)</em> then there is an <em>E'</em> which is
+<img src=alpha.gif>-congruent to <em>E</em> for which
+<ul>
+E'[p:=G][v:=F] = E'[v:=F][p:=G[v:=F]]
+</ul>
+
+
+<h4>Proof</h4>
+<img src=hand.gif>
+Let <em>E'</em> be formed from <em>E</em> by <img src=alpha.gif>-converting
+any <img src=lambda.gif>-abstraction found on <em>p</em> whose bound
+variable is a member of <em>FV(F)</em> to an abstraction whose bound
+variable is not a member of <em>FV(F)</em>.
+
+<p>We now proceed by induction on the length  of <em>p</em>.
+
+<h4>Base Case</h4>
+In the  base-case <em>length(p)=0</em>, so that <em>p = ()</em>.
+In this case, since by UP1 <em>E'[p:=G]=G</em> and <em>v</em> is in scope,
+we have
+<ul>
+E'[p:=G][v:=F] = G[v:=F]
+</ul>
+While
+<ul>
+E'[v:=F][p:=G[v:=F]] = G[v:=F]
+</ul>
+
+<h4>Inductive Step</h4>
+
+Suppose for some natural number  <em>n</em> that
+<em>length(p) <img src=leq.gif> n</em>   implies that
+<ul>
+    E'[p:=G][v:=F]  =  E'[v:=F][p:=G[v:=F]]
+</ul>
+
+
+Consider a path <em>p</em> for which <em>length(p) =  n+1</em>
+Then <em>p = s::p'</em>, where <em>p'=tl(p)</em>, and <em>length(p')=n</em>
+
+<ul>
+
+<li>Case 1-2  <em>E'=v</em>, a variable, or  <em>E'=c</em>, a constant.
+Since <em>p</em> properly addresses <em>E'</em>, these cases don't occur.
+
+
+<p><li>Case 3:      E' = (C D), an application.
+
+We have 2 sub-cases,
+<em>s=0</em> and <em>s=1</em></p>
+
+<ul>
+<p><li>Sub-case 3.1, <em>s=0</em>
+<ul><p>
+E'[p:=G][v:=F]  =  (C[p':=G] D)[v:=F]
+<p>  =  (C[p':=G][v:=F] D[v:=F])
+<p>= (C[v:=F][p':=G[v:=F]]  D[v:=F])
+</ul>
+    <p>The last step above uses the inductive hypothesis, justified because
+<em>length(p') = n</em>, and <em>seen(v,C,p')</em> by
+SC3. On the other hand, using S5</p>
+<ul>
+E'[v:=F][p:=G[v:=F]] = (C[v:=F] D[v:=F])[p:=G[v:=F]]
+<p>= (C[v:=F][p':=G[v:=F]] D[v:=F])
+</ul>
+<p>Hence the result holds in this sub-case.
+
+<p><li>Sub-case 3.2, <em>s=1</em>
+This is similar to 3.1
+</ul>
+
+<p><li>Case 4:  <em>  E' = <img src=lambda.gif>x . H</em>, an abstraction.
+
+We have 2 sub-cases,
+<em>s=0</em> and <em>s=1</em></p>
+
+<ul>
+<p><li>Sub-case 4.1, <em>s=0</em>
+
+<p> <ul>
+
+    E'[p:=G[v:=F]][v:=F]  =   (<img src=lambda.gif>x . H)[p:=G[v:=F]][v:=F]
+<p>        =  (<img src=lambda.gif>x . H)[v:=F]<br><br>
+        =   (<img src=lambda.gif>x . H)[v:=F][p:=G[v:=F]]
+</ul>
+<p>Since substitution converts an abstraction into an abstraction.
+So the result holds for this sub-case.
+
+<p><li>Sub-case 4.2, <em>s=1</em>
+
+<p>Now we again (sigh!) have
+to consider cases S5-S7 of the definition of substitution.
+
+<ul>
+<p><li>Sub-sub-case 4.2.1, <em>x=v</em>
+<p> In this sub-sub-case, <em>v</em> goes out of scope, so, by <em>ex falsa
+libet</em> the result holds.
+
+<p><li>Sub-sub-case 4.2.2, <em> x <img src=not_eq.gif> v</em>
+     and either <em>x <img src=not_in.gif> FV(F)</em>
+         or v  <img src=not_in.gif> FV(H)</em>.
+
+Here
+<p><ul>
+    E'[p:=G][v:=F]
+    = (<img src=lambda.gif>x . H)[p:=G][v:=F]
+<p>    = (<img src=lambda.gif>x . H[p':=G])[v:=F]
+    = (<img src=lambda.gif>x . H[p':=G][v:=F])
+<p> = (<img src=lambda.gif>x. H[v:=F][p':=G[v:=F]])
+
+</ul>
+<p>On the other hand,
+<p><ul>
+E'[v:=F][p:=G[v:=F]] = (<img src=lambda.gif>x. H)[v:=F][p:=G[v:=F]]
+<p> = (<img src=lambda.gif>x. H[v:=F])[p:=G[v:=F]]
+<p> = (<img src=lambda.gif>x. H[v:=F][p':=G[v:=F]])
+
+</ul>
+<p>So the result holds in this sub-sub-case
+
+<p><li>Sub-sub-case 4.2.3, <em> x <img src=not_eq.gif> v</em>
+     and <em>x <img src=in.gif> FV(F)</em>
+         or v  <img src=in.gif> FV(H)</em>
+
+This sub-case can't occur because of the way we have defined <em>E'</em>.
+
+</ul>
+
+
+</ul>
+</ul>
+</ul>
+
+
+<p><a href = church_rosser_2.ps> Figure  for Proposition LC3</a>
+
+<h3>Proposition LC3</h3>
+
+Let <em>(E = (<img src=lambda.gif> u.C) G)</em>
+be a redex  of the <img src=lambda.gif>-calculus.
+
+<p>Let <em>p</em> be a path for which
+<em>E[p] = (<img src=lambda.gif> u.D) H)</em>
+where <em>hd(p)=0</em> and <em>hd(tl(p))=1</em>.
+
+Let <em>p' = tl(tl(p))</em>. Then
+<ul>
+<img src=beta.gif>(<img src=beta.gif>(E,()),p')
+<img src=eqv.gif><sub><img src=alpha.gif></sub>
+<img src=beta.gif>(<img src=beta.gif>(E,p),())
+</ul>
+
+<h4>Proof</h4>
+
+<img src=hand.gif>
+Let <em>C'</em> be formed from <em>C</em> by <img src=alpha.gif>-converting
+any <img src=lambda.gif>-abstraction  whose bound
+variable is a member of <em>FV(G) <img src=cup.gif> FV(H)</em>
+to an abstraction whose bound
+variable is not a member of <em>FV(G)) <img src=cup.gif> FV(H)</em>.
+<p>Let <em>(E' = (<img src=lambda.gif> u'.C') G)</em>
+and let <em>u',D', H'</em> be the converted forms of <em>u,D,H</em>.
+
+<p>Consider that by Lemma PT3.
+<p><ul>
+C'[u':=G][p'] = C'[p'][u':=G]
+<p> = E'[p][u':=G] =   ((<img src=lambda.gif> u'.D') H)[u':=G]
+<p> =  ((<img src=lambda.gif> u'.D') H)
+</ul>
+using the definition of path-addressing, and expanding E.
+This is a redex. So, we can work out
+
+<ul>
+<img src=beta.gif>(<img src=beta.gif>(E',()),p')
+</ul>
+that is
+<ul>
+= <img src=beta.gif>(C'[u':=G]),p')
+</ul>
+using lemma PT6, as being
+<ul>
+=   C'[u':=G][p':=D'[u':=G]]
+</ul>
+
+On the other hand, we can immediately apply the definition of
+<img src=beta.gif> to
+<ul>
+<img src=beta.gif>(<img src=beta.gif>(E',p),())
+</ul>
+obtaining
+<ul>
+<p>= <img src=beta.gif>(E'[p:=D'[v':=H']],())
+</ul>
+Expanding <em>E'</em> and using (twice) the definition of
+path-addressing, we obtain
+
+<ul>
+<p>=
+<img src=beta.gif>(((<img src=lambda.gif> u'. C'[p':=D'[v':=H']])G)),())
+</ul>
+
+which, by the definition of <img src=beta.gif> is
+
+<ul>
+<p>= C'[p':=D'[u':=H']][u':=G]
+</ul>
+Now, we can use lemma PT4 to distribute the outer-substitution across
+the path-update:
+<ul>
+<p>= C'[u':=G][p':=D'[u':=H'][u':=G]]
+</ul>
+Whence we can apply Lemma Sub.4  because
+we have chosen <em>v' <img src=not_in.gif> FV(G) <img src=cup.gif>
+FV(H)</em>.
+<ul>
+<p>= C'[u':=G][p':=D'[u':=G][u':=H']]
+</ul
+</ul>
+
+<img src=hand.gif>
+Thus we have shown that local-confluence holds for <em>E'</em>, which
+is <img src=alpha.gif>-congruent to <em>E</em>. Local confluence for
+<em>E</em>itself follows from <img src=alpha.gif>-conversion.
+
+
+<hr>

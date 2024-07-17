@@ -1,0 +1,810 @@
+
+
+
+<html><head><title>
+Lecture 2: Introduction to  POP2000  </title></head>
+
+<BODY bgcolor = "white">
+
+<compiler = POP2000>
+
+
+<h1> Lecture 2: An Introduction to the POP2000 Language</h1>
+
+<hr>
+
+<h2> The UMASS POP2000 System</h2>
+<h2> **** THIS SYSTEM IS NOT INSTALLED IN THE EDLAB ****</h2>
+
+<a href="#start">How to start up UMASS POP2000.</a><br>
+
+<a href="#edit">Editing Files and Running POP2000 Code.</a><br>
+
+<a href="#font">Changing your default font for VED under X.</a><br>
+
+<hr>
+<h2> The POP2000 Language </h2>
+
+<a href="#typographic"> Typographic conventions used in these notes</a><br>
+
+<a href="#values">  Simple values in POP2000.</a><br>
+
+<a href="#variables">  Variables in POP2000.</a><br>
+
+
+
+<!-- define --> <a href="lean2.html#define">
+Definition variable = <b>expr</b> End;
+creates a new variable and gives it a value </a><br>
+
+<a href="#expr">  Expressions in POP2000.</a><br>
+
+<a href="#functions">  So what are functions in POP2000?.</a><br>
+
+<!-- lambda --> <a href="lean2.html#lambda">
+An expression \<b>(v1..vn) expr</b>) denotes a function .
+</a><br>
+
+<a href="#debugger">  The Debugger.</a><br>
+
+<!-- load --> <a href="lean2.html#load">The
+function <tt>load</tt> loads a file of POP2000
+code.</a><br>
+
+<a href="#lambda_calc">  The lambda calculus.</a><br>
+
+<hr>
+
+<h2><a name = "start"> How to start up UMASS POP2000. </a></h2>
+
+
+
+<p>
+To start up UMASS POP2000 type <tt>POP2000</tt>
+as a Unix command. You will get a message
+like this:
+</p>
+
+
+<pre>
+  Sussex Poplog (Version 14.5 Tue Feb 22 15:01:28 WET 1994)
+  UMASS POP2000 (Version 1.0)
+  initialising X windows
+
+  Sussex XVed (Version 2.0 (motif), SCHEME Tue Sep 12 12:14:16 EDT 1995)
+  X Server: MIT X Consortium
+  initialising X windows
+</pre>
+
+<p>[Note for experts: getting UMASS POP2000 depends on an alias in  the
+class  <tt>.cshrc</tt>  file,  which   itself  depends  on  your   own
+<tt>~/.cshrc</tt> file. If you change this file, you may find yourself
+running a  version MIT  POP2000 which  does NOT  accord with  the  IEEE
+standard required for this class.</p>
+
+<p>UMASS  POP2000  is  implemented  under  the  Sussex  Poplog   system
+developed at Sussex University (Falmer  UK), and employs the  X-window
+system developed at MIT (Cambridge MA). ] </p>
+
+<p>If you are logged in in the EDLAB, you will get a version which  is
+customised for running under X-windows.  In this version, you will  be
+able to edit and test programs entirely within UMASS POP2000 system  if
+you wish.</p>
+
+<p> If you are logged in remotely,  for example from home, and do  not
+have an X-server  on your  local machine, you  will get  a version  of
+UMASS  POP2000  which  is  customised  for  running  under  a  terminal
+emulator. If your emulator  matches a VT100  terminal, this should  be
+OK, but you  may need  to set the  <tt>term</tt> environment  variable
+before you run your POP2000. If POP2000 is unhappy with your terminal it
+will say so.</p>
+
+<ul><code>
+   setenv term vt100
+</code></ul>
+
+
+<p>
+If you are logged in remotely from a machine which is running an X-server, for
+example another workstation in UMASS, or your own machine running an
+X-server using the ppp protocol, you should do:
+</p>
+
+
+<code><ul>
+   setenv DISPLAY <b>mymachine</b>
+</ul></code>
+
+
+<p>
+where <b>mymachine</b>
+is the net-address of the machine you are logged in on. This
+will allow UMASS POP2000 to open windows on your machine.
+
+<h2><a name = "edit"> Editing Files and Running POP2000 Code.</a></h2>
+
+
+<p>
+Under X-windows, a small  "control panel" will pop-up  when you start  POP2000.
+This has a  box labelled "File:".  This contains  the name of  a default  file
+(<tt>"unnamed.lam"</tt>)
+that you can edit using  the built-in VED editor. If you  want
+to change this, put the mouse in the  box, drag the mouse along the length  of
+the name - it will now reverse its colours. Then type in the name of the  file
+you want to edit, and hit the Do Edit button. After a brief pause a new window
+will appear with your file (possibly empty) in it.
+</p>
+
+
+<p>
+If it is a file  to contain text in the  POP2000 language, the name should  end
+with "<tt>.lam</tt>".
+</p>
+
+<p>
+There is also "<b>Exit</b>" button to kill the POP2000 system.
+</p>
+
+
+<p>
+Each edit window contains a "menu-bar" across the top. This is used in a style
+akin to  that  of  the  Macintosh. Currently  this  has  the  following  menus
+attached:
+</p>
+<ul>
+<li><b> File </b>
+Allows you to choose to open a new file for editing, to
+save it
+to
+        backing store, to save it under another name, to write it under
+        another name, to insert the contents of a file, and to
+        "quit" that is to stop editing that particular file.
+<p>
+        Note that most of the file options use a "File Tool" which allows you
+        to select the file to operate on interactively. This looks a bit
+        complicated, but you can always type the name of the file you want
+        in the Selection: slot, and hit the "Edit" button.
+
+<li><b>
+Edit</b>
+This menu allows you to cut, copy and paste pieces of your document.
+        Again, the style is Macintosh-like. You can paste into other windows
+        on your machine which are not related to UMASS POP2000, although you
+        should note that the mouse-button conventions are usually different.
+        You use the LEFT mouse button to select an arbitrary piece of text.
+<p>
+        You can also select a "range" of text. To do this, hold down the
+        control key (ctrl) and use left mouse button to select a number of
+        lines of text. The selected range is indicated by a black line that
+        appears down the left of your screen.
+<p>
+
+        A Search function is also provided.
+
+
+<li><b>
+View</b>
+This allows you to go to the start or end of the file, or of a
+        procedure.
+
+
+
+<li><b>
+Compile</b>
+This menu allows you to compile program text. POP2000 uses an
+        incremental compiler, so it is possible to compile a line of text,
+        a single function definition (use the current procedure menu item)
+        or the text of a range or selection. You can also choose to compile
+        a file selected with a File Tool.
+
+
+<li><b>
+Lectures</b> This gives you access to all the lectures of the course.
+
+
+
+<li><b>
+cs287</b>
+This menu allows you to access information specific to the class.
+        It will be added to as time goes on.
+
+
+</ul>
+
+
+
+<p>
+Additional help with editing is found under the "<tt>287</tt>"
+menu. This
+online
+material is found in the directory <tt>$popPOP2000</tt>.
+</p>
+
+
+<h2><a name = "font"> Changing your default font for VED under
+X.</a></h2>
+
+If you want to use a different font, add a line of the form XVed*font: <font>
+to your .Xdefaults file. You can obtain a (long) listing of available fonts
+by doing xlsfonts as a Unix command.
+
+
+<pre>
+XVed*font: 7x12  # The default size - rather small for some.
+XVed*font: 9x15  # A bigger size, which you may like better.
+</pre>
+
+<p>You can also change the font of a
+particular window by doing</p>
+
+<ul>    <tt>&lt;enter&gt; window font <b>font</b></tt>.
+</ul>
+
+Where <b> font</b> is the name of a font.
+
+<!-- ----------------------------------------------------------- -->
+
+
+<h1> The POP2000 Language </h1>
+
+<h2> <a name = "typographic">
+Typographic conventions used in these Lectures
+</a></h2>
+
+<p>All expressions and other constructs of the POP2000 language which occur
+in these lectures are set in a typewriter font, An example of typewriter
+font is: <tt> Definition pi = 3.14159 End; </tt>.
+
+<p>Typewriter
+fonts  are  characterised  by being  fixed-width  (every  letter
+occupies the same amount of space on  the page). In the HTML browser  which
+has been constructed to  let you  view these  lectures from  within  UMASS
+POP2000, POP2000 expressions will appear in red, since the VED editor  always
+uses a single fixed-width font and provides no means of distinguishing text
+by using a different font, only by making variants on a given font.
+
+<p>Where it is important to make an
+expression of the language stand out, it will be placed indented as a  line
+or lines of text separated from the English commentary. For example:
+
+<ul><pre>
+    Definition pi = 3.14159 End;
+</pre></ul>
+
+<p>Grammatical constructs are specified using a bold version of the
+typewriter font. For example, we specify one form of the POP2000 <tt> define
+</tt> statement by
+
+<ul><pre>
+    Definition <b> variable</b> = <b>expression</b> End;
+</pre></ul>
+
+<p>Here, because <tt><b>variable</b></tt> is in a bold font it means that
+you can write <i>any</i> POP2000 variable in place of it; likewise because
+<tt><b>expression</b></tt> is in a bold font it means that you can write
+<i>any</i> POP2000 expression in place of it. So, the previous statement:
+
+<ul><pre>
+    Definition pi =  3.14159 End;
+</pre></ul>
+
+is an instance of the grammatical form
+
+<ul><pre>
+    Definition <b> variable</b> =  <b> expression</b> End;
+</pre></ul>
+
+<h2><a name = "values"> Simple values in POP2000 </a></h2>
+
+<p>
+POP2000 operates on the usual simple data-objects, that is to say data-objects
+that can best be thought of as having no internal structure.
+</p>
+
+<ul>
+<p>
+<b>integers:</b>  These are of <i> arbitrary precision </i>
+that is they are only limited in size by the total amount of memory
+you have!
+</p>
+
+
+<p>
+<b>rationals:</b>
+POP2000 can and will compute with fractions. If you divide one
+           integer by another you will get a rational. You should usually
+           avoid rational computations, unless you are doing symbolic algebra!
+</p>
+
+
+<p>
+<b>reals:</b>     These are represented by floating point numbers.
+</p>
+
+<p>
+<b>booleans:</b>
+These are the values of the constants false and true.
+
+</p>
+</ul>
+
+<pre>
+23   is an integer
+3.4  is a real
+3/4  is a rational
+
+</pre>
+
+
+<h2><a name = "variables"> Variables in POP2000 </a></h2>
+
+<p>
+A POP2000 variable is either
+<ul>
+<li>a sequence of  letters (a..z A..Z)  or digits (0..9) or an underscore
+    <tt>_</tt> beginning with a letter.
+
+<li> Or is is one of a restricted set of sign sequences (+  - *  / ...)
+</ul>
+
+A variable is terminated by white space or one of a number of separating
+characters, of which parentheses <tt>(</tt>, <tt>)</tt> are the most
+important. Certain reserved-words cannot be used as identifiers.
+
+</p>
+
+
+<p>
+For example the following are variables:
+</p>
+
+
+<pre><code>
+        x y x_23 +  ->
+</code></pre>
+
+
+<p>
+Warning - POP2000 gives some variables <i>initial values</i>,
+for example <tt>+,
+*, / </tt>. It is not a good idea to use these variables for
+your own purposes (except as variables local to a function).
+</p>
+
+
+
+
+<h2><a name = "define"> <tt> Definition </tt> creates a new
+variable, gives it a value</a></h2>
+
+
+<p> Variables usually have values. We  say that a variable is  <i>bound</i>
+to  a  value  when   it  is  associated  with   the  value.  POP2000   has a
+<i>statement</i> which creates a new variable and binds it to the value  of
+an expression </p>
+
+
+
+<ul><pre>
+    Definition <b> variable</b> =  <b> expression</b> End;
+</pre></ul>
+
+<p>
+For example:
+</p>
+
+
+<ul><pre>
+    Definition pi=  3.14159 End;
+</pre></ul>
+
+
+<p>
+binds the variable <tt>pi</tt> to have the value <tt>3.14159</tt>
+</p>
+
+
+<h2><a name = "expr"> Expressions in POP2000</a></h2>
+
+Where the "action" takes place in POP2000 is in the <em>evaluation of
+expressions</em>. POP2000 expressions can have a number of syntactic forms,
+<a href = "#compare_scheme">[in distinction to the Scheme language]</a>
+which we will introduce gradually during the course of these lectures.
+
+<ul>
+<li> A variable is a primitive expression.
+<li> A constant is a primitive expression.
+<li>If <b>expr<sub>1</sub></b> and <b>expr<sub>2</sub></b> are expressions,
+then so are the <em> combinations </em>:
+
+<pre>
+    <b>expr expr<sub>1</sub> expr<sub>2</sub> ...expr<sub>n</sub></b>
+    <b>expr<sub>1</sub> +  expr<sub>2</sub></b>
+    <b>expr<sub>1</sub> -  expr<sub>2</sub></b>
+    <b>expr<sub>1</sub> *  expr<sub>2</sub></b>
+    <b>expr<sub>1</sub></b> / <b> expr<sub>2</sub></b>
+</pre>
+
+Every combination is understood to be a <em>function</em> applied to <em>
+an argument or arguments </em> <a href = "#lambda_calculus">[see note on
+the Lambda calculus].</a> In the case of the form
+
+<pre>
+    <b>expr expr<sub>1</sub> expr<sub>2</sub> ...expr<sub>n</sub></b>
+</pre>
+
+The expression <tt>    <b>expr</b></tt> is the function while
+<b>expr<sub>1</sub> expr<sub>2</sub> ...expr<sub>n</sub></b> are
+the arguments.
+
+<p>In the case of the forms:
+<pre>
+    <b>expr<sub>1</sub> +  expr<sub>2</sub></b>
+    <b>expr<sub>1</sub> -  expr<sub>2</sub></b>
+    <b>expr<sub>1</sub> *  expr<sub>2</sub></b>
+    <b>expr<sub>1</sub></b> / <b> expr<sub>2</sub></b>
+</pre>
+the <em>operators</em> <tt> + - * / </tt> are the functions, each with two
+arguments <b>expr<sub>1</sub>,  expr<sub>2</sub></b>.
+
+<li> If <b> expr</b> is an expression then so is
+<pre>
+    (<b>expr<sub>1</sub></b>)
+</pre>
+
+This parenthesised form is used to resolve ambiguity. For example
+<tt> 2*3+4 </tt> could mean <tt>(2*3)+4</tt> or <tt> 2*(3+4)</tt>.
+In the absence of parentheses, an <em>operator precedence and
+associativity rule</em> is used by the POP2000 compiler. This treats
+multiplication as more binding than addition, so that <tt>2*3+4</tt> is
+interpreted as <tt>2*3+4</tt>. All operators are less binding than
+direct function application, so that <tt> sin x + y </tt> is
+interpreted as <tt> (sin x) + y</tt>, that is apply the function <tt>
+sin</tt> to the variable <tt>x</tt> and then add the result to the variable
+<tt>y</tt>.
+
+The arithmetical operators are <em>left associated</em>, so that, for
+example, <tt> x-y-z </tt> means <tt> (x-y)-z </tt> and not <tt>x -
+(y-z)</tt>. This, of course, is consistent with normal mathematical usage.
+
+
+</ul>
+
+
+
+
+
+
+
+<pre><code>
+     3+4
+</code></pre>
+
+
+<p>
+is an expression, whose function is <tt>'+'</tt>
+and whose arguments are <tt>3</tt> and <tt>4</tt>.
+</p>
+
+
+
+<p>
+When POP2000 evaluates an  expression of this form,  it evaluates the  function
+and arguments, and then <i>applies</i>
+the function to the arguments. Evaluating  the
+above expression we get
+</p>
+
+
+<ul><code>
+     7
+</code></ul>
+
+Likewise:
+
+<ul><code>
+    5 - 4
+</code></ul>
+
+
+<p>
+means "the result of subtracting 4 from 5".
+</p>
+
+
+
+<p>
+A more complicated example is:
+</p>
+
+
+<ul><code>
+3+(4*5)
+</code></ul>
+
+<p>
+Here we evaluate <tt>4*5</tt> to get <tt>20</tt>,
+and then add <tt>3</tt> to get <tt>23</tt>.
+</p>
+
+
+<h2><a name = "functions">So what are functions in POP2000?</a></h2>
+
+
+
+
+<p>
+Well, actually functions are <i>pieces of machine code</i> (in
+effect subroutines for
+those who have taken CMPSCI 201). So the value of the variable '+' is a  piece
+of code for doing addition.
+</p>
+
+
+
+<p>
+[Note you  can  actually  redefine  POP2000 standard  functions.  This  is  NOT
+recommended for novices, for you may lose important capabilities]
+</p>
+
+
+<h2><a name = "lambda">Making your very own function</a></h2>
+
+
+<p>
+A POP2000 function is specified by the syntax
+</p>
+
+
+<ul><pre>
+    \ <b> formals</b>. <b> body</b>
+</pre></ul>
+
+<p> here <b>formals</b>  a sequence  of variables,  and  <b>body</b>  is
+an  expression. The entire construct is itself an <em>expression</em>. The
+particular syntax has been chosen to correspond as closely as possible with
+the Lambda Calculus notation of Church, who used the Greek letter "lambda",
+which, alas, is not available in the standard fonts used for computer
+programs.
+
+
+<p>
+Note that this is <i>not</i>
+an application of the function <tt>lambda</tt>, but is what  is
+called a "special form" in POP2000.
+</p>
+
+<p>
+For example
+</p>
+
+
+<ul><code>
+    (\x.  x*x)
+</code></ul>
+
+
+<p>
+is the function which squares its argument. So
+</p>
+
+
+
+<ul><code>
+    ( (\x.  x*x)  3)
+</code></ul>
+
+<p>
+evaluates to  9.
+</p>
+
+<p>  The rule  for evaluation  of  a lambda-function  applied  to
+  arguments is  to (a)  evaluate all  the arguments,  and  (b)
+  strip off the  'lambda' and  substitute the  values of  each
+  argument for  the corresponding  formals, (c)  evaluate  the
+  body of the lambda with the values substituted. </p>
+
+  
+<pre><code>
+   ( (\x.  x*x) 3+4)
+</code></pre>
+
+<p>
+Evaluate the argument
+</p>
+
+
+<ul><code>
+   ( (\x.  x*x) 7)
+</code></ul>
+
+
+<p>
+Strip and substitute for corresponding formals (x=7) :
+</p>
+
+
+<ul><code>
+    7*7
+</code></ul>
+
+<p>
+Evaluate body
+</p>
+
+
+<ul><code>
+    49
+</code></ul>
+
+
+<p>
+This may seem a funny way of defining functions - in Pascal we would give  the
+corresponding function a name, like "square". In POP2000, this is easily done
+</p>
+
+
+<ul><code>
+    Definition square = \x.  x*x  End;
+</code></ul>
+
+
+<p>
+POP2000 responds:
+</p>
+
+
+<ul><pre>
+&lt;Compiled function: square&gt;
+</pre></ul>
+
+
+<p>
+and now we can use it
+</p>
+
+
+<ul><pre>
+    square 4;
+</pre></ul>
+
+
+<p>
+POP2000 responds:
+</p>
+
+
+<ul><pre>
+    16
+</pre></ul>
+
+
+<p>
+An example of a lambda expression with more than one argument is
+</p>
+
+
+<ul><pre>
+    \ x y. x + 2*y
+</pre></ul>
+
+
+<p>
+And an example of its use is:
+</p>
+
+
+<ul><pre>
+    (\ x y. x + 2*y) (4 + 3) 5;
+</pre></ul>
+
+<p>
+Evaluate the arguments
+</p>
+
+
+<ul><pre>
+    (\ x y. x + 2*y) 7 5)
+</pre></ul>
+
+
+<p>
+Strip and substitute, x=7, y=5:
+</p>
+
+
+<ul><pre>
+    7 + 2*5
+</pre></ul>
+
+
+<p>
+and evaluate
+</p>
+
+
+<ul><pre>
+    7+10
+</pre></ul>
+
+<ul><pre>
+     17
+</pre></ul>
+
+<h2><a name = "debugger">The Debugger</a></h2>
+
+<p>
+This is accessed by hitting the "Debugger" button on the POP2000 Control Panel.
+It is operated by a panel which contains the following buttons:
+</p>
+
+
+
+<dl>
+
+<dt>Generate Debug Code:
+<dd>This is  normally true,  so that  POP2000
+generates code for  the debugger  by default.  Turn it  off to  create
+smaller, faster programs.
+
+<dt>Stop at  All Breakpoints:  <dd>This is  normally false.  When  set
+true, POP2000 will  stop after it  evaluates every compound  expression
+such as (+ x 2).  It will print out "frames"  for the top n  functions
+you are currently executing, where n is set by the "Number of  Frames"
+slider.
+
+<dt>Number  of   Frames:<dd>   This   slider   determines   how   many
+function-frames you will see.
+
+
+<dt>
+Go To Next Breakpoint: <dd>Execution continues until the next
+(automatically generated) breakpoint. Breakpoints occur after an
+expression has been evaluated.
+
+
+<dt>
+Skip Current Function:
+<dd> The execution of the current function will be completed without
+stopping at any breakpoints.
+
+<dt> Help:
+<dd>Prints out help information about the debugger.
+
+</dl>
+
+
+
+<h2><a name  = "load">  The  function <tt>load</tt>  loads a  file  of
+POP2000  code.  </a></h2>  <p>   The  function  application
+<tt>(load `<b>file</b>`)</tt> will load any file as POP2000 program. </p>
+
+<hr>
+<a name = "compare_scheme"></a>
+<h2> A comparision with the Scheme Language </h2>
+
+Functional languages can all be regarded as descendents of John McCarthy's
+LISP language. In the direct descendents of LISP, of which Scheme is the
+closest to POP2000, it has been conventional to employ a simple uniform
+syntax, in which compound expressions are written with the function
+followed by the arguments, all being enclosed in parentheses. For example:
+
+<pre>
+    (+ 3 (* 4 5))
+</pre>
+
+<p>is a Scheme expression equivalent to <tt> 3+4*5</tt> in POP2000. This
+syntax stresses  the <em> conceptual uniformity </em> of functional
+languages, but at the price of making code have a form that is unfamiliar
+to users.
+
+<a name =  "lambda_calculus">
+<h2> A note on the Lambda Calculus </h2>
+
+<p>In
+the lambda-calculus, which provides the theoretical underpinning of the
+POP2000 language, a function only has <em>one</em> argument. Thus
+(+ 2 3) is construed as ((+ 2) 3), where (+ 2) is the function "add 2".
+POP2000 does in fact support this model of computation (in distinction to
+Scheme which does not directly) but for beginners it is easier to think of
+a function such as <tt>+</tt> taking two arguments.

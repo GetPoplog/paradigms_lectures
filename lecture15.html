@@ -1,0 +1,740 @@
+
+
+<html><head><title>
+
+Laws &amp Invariants for  Sets
+
+</title></head>
+
+<body bgcolor="white">
+
+
+<h1>
+<center>
+    LECTURE 15 Laws and Invariants for Sets
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+
+<a href = "lecture15.html#laws">
+  1   Laws Characterise Datatypes Logically
+</a><br>
+<pre>
+      1.1   The Halting Problem: does the execution of a function stop?
+      1.2   Approaches to validating laws
+</pre>
+
+<a href = "lecture15.html#laws_sets"> 2   Laws for Sets</a><br>
+<pre>
+      2.1   Laws for  empty_set
+      2.2   Laws for list->set
+      2.3   Laws for set->list
+      2.4   Laws for member_set?
+      2.5   Laws for included_in?
+      2.6   Laws for equal_set?
+      2.7   Laws for adjoin
+      2.8   Laws for intersect
+      2.9   Laws for sets as an abstract data-type
+</pre>
+
+<a href = "lecture15.html#verify_laws"> 3   Verifying Laws with Synthesised
+Data</a><br>
+<pre>
+      3.1   Generating not-too-random numbers with the non-random  function
+      3.2   Generating not-too-random lists of numbers with list_of_random
+      3.3   Testing an implementation of sets with test_laws_sets
+</pre>
+<a href = "lecture15.html#invariants">
+  4   Invariants of Representations.</a><br>
+
+<a href = "lecture15.html#laws_static">
+  5   Verifying Laws with Static Typing - ".h" files in C
+</a><br>
+
+
+<a name = "laws"></a>
+<h2>1  Laws Characterise Datatypes Logically</h2>
+
+
+<p>
+If we are creating a datatype it  is helpful to characterise it abstractly  in
+terms of  <em>laws</em>
+which  say  how the  operations on  it  are to  behave  without
+specifying how this behaviour is  to be achieved. We  can regard such laws  as
+logical statements of the required behaviour, and can encode them in Scheme as
+functions whose body <em>must not</em> evaluate  to <tt>#f</tt>.
+
+<p>
+So, the role of laws is to allow us to express an abstract characterisation of
+the datatype from the outsider's point of view, thus assuring the user of  the
+data-type that objects  of that type  will, at least  in some aspects,  behave
+correctly.
+
+<p>
+Given that, in Scheme, we can  represent a law using <em>boolean  functions</em>
+to encode logical statements, it will be convenient to have functions for  those
+logical connectives (<em>implies</em> and <em>if and only if</em>) which have no
+standard binding in Scheme.
+
+<p>
+Implication is easily defined:
+
+<pre><code>
+(define (-> b1 b2)
+     (or (not b1) b2)
+    )
+</code></pre>
+
+<p>
+while logical equivalence is adequately coded using the <tt>equal?</tt> function:
+
+
+<pre><code>
+(define &lt;-> equal?)
+</code></pre>
+
+
+<p>
+It is a convenience to express the fact  that an expression <em>is</em> a
+law, that
+is
+to say that there is a requirement  that it never evaluates to <tt>#f</tt>, by  using a
+[non-standard] special  form.  If <b>expr</b>  is  a Scheme  expression,  then  the
+special form:
+
+<pre>
+    (:- <b>expr</b> )
+</pre>
+
+<p>
+evaluates <b>expr</b> and halts the computation  with an error condition if the  if
+<b>expr</b> evaluates to <tt>#f</tt>. The  expression <b>expr</b> is printed  out as part of  the
+error message. Thus if we were to evaluate:
+
+<pre>
+    (:-  (= 3 4))
+</pre>
+
+<p>
+the computation would halt, printing out the message:
+
+<pre>
+    Error: Failed assertion check (:- (= 3 4))
+</pre>
+
+<p>
+Thus we could express the fact  that the built;-in integer data-type in  Scheme
+obeys the  commutative  law of  addition  by saying  that,  if we  define  the
+function:
+
+<pre><code>
+(define law_+
+    (lambda (x y)
+        (:-
+            (= (+ x y) (+ y x)))))
+</code></pre>
+
+
+<p>
+then the function <tt>law_+</tt>
+will never halt  and report an error  if it is  given
+integer arguments.
+
+
+
+<p>
+Consider now the following test program which systematically works through all
+pairs of integers, calling <tt>law_+</tt> for each pair:
+
+<pre><code>
+(define (test_law_+)
+    (help1_+ 0))
+
+(define (help1_+ n)
+    (help2_+ n 0 n)
+    (help1_+ (+ n 1)))
+
+(define (help2_+ n m m_max)
+    (if (&lt;= m m_max)
+        (begin
+            (law_+ n m)
+            (law_+ (- n) m)
+            (law_+ n  (- m))
+            (law_+ (- n) (- m))
+            (help2_+ n (+ m 1) m_max)
+            )
+        )
+    )
+</code></pre>
+
+<p>
+We can see that <em>
+the commutative law for the addition of Scheme integers holds
+if and only if the function</em> <tt>test_law_+</tt>
+does not halt during execution.
+
+<h3>1.1  The Halting Problem: does the execution of a function stop?</h3>
+
+
+<p>
+This brings  us  to a  famous  problem of  computer  science. Can  we  write a
+function <tt>halts?</tt>
+which  takes another function  as argument and  <em>decides</em> if  it
+<tt>halts?</tt> That is  to say,  for any  function <tt>f</tt>,  <tt>(halts?
+<tt>f</tt>)</tt>  will always  itself
+terminate, yielding <tt>#t</tt> if <tt>f</tt> terminates and  <tt>#f</tt> if it does not. We can  imagine
+the <tt>halts?</tt>
+function  examining the  definition  of  <tt>f</tt>, which  could  be  made
+available if we were using an interpreter.
+
+<p>
+The answer is well known - if we are writing in a language powerful enough  to
+express an arbitrary computation, <em>no,
+we cannot write</em> such a <tt>halts?</tt> function.
+
+<p>
+It is easy enough to convince ourselves that we can't. For suppose we did have
+a <tt>halts?</tt> function. Consider the Scheme function <tt>tricky</tt>:
+
+<pre>
+     (define (tricky x)
+           (if (halts? tricky) (tricky x) #t)
+       )
+</pre>
+
+<p>
+If we ask, "what should the value of <tt>(halts
+tricky)</tt> be?", we obtain a paradox.
+If it is <tt>#t</tt> it should be <tt>#f</tt>, and if  it <tt>#f</tt> it should be
+<tt>#t</tt>.
+
+<h3>1.2  Approaches to validating laws</h3>
+
+
+<p>
+We saw above that we  can express the problem  of deciding if the  commutative
+law holds for  Scheme integers is  equivalent to deciding  if a test  function
+halts. This would indicate that we would  not expect to be able in general  to
+decide if the laws applying to a data-type with an infinite set of members are
+valid. So, if we let ourselves be unrestricted in what we say in our laws,  we
+cannot expect them to be automatically verified in a logically watertight way
+
+<p>
+However, there are a number of ways in which we could attach laws to datatypes
+and still get a useful measure of verification.
+
+<ul>
+
+<li>
+    We might express our laws in a sufficiently weak logical formalism within
+    which it is possible to <em>decide</em>
+whether the laws applying to a datatype are
+    valid. This is an approach embodied in statically typed languages, such as
+    Pascal or C or SML. If the language is based on a <em>sound</em>
+type theory (which
+    C certainly is not, and neither is Pascal) it can at least assure us of
+    certain facts about data-types.
+<li>
+    We might obtain some assurance that the laws were valid by applying them
+    to sets of arguments that were in some way held to be representative of
+    the arguments the functions operating on the datatypes would meet in
+    practice. This is the normal <em>debugging</em> approach.
+<li>
+    We might try to use some kind of mechanical theorem prover to verify the
+    laws, despite the limitations which we see are imposed by the halting
+    problem. We would expect the user to interact with the theorem prover by
+    giving it hints about how to approach a particular problem. When we come
+    to consider the logic paradigm, we will meet techniques for mechanical
+    theorem proving which are able, if developed, to support the verification
+    of some programs.
+</ul>
+
+
+<a name = "laws_sets"> </a>
+<h2>2  Laws for Sets</h2>
+
+
+<p>
+Returning now to our computational representation of sets, we can see that the
+laws in this case are the <em>relevant
+definitions</em> of set-theory, translated  into
+computational terms. If our representations  of sets satisfy the  definitions,
+they necessarily satisfy  the theorems  of set  theory. So,  for example  if a
+representation satisfies the  definition of intersection,  (an element x  is a
+member of the intersection of two sets S1 and S2 if and only if it is a member
+of both S1 and of S2), and  other definitions (e.g. of equality of sets)  then
+it will satisfy the theorem that the intersection of S1 and S2 is equal (under
+set-equality) to the intersection of S2 and S1.
+
+<h3>2.1  Laws for  <tt>empty_set</tt> </h3>
+
+<p>
+So let's begin with the  laws for the <tt>empty_set</tt>. This  is easy - nothing  is a
+member of the empty set.
+
+<pre><code>
+(define laws_empty_set
+    (lambda (x) (not (member_set? x empty_set))))
+</code></pre>
+
+<h3>2.2  Laws for <tt>list->set</tt></h3>
+
+
+<p>
+The laws for <tt>list->set</tt> are not part of our usual mathematics, but it is clear
+what we want - any element of the list is a member of the set, and conversely.
+
+<p>
+We will need the definition of <tt>member?</tt> from Lecture 5:
+
+<pre><code>
+(define (member? x list)
+     (if (null? list) #f
+         (if (<tt>equal?</tt> x (car list)) #t
+              (member? x (cdr list)))))
+</code></pre>
+
+
+<pre><code>
+(define laws_list->set
+    (lambda (x l)
+        (:-
+            (lambda (x)
+                (&lt;-> (member? x l)
+                    (member_set? x (list->set l))
+                    )))))
+</code></pre>
+
+<h3>2.3  Laws for set->list</h3>
+
+<p>
+Likewise, the laws for the <tt>set->list</tt> function say much the same thing.
+
+<pre><code>
+(define laws_set->list
+    (lambda (x s)
+       (:-
+           (&lt;-> (member_set? x s) (member? x (set->list s))))))
+</code></pre>
+
+
+<h3>2.4  Laws for member_set?</h3>
+
+<p>
+What are the laws of the <tt>member_set?</tt>
+function? Well, these are mostly subsumed
+in the  laws  for  the  other  functions.  However,  we  should  require
+
+<pre>
+    (not (member_set? x x))
+</pre>
+
+<p>
+always to be true. Since we are confining ourselves to sets of numbers,  there
+is no problem with this axiom - it is guaranteed by our type-discipline.
+
+<h3>2.5  Laws for included_in?</h3>
+
+
+<p>
+For the <tt>included_in?</tt>
+function we have the law that one set <tt>s1</tt> is included in a
+set <tt>s2</tt>
+if any <tt>x</tt>  which is a member  of <tt>s1</tt>
+is a member  of <tt>s2</tt>. [Note for  logic
+buffs: we only have a one-way implication in this law because of the fact that
+if we  wrote out  the logical  statement  with quantifiers,  <tt>x</tt>
+is  bound  by a
+universal quantifier  internal to  the definition  of <tt>included_in?</tt>.
+Only  the
+forward implication is correctly translated as below.]
+
+
+<pre><code>
+(define laws_included_in?
+    (lambda (x s1 s2)
+       (:-
+         (->
+            (included_in? s1 s2)
+            (-> (member_set? x s1) (member_set? x s2))) )))
+</code></pre>
+
+
+
+<h3>2.6  Laws for equal_set?</h3>
+
+
+<p>
+The laws for <tt>equal_set?</tt>
+are similar to our generic function defining equality.
+
+
+<pre><code>
+(define laws_equal_set?
+    (lambda (s1 s2)
+        (:-
+            (&lt;->
+                (equal_set? s1 s2)
+                (and
+                    (included_in? s1 s2)
+                    (included_in? s2 s1)
+                    )
+                )
+            )))
+</code></pre>
+
+<h3>2.7  Laws for adjoin</h3>
+
+
+<p>
+The laws for adjoin state that when we adjoin  an element <tt>x</tt>
+to a set <tt>s, x</tt>
+is a member of <tt>(adjoin x s)</tt>,
+and that any member <tt>y</tt> of <tt>s</tt> is also a member
+of <tt>(adjoin x s)</tt>.
+
+
+<pre><code>
+(define laws_adjoin
+    (lambda (x y s)
+        (:-
+            (and
+                (member_set?  x (adjoin x s))
+                (->   (member_set? y s) (member_set? y (adjoin x s)))
+                )
+            )
+        )
+    )
+</code></pre>
+
+<h3>2.8  Laws for intersect</h3>
+
+
+<p>
+Finally, the laws for  <tt>intersect</tt>
+state that  an element <tt>x</tt> is  a member of  the
+intersection of two sets <tt>s1</tt>
+and  <tt>s2</tt> if and only if it  is a member of both  of
+them.
+
+<pre><code>
+(define laws_intersect
+    (lambda (x s1 s2)
+        (:-
+            (&lt;->
+                (and (member_set? x s1) (member_set? x s2))
+                (member_set? x (intersect s1 s2))
+                )
+            )
+        )
+    )
+</code></pre>
+
+<h3>2.9  Laws for sets as an abstract data-type</h3>
+
+
+<pre><code>
+(define laws_sets
+    (lambda (x y l s1 s2)
+        (and
+            (laws_empty_set s1)
+            (laws_list->set x l)
+            (laws_set->list x s1)
+            (laws_included_in? x s1 s2)
+            (laws_equal_set?   s1 s2)
+            (laws_adjoin x y s1)
+            (laws_intersect x s1 s2)
+            )
+        )
+    )
+</code></pre>
+
+
+<a name = "verify_laws"></a>
+<h2>3  Verifying Laws with Synthesised Data</h2>
+
+
+<p>
+Let us consider how we  might generate data that  would help convince us  that
+laws  pertaining  to  a  particular   data-type  were  likely  to  be   valid.
+Immediately, we can conceive of creating <em>random</em>
+integers and lists of integers
+as our test data.  It is quite easy  (though not so easy  as some people  have
+supposed) to write programs to produce a <em>pseudo
+random</em> sequence of numbers  by
+performing arithmetic. There  is a (non-standard)  function <tt>random</tt>
+built;  into
+UMASS Scheme which provides such a sequence. The call <tt> (random n)</tt>
+produces a
+pseudo-random number between <tt>0</tt> and <tt>n-1</tt>.
+
+<p>
+However random test  data may not  test our programs  very well! Consider  the
+<em>merge</em>
+algorithm. The action we take at each step depends on whether the  first
+member of one argument-list is less than, equal to, or greater than the  first
+member of the other argument-list. If  we chose two sorted lists with  entries
+chosen randomly between 1 and 1000, we might well not encounter the "equality"
+case. For example, we might have
+
+<pre>
+        (45 248 687)
+</pre>
+
+and
+
+<pre>
+        (134 573 724 898)
+</pre>
+
+<p>
+Bearing this in mind, below is some code for generating some not-too-random
+test data.
+
+<h3>3.1  Generating not-too-random numbers with the <tt>non-random</tt>
+function</h3>
+
+<p>
+The first thing to do is to  generate a sequence of numbers, which are  likely
+to have repeats. The function call  <tt>(non-random
+n)</tt> returns a number  between <tt>1</tt>
+and <tt>n</tt> with a one-in-three chance of repeating the previous number.
+
+<pre><code>
+(define random_last 0)
+
+(define (non-random n)
+    (cond
+        ((= (random 3) 0) random_last)
+        (else (set! random_last (random n)) random_last))
+    )
+</code></pre>
+
+
+<h3>3.2  Generating not-too-random lists of numbers with
+list_of_random</h3>
+
+
+<pre><code>
+(define (list_of_random n m)
+    (if (= n 0)
+        '()
+        (cons (random m) (list_of_random (- n 1) m))
+        )
+    )
+
+
+(define (random_list n)
+    (list_of_random (random n) (+ 1 (random  n)))
+)
+
+(define random_last_list '(5 3))
+
+(define (non-random_list n)
+   (cond
+        ((= (random 3) 0) random_last_list)
+        (else (set! random_last_list (random_list n)) random_last_list))
+
+)
+
+</code></pre>
+
+<h3>3.3  Testing an implementation of sets with test_laws_sets</h3>
+
+
+<p>
+Once we have an  implementation of sets,  we can verify  it by evaluating  the
+expression <tt>(test_laws_sets
+n)</tt> where <tt>n</tt> is an integer. With present  experience,
+if  <tt>n</tt>
+is  given  the  value  100,   this  is  quite  adequate  to  test   the
+implementations of  sets  given in  these  lectures.
+
+<pre><code>
+(define test_laws_sets_once
+    (lambda ()
+        (let* (
+             (x (random 10))
+             (y (non-random 10))
+             (l (random_list 10))
+             (s1 (list->set l))
+             (s2 (list->set (non-random_list 10)))
+             )
+            (writeln "testing sets: x = " x ", y = " y ", l = " l)
+            (writeln "s1 = " s1 ", s2 = " s2)
+            (laws_sets x y l s1 s2)
+            )
+        )
+    )
+</code></pre>
+
+
+<pre><code>
+(define (test_laws_sets n)
+  (if (> n 0)
+    (begin (test_laws_sets_once) (test_laws_sets (- n 1)))))
+</code></pre>
+
+
+
+<a href = "lecture15.html#invariants"></a>
+<h2>4  Invariants of Representations.</h2>
+
+<p>
+When we are implementing a representation of a datatype which has been defined
+abstractly, there will be facts about this representations which are not  true
+of the data-type itself. Thus our specification of sets says nothing about how
+sets are to be stored in  the machine, but our three separate  implementations
+are characterised by three different ways  of storing the data - as  unordered
+lists without duplicates, as ordered lists  and as trees. We can  characterise
+these ways of representing sets by <em>invariants</em>.
+When testing the implementation
+of  a  data-type  we  could  put   "wrappers"  round  the  functions  of   the
+implementation which enforced the invariants.
+
+
+
+<p>
+So, <em>laws</em>
+should hold for all implementations of an abstract data type such  as
+sets. By contrast, <em>invariants</em> are what distinguish between them.
+
+<p>
+The invariant for the unordered-list representation is simply that the
+representation contains no duplicates.
+
+
+<pre><code>
+(define invariant_sets_unordered
+    (lambda (s) (:- (no_dups s))))
+</code></pre>
+
+<pre><code>
+(define (no_dups s)
+    (if (null? s) #t
+        (and
+            (not (member? (car s) (cdr s)))
+            (no_dups (cdr s)))) )
+</code></pre>
+
+<p>
+The invariant for  the ordered  list representation  states that  the list  is
+ordered. If  we  use  the <tt> &lt;</tt>
+function,  then  this means  that  there
+are  no duplicates.
+
+
+<pre><code>
+(define invariant_sets_ordered
+    (lambda (s) (:- (ordered? s))))
+</code></pre>
+
+<pre><code>
+(define (ordered? l)
+    (cond
+        ((null? l) #t)
+        ((null? (cdr l)) #t)
+        (else (and (&lt; (car l) (cadr l)) (ordered? (cdr l)))))
+    )
+
+</code></pre>
+
+
+
+
+<a name = "laws_static"></a>
+<h2>5  Verifying Laws with Static Typing - ".h" files in C</h2>
+
+
+<p>
+[NOTE This section is optional, and is  included for the benefit of those  who
+are familiar with the C language. It is not compiled as part of the lecture.]
+
+<p>
+We have seen that the problem  with writing very general laws to  characterise
+the behaviour of a datatype is that there is no guaranteed and watertight  way
+of verifying them mechanically. One approach  to attacking this problem is  to
+use a kind of <em>weak
+logic</em> which will allow a compiler to "believe" that certain
+statements about a program are true.  If this logic is <em>sound</em> then the
+compiler's belief will be justified.
+
+
+<p>
+Static typing,  such as  is found  in Pascal  or C,  gives us  just such  weak
+logical system which the computer uses to establish that certain laws hold. In
+the case of C, the ".h" files are in effect the laws of a datatype, which  the
+corresponding ".c" files must  obey. It is  to be noted  that, in both  cases,
+this logic is not only weak, but  is <em>unsound!</em>
+For example, in C, a  programmer
+can  "cast"  the  type  of  certain  expressions  violating  type  security. A
+less-obvious unsoundness  in  Pascal  arises from  the  existence  of <em>
+variant records</em>
+whose <em>tag field</em>  does not necessarily reflect  the actual type of  the
+data in the record.
+
+<p>
+What can be said in these static type systems is in effect laws and invariants
+which could be expressed in  Scheme using the type-recognising functions  such
+as <tt>boolean?</tt>.
+This provides a logic in  which we can state what data-types  the
+arguments of, and results of, functions belong to. So, we can express the fact
+that the intersection of sets is a set, but <em>not</em>
+the fact that the intersection
+of <tt>s1</tt> and <tt>s2</tt> is the same as the intersection of <tt>s2</tt>
+and
+<tt>s1</tt>.
+
+<p>
+Below is some C  code intended to  illustrate the use  of static typing.  Note
+that we have restricted our lists to being lists of integers.
+
+<pre>
+/*   sets.c     Contains code   */
+/*  Invariants - characterise a particular representation */
+    typedef     int* Set;      /* represent sets as arrays  */
+
+#include "sets.h"
+
+int car(List l)
+    {return l->car;}
+
+List cdr(List l)
+    {return l->cdr;}
+
+List cons(int x, int y)
+    {
+        List l malloc(sizeof int * 2);
+        l -> car = x;
+        l -> cdr = y;
+        return l;
+    }
+
+Boolean member_set(int x, Set s)
+    {  return
+            null
+            x=car(s)? True :
+    }
+
+
+/* sets.h       Contains laws      */
+
+/* Laws - state facts which are true of all representations. */
+    typedef   int* List;     /* represent lists as arrays */
+    typedef   int Boolean;
+    Set       empty_set;                     /* The empty set is a set  */
+    Set       list_to_set(List l);           /* convert a list to a set */
+    List      list_to_set(Set s);
+    Set       intersect(Set s1, Set s2);   /* intersection of sets is a set*/
+    Boolean   member_set(int i, Set s);    /* is integer i a member of set S*/
+    Boolean   included_in(Set s1, Set s2); /* is set s1 included in set s2? */
+    Boolean   equal_set(Set s1, Set s2);   /* are two sets <tt>equal?</tt>           */
+    Set       intersect(Set s1, Set s2);   /* intersection of sets is a set */
+</pre>
+
+</body>
+</html>

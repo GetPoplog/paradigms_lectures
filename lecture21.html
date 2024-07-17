@@ -1,0 +1,474 @@
+
+
+
+
+<html><head><title>
+
+
+Data Structures in  the Logic Paradigm
+
+</title></head>
+<body bgcolor="white">
+
+
+<h1>
+<center>
+
+
+    LECTURE 21  Data Structures in  the Logic Paradigm
+
+</center>
+
+</h1>
+
+<hr>
+<!-- ============================================================= -->
+
+
+
+<a href = "lecture21.html#horn">
+  1   We usually restrict ourselves to Horn clauses in the logic paradigm
+</a><br>
+
+
+<a href = "lecture21.html#procs">
+  2   Viewing Clauses as Procedures
+</a><br>
+<pre>
+      2.1   Matching constant parameters
+      2.2   Procedure Activations Persist after Procedure returns result
+      2.3   Procedure Definitions may be Distributed over Clauses
+      2.4   Unit Clauses Record Basic Facts
+</pre>
+<a href = "lecture21.html#arith">
+  3   Arithmetic and other operations can be built in
+</a><br>
+
+<a href = "lecture21.html#function">
+  4   Function symbols provide the ability to create data-structures.
+</a><br>
+
+<hr>
+
+<a name = "horn">
+<h2>1  We usually restrict ourselves to Horn clauses in the logic
+paradigm</h2> </a>
+
+<p>
+So far  we  have considered  resolution  in  the full  first  order  predicate
+calculus. However in the logic paradigm  it is customary to restrict the  kind
+of clauses  we  are  allowed to  write  in  exchange for  the  possibility  of
+efficient implementation  of  the  logic  on  a  computer.  The  most  serious
+restriction is  that we  allow  <em>only one  positive  literal</em> per
+clause.  Such clauses are called "Horn clauses". In terms of implication, a
+Horn clause
+
+<pre>
+        ~a&#160;<sub>1</sub> \/ ~a&#160;<sub>2</sub> \/ ... ~a&#160;<sub>n</sub> \/ b
+</pre>
+
+<p>
+can be regarded as a implication:
+
+<pre>
+       (a<sub>1</sub> &amp; a<sub>2</sub> &amp; ...... a<sub>n</sub>) -> b
+</pre>
+
+Moreover this is commonly  given an <em>operational
+interpretation</em>  in which <tt>b</tt>  is regarded as a kind of
+<em>procedure</em>.
+
+<p>
+In the Prolog language, for example, a Horn clause is written
+
+<pre>
+    <b>consequence</b> :- <b>premises</b>
+</pre>
+
+<p>
+where the <consequence> is  the single unit clause,  and the premises are  the
+negative literals separated by commas. Thus we might define:
+
+<pre>
+        grandparent(X,Y) :- parent(X,Z), parent(Z,Y).
+</pre>
+
+<p>
+where <tt>X, Y</tt> and  <tt>Z</tt> are  variables,  according  to the
+Prolog convention  of capitalising variables.
+
+<p>
+Let us  write Horn clauses as, for example:
+
+
+<pre>
+       (or (grandparent (? x) (? y))
+           (not (parent (? x) (? z)))
+           (not (parent (? z) (? y))))
+</pre>
+
+<a name="procs"> </a>
+<h2>2  Viewing Clauses as Procedures
+</h2>
+
+<p> Such  a  clause  can  be  regarded as  a  kind  of  a  definition  of a
+<em>procedure</em> <tt>grandparent</tt>. From  this operational  viewpoint,
+<tt>(? x)</tt> and <tt>(? y)</tt>  are formal parameters of the  procedure,
+while <tt>(? z)</tt> is a local variable. Whereas in Scheme all  parameters
+are called by  <em> value</em>,  in the operational  interpretation of  the
+logic  paradigm   we   regard   all   parameters   as   being   called   by
+<em>reference</em>. So if we regard the clause above as a kind of procedure
+definition we see the following correspondence:</p>
+
+
+<center>
+<IMG SRC = "clauses_as_procedures.gif">
+</center>
+
+<!--
+ ----------------------------------------------------------------------------
+ |                                          |                               |
+ | Procedure Header                         |(or (grandparent (? x) (? y))  |
+ |------------------------------------------+-------------------------------|
+ | Procedure   | a call to a procedure      | (not (parent (? x) (? z)))    |
+ |             |----------------------------|                               |
+ | Body        |another to a procedure      | (not (parent (? z) (? y))))   |
+ ----------------------------------------------------------------------------
+
+-->
+
+<p>
+So, the negated form of our theorem, for example
+
+<pre>
+       (not (grandparent Liz (? p)))
+</pre>
+
+<p>
+can be  regarded as  a <em>call</em>  of  our procedure
+<tt>grandparent</tt>.
+
+<h3>2.1  Matching constant parameters</h3>
+
+
+<p>
+Notice that  one difference  between this  and Pascal  is that  if you  pass a
+constant as actual parameter, instead of getting an error report if you try to
+bind it inside the procedure, a logic language will try to match the constant.
+Here you could think of the <tt>(? p)</tt>  in the call as a kind of
+call-by-reference
+(although the logic paradigm extends this concept rather far).
+
+<h3>2.2  Procedure Activations Persist after Procedure returns result</h3>
+
+
+<p>
+Another important difference is that the <tt>grandparent</tt>
+procedure activation does
+not cease to exist when  it returns a result. Rather  it is kept around to  be
+re-activated if the result is not  satisfactory. This corresponds to the  fact
+that a clause can be resolved with several other clauses.
+
+<p>
+[Some implementations of Scheme allow you to write Scheme functions that  have
+the same property - they provide  a function named <tt>call/cc</tt>
+(call with  current
+continuation) which preserves the state of a computation to be re-activated at
+a later time.]
+
+<h3>2.3  Procedure Definitions may be Distributed over Clauses</h3>
+
+
+<p>
+Finally, let us  notice that the  definition of a  predicate-procedure can  be
+spread over more  than one  case. For example,  suppose we  had expressed  our
+family relations in terms of <tt>mother</tt> and <tt>father</tt>
+then we might have
+
+
+<pre>
+    (or (grandmother (? x) (? y))
+        (not (mother (? x) (? z))) (not (mother (? z) (? y))))
+
+    (or (grandmother (? x) (? y))
+        (not (mother (? x) (? z))) (not (father (? z) (? y))))
+</pre>
+
+<p>
+We shall  see  this  kind  of  distribution  of  a  definition  among  several
+statements that may  be widely  separated in the  program text  in the  Object
+Oriented Paradigm.
+
+<h3>2.4  Unit Clauses Record Basic Facts</h3>
+
+
+<p>
+Now let us consider <em>unit clauses</em>. Operationally two clauses such
+as
+
+<pre>
+    (parent Liz Charley)
+    (parent Charley Will)
+</pre>
+
+<p>
+can be regarded as defining a single procedure <tt>parent</tt>. We could
+think of this as a succinct way of defining a conditional.
+
+<p>
+So let us consider the query
+
+<pre>
+    (not (grandparent Liz (? p)))
+</pre>
+
+<p>
+this "calls the procedure" <tt>grandparent</tt>,
+requiring us to perform the calls
+
+<pre>
+     (not (parent Liz (? z)))  (not (parent (? z) (? p)))
+</pre>
+
+<p>
+performing the first call of <tt>parent</tt>
+we bind <tt>(? z)</tt> to  <tt>Charley</tt>. Performing the
+second call, we bind the variable <tt>(? p)</tt> to the value
+<tt>Will</tt>.
+
+
+<a name = "arith">
+<h2>3  Arithmetic and other operations can be built in </h2></a>
+
+<p>
+Computers have a lot of built-in arithmetic capability. We could construct our
+arithmetic from logical first principles, for example by translating the Peano
+postulates into predicate calculus. However it would be much more efficient to
+make  use  of  built-in  arithmetic  capabilities.
+
+<h3>3.1  Building in arithmetic predicates like &lt;</h3>
+
+<p>
+Consider the "less-than" relationship of arithmetic. A good implementation  of
+the logic paradigm should behave exactly  as if there were an infinite  number
+of unit clauses such as
+
+<pre>
+    (or (&lt; 1 2))
+    (or (&lt; 1 3))
+    (or (&lt; 1 4))
+    ...
+    (or (&lt; 2 3))
+    ...
+</pre>
+
+<p>
+It should be noted that the  best-known implementation of the Logic  Paradigm,
+namely the  Prolog language,  has a  half-baked implementation  of  arithmetic
+comparison - both  arguments of &lt;  and other arithmetic  operators have to  be
+instantiated to numbers if an error message is to be avoided.
+
+<h3>3.2  Building in arithmetic functions like +</h3>
+
+
+<p>
+Arithmetic functions can also be built in. Given that logic programs behave as
+procedural rather  than  functional  languages, the  most  consistent  way  of
+implementing such  functions would  be to  represent them  as predicates.  For
+example one might write <tt>(add 2 3 (? x))</tt>
+and expect <tt>(? x)</tt> to be bound
+to  <tt>5</tt>.
+However this is a very tedious way of specifying arithmetic, so the convention
+is to introduce an <em>evaluation
+predicate</em> which evaluates an expression. In  our
+Scheme-based formalism one would write:
+
+<pre>
+        (is (? x) (+ 2 3))
+</pre>
+
+<p>
+Again, the logic-languages behave to some extent as if there were an infinite
+number of unit clauses which said, for example
+
+
+<pre>
+        (is 5 (+ 2 3))
+</pre>
+
+<p>
+however they do not behave consistently.
+
+<p>
+<h4>Exercise:</h4>
+Would  the Peano  postulates  translate into  first-order  predicate
+calculus?
+
+
+<a name = "function">
+<h2>4  Function symbols provide the ability to create data-structures.</h2>
+</a>
+
+<p>
+So far we have confined ourselves in  our examples to what is often  called
+the "datalog" paradigm, that is to say the arguments of the predicates have
+been simple  variables, numbers  or  other constants.  At this  level,  the
+capabilities of languages  of the logic  paradigm such as  Prolog, and  the
+capabilities of <em>relational databases</em> are very similar. In a sense,
+logic languages  tend to  work  more lazily  - they  "think"  of a  way  of
+satisfying a predicate  and postpone thinking  of any other  way until  the
+first way is proved wrong. Relational  databases work more eagerly. In  the
+grandparent case, a  relational database  would think of  all the  possible
+pairs of people who had that relationship and then might allow the user  to
+choose the particular one she wanted.
+
+<p>
+However our  version of  the predicate  calculus allows  us to  have  function
+symbols. These allow us in effect to build data-structures.
+
+<h3>4.1  Determining if a given element is a member of a list</h3>
+
+
+<pre>
+    (or (member (? x) (cons (? x) (? y))))                            ;(1)
+    (or (member (? x) (cons (? y) (? z))) (not (member (? x) (? z)))) ;(2)
+</pre>
+
+<p>
+Now consider the "goal":
+
+<pre>
+    (not (member 2 (cons 1 (cons 2 (cons 3 nil)))))    ;(3)
+</pre>
+
+<p>
+This generates the sub-goal, with the substitution <tt>((? y) . 1)</tt>
+
+<pre>
+    (not (member 2 (cons 2 (cons 3 nil))))
+</pre>
+
+<p>
+And now  with the  substitution  <tt>((?
+x)  .  2)</tt>, we  get  the empty  clause  by
+resolution with (1). So the original goal is satisfied.
+
+<p>
+Now consider:
+
+<pre>
+    (or (not (member (? p) (cons 1 (cons 2 (cons 3 nil)))))
+                (not (> (? p) 1)))                                      ;(4)
+</pre>
+
+<p>
+This resolves with (1) to give the binding <tt>((? p) . 1)</tt>
+and the new goal
+
+<pre>
+    (not (> 1 1))
+</pre>
+
+<p>
+However this goal cannot  be satisfied by resolution  against anything in  the
+(implicit) database of numeric facts since the (false) fact <tt>(or
+(> 1 1))</tt>  does
+not occur in there. So our first result from the <tt>member</tt>
+procedure is no  good.
+However we can resuscitate it, by using clause (2)! From (4) and (2) we obtain
+
+<pre>
+      (or
+         (not (member (? x) (cons 2 (cons 3 nil))))
+         (not (> (? p) 1)))
+</pre>
+
+<p>
+The first clause now resolves against (1) giving <tt>((?
+x) . 2)</tt> , leaving us with
+
+<pre>
+         (not (> 2 1))
+</pre>
+
+<p>
+which resolves  against the  implicit clause  <tt>(or
+(>  2 1))</tt> in the  database,
+leaving us the empty clause.
+
+
+<h3>4.2  Building a new list with concatenation</h3>
+
+
+<p>
+Now let us consider a more complicated example. We might define
+<tt>append</tt> as:
+
+<pre>
+    (or (append nil (? list) (? list)))         ;[1]
+
+    (or                                         ;[2]
+        (append
+            (cons (? x) (? list1))
+            (? list2)
+            (cons (? x) (? list3)))
+        (not
+            (append (? list1) (? list2) (? list3))))
+</pre>
+
+
+<p>
+Now consider the goal:
+
+<pre>
+    (not (append (cons 1 nil) (cons 2 nil) (? listout)))      ;[3]
+</pre>
+
+<p>
+This resolves with [2] with the unification
+
+<pre>
+    (                                                         ;[U1]
+        ((? x) . 1)
+        ((? list1) . nil)
+        ((? list2) (cons 2 nil))
+        ((? listout) (cons 1 (? list3)))
+        )
+</pre>
+
+<p>
+giving the new goal
+
+<pre>
+    (not (append nil (cons 2 nil) (? list3)))                ;[4]
+</pre>
+
+
+<p>
+we can now use clause [1] to obtain the unification
+
+<pre>
+    (((? list3) (cons 2 nil)))                               ;[U2]
+</pre>
+
+<p>
+satisfying the goal, since [1] is a unit clause. We can get the actual
+value of <tt>(? listout)</tt> by using the two unifying substitutions [U1]
+and [U2]. From U1 we obtain
+
+<pre>
+        (cons 1 (? list3))
+</pre>
+
+<p>
+as the value for <tt>(? listout)</tt>, and from [U2] this is seen to be
+
+
+<pre>
+        (cons 1 (cons 2 nil))
+</pre>
+
+
+
+
+</body></html>
